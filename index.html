@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e4edff'/%3E%3Cpath d='M8 24 16 7l8 17' stroke='%233a0f86' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=Audiowide&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ===== THEME TOKENS: swap the look here ===== */
 :root{
@@ -52,8 +52,8 @@ nav a.link:hover,nav a.link.on{color:var(--text);border-color:var(--accent)}
 /* ===== HERO ===== */
 #hero{position:relative;min-height:calc(100vh - 74px);display:flex;align-items:center;padding:2rem 0 3rem;overflow:hidden}
 #hero .wrap{position:relative;text-align:center;width:min(1320px,100% - 2.5rem)}
-h1{font-size:clamp(2rem,8vw,5rem);font-size:clamp(2rem,11cqi,6rem);letter-spacing:-.02em;line-height:1.14;margin-bottom:1.2rem}
-.ln{display:block}.l1{font-weight:500;color:#e9e1ff;font-size:.85em}.l1 .nm{font-weight:700;color:#cdb8ff}.l2{font-weight:800;color:#fff}.l2 .nm{color:#cdb8ff}
+h1{font-family:'Audiowide',var(--display);font-weight:400;font-synthesis:none;white-space:nowrap;font-size:clamp(1.6rem,7.5vw,4.6rem);font-size:clamp(1.6rem,10.5cqi,5.8rem);letter-spacing:2px;line-height:1.1;margin-bottom:1.2rem}
+.ln{display:block}.l1{font-weight:500;color:#e9e1ff;font-size:.85em}.l1 .nm{font-weight:700;color:#cdb8ff}.l2{font-weight:400;color:#fff}.l2 .nm{color:#cdb8ff}
 .w{display:inline-block;opacity:0;transform:translateY(.45em);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*70ms + 150ms)}
 .sub{font:400 .95rem var(--mono);color:var(--muted);margin:0 auto 1.6rem;max-width:80ch}
 .cta{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;opacity:0;animation:rise .7s .95s forwards}
@@ -523,6 +523,17 @@ document.querySelector('[data-cfg="logo"]').textContent = CONFIG.logo;
   let i = 0;
   const line = (cls, txt) => `<span class="ln ${cls}">` + txt.split(" ").map(w => `<span class="w${w === "KUMAR" ? " nm" : ""}" style="--i:${i++}" aria-hidden="true">${w}</span>`).join(" ") + `</span>`;
   h.innerHTML = line("l2", "ANMOL KUMAR");
+})();
+
+/* Audiowide is wide: if the name is wider than its column, shrink it so it never overflows */
+(() => {
+  const h = $("h1");
+  const fit = () => {
+    h.style.fontSize = "";
+    if (h.scrollWidth > h.clientWidth) h.style.fontSize = parseFloat(getComputedStyle(h).fontSize) * h.clientWidth / h.scrollWidth * .97 + "px";
+  };
+  fit(); addEventListener("resize", fit);
+  if (document.fonts) document.fonts.ready.then(fit);
 })();
 
 /* Mobile menu */
