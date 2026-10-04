@@ -104,10 +104,6 @@ h3.sec{font-size:1.7rem;margin:4rem 0 1.2rem}
 .chip{font:500 .75rem var(--mono);padding:.2rem .65rem;border-radius:99px;border:1px solid var(--border);color:var(--muted)}
 .chip[data-s=Exploring]{border-color:var(--accent-2);color:var(--accent-2)}
 .chip[data-s=Building]{background:var(--accent);border-color:var(--accent);color:#12082e}
-dl.picked{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.8rem 2.5rem;margin:0}
-dl.picked div{border-top:1px solid var(--border);padding-top:.8rem}
-dt{color:var(--head);font:700 1.1rem var(--display);letter-spacing:-.02em}
-dd{margin:.25rem 0 0;color:var(--muted);font-size:.95rem}
 .duo{display:grid;grid-template-columns:1.3fr 1fr;gap:4rem;align-items:start}
 .tl{list-style:none;margin:0;padding:0 0 0 1.6rem;border-left:2px dashed var(--border)}
 .tl li{position:relative;padding-bottom:1.5rem}
@@ -153,11 +149,12 @@ footer a{text-decoration:none}footer a:hover{color:var(--text)}
 /* ===== CONTACT: glass fields, circuit traces, floating tools ===== */
 .ct{position:relative;overflow:hidden}.ct .wrap{position:relative}
 .ct-bg{position:absolute;inset:0;pointer-events:none}
+#circuitL{position:absolute;left:0;top:0;width:42%;height:100%;transform:scale(-1,-1);-webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%)}
 #circuit{position:absolute;right:0;top:0;width:78%;height:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}
-#circuit path{fill:none;stroke:rgba(167,139,250,.38);stroke-width:1.2}
-#circuit circle{fill:#cbb8ff;filter:drop-shadow(0 0 5px #a78bfa)}
+#circuit path,#circuitL path{fill:none;stroke:rgba(167,139,250,.38);stroke-width:1.2}
+#circuit circle,#circuitL circle{fill:#cbb8ff;filter:drop-shadow(0 0 5px #a78bfa)}
 .code{position:absolute;margin:0;font:11px/1.6 var(--mono);color:#8c85c9;opacity:.5;filter:blur(.6px)}
-.c1{right:16%;top:6%}.c2{right:12%;top:30%;font-size:15px;color:#6cb6ff;opacity:.85}.c3{right:34%;bottom:4%}
+.c1{right:16%;top:6%}.c2{right:12%;top:30%;font-size:15px;color:#6cb6ff;opacity:.85}.c3{right:34%;bottom:4%}.c4{left:1%;top:19%;font-size:10px}.c5{left:3%;top:51%;font-size:13px;color:#6cb6ff;opacity:.85}
 .tile{position:absolute;width:52px;height:52px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(205,189,255,.18);color:#c9b8ff;animation:float 7s ease-in-out infinite}
 .tile svg{width:24px;height:24px}
 .ct-title{display:flex;align-items:center;gap:1rem;text-shadow:0 0 30px rgba(180,150,255,.55)}
@@ -182,7 +179,7 @@ input:focus,textarea:focus{border-color:#b69cff;background:rgba(255,255,255,.1);
 .ct .info li:last-child{border:0}
 @keyframes float{50%{translate:0 -10px}}
 @keyframes ring{0%{scale:.5;opacity:.8}100%{scale:2.4;opacity:0}}
-@media (max-width:900px){.code,.tile{display:none}#circuit{opacity:.35}}
+@media (max-width:900px){.code,.tile{display:none}#circuit{opacity:.35}#circuitL{display:none}}
 
 /* ===== Extra polish: glow headings, neon ring on DevFix ===== */
 html{scrollbar-color:#4b36a8 #0b0721}
@@ -273,6 +270,38 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
 @media (max-width:480px){.hstats{grid-template-columns:1fr}.hs{display:flex;align-items:baseline;gap:.8rem}.hs b{font-size:1.4rem}}
 @media (prefers-reduced-motion:reduce){.fcard,.hs{opacity:1;transform:none!important}}
 
+/* ===== PICKED UP: zig-zag floating glass boxes ===== */
+@property --g{syntax:"<number>";initial-value:0;inherits:false}
+@property --h{syntax:"<number>";initial-value:0;inherits:false}
+.picked{position:relative;display:flex;flex-direction:column;gap:2.2rem;margin-top:2rem}
+.picked::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(205,189,255,.14);pointer-events:none}
+.pk{position:relative;width:min(42%,460px)}
+.pk:nth-child(odd){align-self:flex-start}
+.pk:nth-child(even){align-self:flex-end}
+.glass{padding:1.3rem 1.5rem;border-radius:16px;background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(205,189,255,.16);box-shadow:var(--depth),0 0 calc(26px + var(--g,0)*18px + var(--h,0)*22px) -8px rgba(157,125,255,calc(.28 + var(--g,0)*.22 + var(--h,0)*.3));animation:pkfloat var(--t,5s) ease-in-out var(--d,0s) infinite,pkglow 6s ease-in-out var(--d,0s) infinite;transition:--h .35s,border-color .35s,transform .35s var(--ease)}
+.glass:hover{--h:1;border-color:rgba(190,160,255,.5);transform:translateY(-4px)}
+.glass small{display:block;margin-bottom:.35rem;font:500 .72rem var(--mono);color:var(--accent-2)}
+.glass h4{margin:0 0 .35rem;font:600 1.2rem/1.25 var(--display);letter-spacing:-.02em;color:var(--head)}
+.glass p{margin:0;font-size:.95rem;color:var(--muted)}
+@keyframes pkfloat{50%{translate:0 -8px}}
+@keyframes pkglow{50%{--g:1}}
+@media (max-width:900px){.picked{gap:1.4rem}.picked::before{display:none}.pk{width:100%}}
+
+/* ===== DevFix link ===== */
+.ttl{display:flex;align-items:center;flex-wrap:wrap;gap:.2rem 1.2rem}
+.feat h3 a{color:inherit;text-decoration:none;background:linear-gradient(#cdb8ff,#cdb8ff) 0 100%/0 3px no-repeat;transition:background-size .3s var(--ease),color .3s}
+.feat h3 a:hover{background-size:100% 3px;color:#efe8ff}
+.demo{font:500 .8rem var(--mono);color:#fff;text-decoration:none;padding:.4rem .85rem;border-radius:99px;border:1px solid rgba(205,189,255,.45);background:rgba(255,255,255,.08);transition:background .25s,color .25s,box-shadow .25s,transform .25s}
+.demo:hover{background:var(--accent);color:#12082e;box-shadow:0 0 22px rgba(157,125,255,.6);transform:translateY(-2px)}
+
+/* ===== NAV: GitHub + LinkedIn icons, top right ===== */
+.nav-ic{display:flex;align-items:center;gap:.4rem;padding-left:1.4rem;border-left:1px solid var(--border)}
+.ni{display:grid;place-items:center;width:36px;height:36px;padding:0;border-radius:10px;color:var(--muted);transition:color .25s,background .25s,box-shadow .25s}
+.ni svg{width:20px;height:20px}
+.ni:hover{color:var(--head);background:rgba(157,125,255,.16);box-shadow:0 0 18px rgba(157,125,255,.35)}
+@media (min-width:761px){#menu{align-items:center}}
+@media (max-width:760px){.nav-ic{border-left:0;border-top:1px solid var(--border);margin-top:.3rem;padding:.8rem 0 .4rem}}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width:900px){
   .about,.proj,.duo,.contact{grid-template-columns:1fr;gap:2.5rem}
@@ -300,6 +329,7 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
       <li><a class="link" href="#projects">Projects</a></li>
       <li><a class="link" href="#skills">Skills</a></li>
       <li><a class="link" href="#contact">Contact</a></li>
+      <li class="nav-ic" id="navIcons"></li>
     </ul>
   </nav>
 </header>
@@ -362,7 +392,7 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
     <h3 class="sec" style="margin-top:0">What I'm learning</h3>
     <div class="learn" id="learn"></div>
     <h3 class="sec">What I've picked up so far</h3>
-    <dl class="picked" id="picked"></dl>
+    <div class="picked" id="picked"></div>
     <div class="duo" style="margin-top:4rem">
       <div><h3 class="sec" style="margin-top:0">Currently under construction</h3><ol class="tl" id="tl"></ol></div>
       <div><h3 class="sec" style="margin-top:0">Developer status</h3>
@@ -374,6 +404,7 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
 <section id="contact" class="ct">
   <div class="ct-bg" id="ctBg" aria-hidden="true">
     <svg id="circuit" viewBox="0 0 800 640" preserveAspectRatio="xMaxYMid slice"></svg>
+    <svg id="circuitL" viewBox="0 0 800 640" preserveAspectRatio="xMidYMid slice"></svg>
     <pre class="code c1">var colors = {
   project: 'nomal' {
     return: 'hello.world';
@@ -386,6 +417,11 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
     spot: 'new message',
   }
 };</pre>
+    <pre class="code c4">const build = () => {
+  learn();
+  fix();
+};</pre>
+    <pre class="code c5">{ bug: '...' }</pre>
   </div>
   <div class="wrap">
     <h2 class="ct-title"><svg viewBox="0 0 56 36" width="56" height="36" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="#9d7dff" d="M8 14l8-4.5 8 4.5v9l-8 4.5-8-4.5zM8 14l8 4.5 8-4.5M16 18.5v9"/><path stroke="#ffb27a" d="M44 9a7 7 0 0 0-4 12.7V25h8v-3.3A7 7 0 0 0 44 9zM40.5 28h7"/></svg>Let's Build Something</h2>
@@ -411,7 +447,6 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
   <div class="wrap">
     <span id="copy"></span>
     <span>Built while learning.</span>
-    <span class="ic" id="fIcons"></span>
     <a href="#hero">Back to top</a>
   </div>
 </footer>
@@ -431,29 +466,29 @@ const CONFIG = {
 
 /* ===== DATA: add to these arrays and the page updates ===== */
 const PROJECTS = [
-  { featured:true, title:"DevFix", category:"CODING ERROR SOLVER",
+  { featured:true, title:"DevFix", category:"CODING ERROR SOLVER", url:"https://thehellspires.vercel.app/",
     tagline:"Turn coding errors into understandable solutions.",
     desc:"DevFix is a beginner-friendly project designed to help students understand programming errors instead of simply copying a solution. It explains common coding mistakes, possible causes, and practical fixes in a simple way.",
     tags:["BEGINNER FRIENDLY","EDUCATIONAL","PROBLEM SOLVING"],
     demo:[["bad","Segmentation fault (core dumped)"],["","what it means: you touched memory that isn't yours."],["ok","likely fix: check your array index before the loop ends."]],
     strs:[["segfault","bad",14,64],["fixed","ok",38,104],["learn()","",62,76],["git push","",86,120]] },
-  { title:"Untitled project 2", desc:"Currently being built...", foot:"Project under construction. Bugs included.", strs:[["building...","",50,70]] },
+  { title:"Untitled project 2", desc:"Currently being built...", foot:"Project under construction. Bugs included.", strs:[] },
   { title:"404", desc:"Another idea is loading...", foot:"Project not found (yet).", strs:[["404","bad",50,56]] }
 ];
 const LEARNING = [["C Programming","Learning"],["Python Fundamentals","Learning"],["Linux","Exploring"],["Git & GitHub","Building"],["Web Development","Exploring"],["Problem Solving","Building"],["Programming Fundamentals","Learning"]];
-const PICKED = [
-  ["C fundamentals","Write, compile, run, stare at the output. Repeat."],
-  ["Variables and data types","Named boxes for values, and why mixing types bites."],
-  ["Operators","Math, comparisons, and the day I mixed up = and ==."],
-  ["Conditions","if, else if, else. Teaching a program to choose."],
-  ["Loops","for, while, and the occasional accidental infinite one."],
-  ["Functions","Splitting code into pieces I can reuse."],
-  ["Basic problem solving","Make it small, solve the small bit, repeat."],
-  ["Number systems","Binary, octal, hex. Yes, I convert by hand."],
-  ["Algorithms","Step-by-step recipes. Writing good ones is the hard part."],
-  ["Flowcharts","Boxes and arrows first. Saves me from myself."],
-  ["Basic Git/GitHub workflow","add, commit, push. Merge conflicts still scare me."],
-  ["Linux basics","Moving around, files, permissions. The terminal and I are on speaking terms."]
+const PICKED = [ // [topic, small label, one-liner]
+  ["Fundamentals","Starting point","Write, compile, run, stare at the output. Repeat."],
+  ["Variables & Data Types","Fundamentals","Named boxes for values."],
+  ["Operators","Fundamentals","Math, comparisons, and = vs ==."],
+  ["Conditions","Fundamentals","Teaching a program to choose."],
+  ["Loops","Fundamentals","Repeat things, not mistakes."],
+  ["Functions","Fundamentals","Code I only write once."],
+  ["Algorithms","Problem Solving","Step-by-step recipes."],
+  ["Flowcharts","Problem Solving","Boxes and arrows before code."],
+  ["Basic Problem Solving","Problem Solving","Make it small, then solve it."],
+  ["Number Systems","Problem Solving","Binary, octal, hex by hand."],
+  ["Basic Git/GitHub Workflow","Tools","add, commit, push, pray."],
+  ["Linux Basics","Tools","The terminal and I talk now."]
 ];
 const TIMELINE = [
   ["Learning how computers and programming actually work","Turns out it's not magic. Mostly."],
@@ -488,7 +523,7 @@ const SkillCard = ([n, s]) => `<div class="skill"><span>${n}</span><span class="
 const TimelineItem = ([t, n]) => `<li><b>${t}</b><span>${n}</span></li>`;
 const Strings = a => `<div class="strings" aria-hidden="true">${a.map(([t, c, l, len], i) => `<span class="str" style="left:${l}%;--len:${len}px;--s:${-i * .7}s;--o:${i * .12}s"><i class="${c}">"${t}"</i></span>`).join("")}</div>`;
 const ProjectCard = p => p.featured
-  ? `<article class="card feat"><p class="cat">${p.category}</p><h3>${p.title}</h3><p class="tag">${p.tagline}</p><p class="d">${p.desc}</p>
+  ? `<article class="card feat"><p class="cat">${p.category}</p><div class="ttl"><h3>${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer">${p.title}</a>` : p.title}</h3>${p.url ? `<a class="demo" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${p.title} live demo (opens in a new tab)">Live Demo ↗</a>` : ""}</div><p class="tag">${p.tagline}</p><p class="d">${p.desc}</p>
      <div class="err" aria-label="Example of a DevFix explanation">${p.demo.map(([c, l]) => `<div class="${c}">${l}</div>`).join("")}</div>
      <ul class="tags">${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>${Strings(p.strs)}</article>`
   : `<article class="card soon"><h3>${p.title}</h3><p>${p.desc}</p><p class="mono">${p.foot}</p>${Strings(p.strs)}</article>`;
@@ -503,16 +538,17 @@ $("marq").innerHTML = ("<span>LEARNING • BREAKING • FIXING • BUILDING</spa
 $("stats").innerHTML = STATS.map(StatCard).join("");
 $("projGrid").innerHTML = PROJECTS.map(ProjectCard).join("");
 $("learn").innerHTML = LEARNING.map(SkillCard).join("");
-$("picked").innerHTML = PICKED.map(([t, d]) => `<div><dt>${t}</dt><dd>${d}</dd></div>`).join("");
+$("picked").innerHTML = PICKED.map(([t, c, d], i) =>
+  `<div class="pk"><div class="glass" style="--d:${-i * .8}s;--t:${4.6 + (i % 3) * .5}s"><small>${c}</small><h4>${t}</h4><p>${d}</p></div></div>`).join("");
 $("tl").innerHTML = TIMELINE.map(TimelineItem).join("");
 $("devstatus").innerHTML = STATUS.map(([k, v]) => `<div><span class="k">${k}:</span> ${v}</div>`).join("");
 $("info").innerHTML = [
   [IC.mail, CONFIG.name, null], [IC.mail, CONFIG.email, "mailto:" + CONFIG.email],
   [IC.github, "GitHub", href(CONFIG.github)], [IC.linkedin, "LinkedIn", href(CONFIG.linkedin)]
 ].map(([i, t, h]) => `<li>${i}${h ? `<a href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${t}</a>` : `<span>${t}</span>`}</li>`).join("");
-$("fIcons").innerHTML =
-  `<a href="${href(CONFIG.github)}" aria-label="GitHub" target="_blank" rel="noopener">${IC.github}</a>` +
-  `<a href="${href(CONFIG.linkedin)}" aria-label="LinkedIn" target="_blank" rel="noopener">${IC.linkedin}</a>`;
+$("navIcons").innerHTML =
+  `<a class="ni" href="${href(CONFIG.github)}" aria-label="GitHub" target="_blank" rel="noopener">${IC.github}</a>` +
+  `<a class="ni" href="${href(CONFIG.linkedin)}" aria-label="LinkedIn" target="_blank" rel="noopener">${IC.linkedin}</a>`;
 $("copy").textContent = `${CONFIG.alias} © ${CONFIG.year}`;
 document.querySelector('[data-cfg="logo"]').textContent = CONFIG.logo;
 
@@ -583,10 +619,11 @@ document.querySelectorAll("[data-ic]").forEach(e => { e.innerHTML = IC[e.dataset
     h += `<path d="M800 ${y} H${x1} C${x1 - 60} ${y} ${x1 - 80} ${y + b} ${x1 - 160} ${y + b} H${x2}"/><circle cx="${x2}" cy="${y + b}" r="3"/>`;
     if (i % 3 === 0) h += `<circle cx="${700 - i * 9}" cy="${y}" r="2.5"/>`;
   }
-  $("circuit").innerHTML = h;
+  $("circuit").innerHTML = $("circuitL").innerHTML = h;
   $("ctBg").insertAdjacentHTML("beforeend",
-    [["bulb", "7%", "4%", 0], ["gear", "19%", "15%", 1.5], ["cloud", "2%", "27%", 3], ["wrench", "24%", "58%", 2], ["cloud", "5%", "86%", 4.5]]
-      .map(([k, r, t, d]) => `<span class="tile" style="right:${r};top:${t};animation-delay:${d}s">${IC[k]}</span>`).join(""));
+    [["bulb", "right", "7%", "4%", 0], ["gear", "right", "19%", "15%", 1.5], ["cloud", "right", "2%", "27%", 3], ["wrench", "right", "24%", "58%", 2], ["cloud", "right", "5%", "86%", 4.5],
+     ["wrench", "left", "3%", "6%", 1], ["gear", "left", "3%", "38%", 2.5], ["bulb", "left", "2%", "64%", .5], ["cloud", "left", "3%", "84%", 3.5]]
+      .map(([k, side, x, t, d]) => `<span class="tile" style="${side}:${x};top:${t};animation-delay:${d}s">${IC[k]}</span>`).join(""));
 })();
 
 /* ===== Animated background: always-moving constellation, data pulses, cursor light ===== */
