@@ -302,6 +302,17 @@ h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,
 @media (min-width:761px){#menu{align-items:center}}
 @media (max-width:760px){.nav-ic{border-left:0;border-top:1px solid var(--border);margin-top:.3rem;padding:.8rem 0 .4rem}}
 
+/* ===== GLASS PANELS: lighter on phones (desktop rules above stay as they are) ===== */
+@keyframes pkfloatm{50%{transform:translate3d(0,-4px,0)}}
+@media (max-width:768px){
+  .glass{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);background:rgba(255,255,255,.05);border-color:rgba(205,189,255,.14);box-shadow:0 8px 24px -16px rgba(0,0,0,.6),0 0 16px -10px rgba(157,125,255,.28);animation:none;transition:border-color .3s}
+  .glass.live{animation:pkfloatm calc(var(--t,5s) + 3s) ease-in-out var(--d,0s) infinite}
+  .glass:hover{--h:0;transform:none;border-color:rgba(205,189,255,.14)}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width:900px){
   .about,.proj,.duo,.contact{grid-template-columns:1fr;gap:2.5rem}
@@ -726,6 +737,12 @@ document.querySelectorAll("[data-ic]").forEach(e => { e.innerHTML = IC[e.dataset
     });
   });
   sec.addEventListener("pointerleave", () => strs.forEach(el => { el.style.transform = ""; }));
+})();
+
+/* Phones: only panels near the viewport float (the CSS ignores .live on desktop) */
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("live", e.isIntersecting)), { rootMargin: "80px 0px" });
+  document.querySelectorAll(".glass").forEach(g => io.observe(g));
 })();
 </script>
 </body>
