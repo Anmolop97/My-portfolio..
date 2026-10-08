@@ -1,749 +1,1943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anmol Kumar (Aelric) | First-Year CSE Student</title>
-<meta name="description" content="Learning. Breaking things. Fixing them. Building again.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e4edff'/%3E%3Cpath d='M8 24 16 7l8 17' stroke='%233a0f86' stroke-width='3' fill='none'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=Audiowide&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ===== THEME TOKENS: swap the look here ===== */
-:root{
-  --bg:#0b0721;--surface:#130c36;--border:rgba(205,189,255,.12);--ink:#2b1280;--head:#f3efff;--ease:cubic-bezier(.22,.8,.24,1);
-  --accent:#9d7dff;--accent-2:#b79cff;--text:#ece8ff;--muted:#a8a2d0;
-  --glow:0 30px 90px -20px rgba(124,84,255,.5);--depth:0 40px 80px -40px rgba(0,0,0,.7);
-  --display:'Sora',system-ui,sans-serif;
-  --body:'DM Sans',system-ui,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
-}
-html{color-scheme:dark}
-*,*::before,*::after{box-sizing:border-box}
-::selection{background:var(--accent);color:#12082e}
-#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-html{scroll-behavior:smooth;scroll-padding-top:90px}
-body{margin:0;background:var(--bg);color:var(--text);font:400 1.05rem/1.65 var(--body);overflow-x:hidden}
-h1,h2,h3{color:var(--head);font-weight:600;font-family:var(--display);letter-spacing:-.03em;line-height:1.02;margin:0}
-p{margin:0}a{color:inherit}
-:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px;border-radius:4px}
-.wrap{width:min(1120px,100% - 2.5rem);margin-inline:auto}
-section{padding:7rem 0}
-h2{font-size:clamp(2.2rem,5vw,3.6rem);margin-bottom:2rem}
-.mono{font-family:var(--mono)}
-.sr{position:absolute;left:-9999px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anmol Kumar | Creative Developer</title>
+  <meta name="description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-/* ===== NAV ===== */
-header{position:sticky;top:12px;z-index:50;padding:0 .75rem}
-nav.wrap{width:min(1240px,100%);display:flex;align-items:center;justify-content:space-between;height:62px;background:rgba(16,10,44,.72);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:14px;box-shadow:var(--depth);padding-inline:1.25rem}
-.logo{color:var(--head);font:700 1.3rem var(--display);text-decoration:none;letter-spacing:.1em}
-.logo::after{content:"_";color:var(--accent);animation:blink 1.1s steps(1) infinite}
-nav ul{display:flex;gap:2rem;list-style:none;margin:0;padding:0}
-nav a.link{text-decoration:none;color:var(--muted);font-size:.95rem;padding:.3rem 0;border-bottom:2px solid transparent;transition:color .2s}
-nav a.link:hover,nav a.link.on{color:var(--text);border-color:var(--accent)}
-#burger{display:none;background:none;border:1px solid var(--border);color:var(--text);font:inherit;padding:.4rem .8rem;border-radius:6px;cursor:pointer}
+  <style>
+    /* ===== CALM, SOPHISTICATED OBSIDIAN PALETTE ===== */
+    :root {
+      --bg: #04060a;
+      --surface: rgba(12, 16, 26, 0.68);
+      --surface-hover: rgba(16, 22, 36, 0.82);
+      --surface-border: rgba(56, 189, 248, 0.12);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --head: #f8fafc;
+      --text: #94a3b8;
+      --text-bright: #e2e8f0;
+      --muted: #64748b;
+      --cyan: #38bdf8;
+      --cyan-bright: #7dd3fc;
+      --emerald: #10b981;
+      --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
 
-/* ===== BUTTONS ===== */
-.btn{display:inline-block;font:500 1rem var(--body);text-decoration:none;padding:.85rem 1.5rem;border-radius:8px;border:1px solid var(--border);color:var(--head);background:rgba(255,255,255,.06);cursor:pointer;transition:box-shadow .25s,border-color .25s,transform .25s}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#12082e;font-weight:600}
-.btn:hover{border-color:var(--accent);box-shadow:0 0 28px rgba(157,125,255,.4);transform:translateY(-2px)}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      color-scheme: dark;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: #1e293b #04060a;
+    }
 
-/* ===== HERO ===== */
-#hero{position:relative;min-height:calc(100vh - 74px);display:flex;align-items:center;padding:2rem 0 3rem;overflow:hidden}
-#hero .wrap{position:relative;text-align:center;width:min(1320px,100% - 2.5rem)}
-h1{font-family:'Audiowide',var(--display);font-weight:400;font-synthesis:none;white-space:nowrap;font-size:clamp(1.6rem,7.5vw,4.6rem);font-size:clamp(1.6rem,10.5cqi,5.8rem);letter-spacing:2px;line-height:1.1;margin-bottom:1.2rem}
-.ln{display:block}.l1{font-weight:500;color:#e9e1ff;font-size:.85em}.l1 .nm{font-weight:700;color:#cdb8ff}.l2{font-weight:400;color:#fff}.l2 .nm{color:#cdb8ff}
-.w{display:inline-block;opacity:0;transform:translateY(.45em);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*70ms + 150ms)}
-.sub{font:400 .95rem var(--mono);color:var(--muted);margin:0 auto 1.6rem;max-width:80ch}
-.cta{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;opacity:0;animation:rise .7s .95s forwards}
-.term{position:relative;margin:2rem auto 0;text-align:left;width:min(360px,100%);background:rgba(16,10,44,.78);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;font:.82rem/1.7 var(--mono);box-shadow:var(--depth);transform:rotate(2deg);opacity:0;animation:rise .7s 1.2s forwards}
-.term .p{color:var(--accent-2)}.term .d{color:var(--muted)}
-.cur{display:inline-block;width:.55em;height:1em;background:var(--accent);vertical-align:-2px;animation:blink 1.1s steps(1) infinite}
+    /* ===== SLEEK CUSTOM SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #04060a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+    ::-webkit-scrollbar-button {
+      display: none !important;
+      width: 0;
+      height: 0;
+    }
 
-/* ===== MARQUEE ===== */
-.marq{border-block:1px solid var(--border);overflow:hidden;white-space:nowrap;padding:1rem 0;background:var(--ink)}
-.marq div{display:inline-block;animation:scroll 28s linear infinite;font:600 1.5rem var(--display);letter-spacing:-.02em;color:#cdbdff}
-.marq span{padding-right:2.5rem}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.7;
+    }
 
-/* ===== ABOUT ===== */
-.about{display:grid;grid-template-columns:1.5fr 1fr;gap:4rem;align-items:start}
-.about p+p{margin-top:1.2rem}.about p{max-width:60ch;color:var(--text)}
-.stats{display:grid;gap:0;border-left:2px solid var(--border)}
-.stat{color:var(--head);padding:1rem 0 1rem 1.5rem;font:700 1.35rem/1.2 var(--display);letter-spacing:-.02em}
-.stat:nth-child(2){margin-left:1.5rem}.stat:nth-child(4){margin-left:.6rem}
-.stat svg{width:1.1em;height:1.1em;vertical-align:-2px;margin-right:.35rem;color:var(--accent)}
-.glitch{position:relative;display:inline-block;color:var(--accent-2)}
-.glitch::before,.glitch::after{content:attr(data-t);position:absolute;inset:0;opacity:0}
-.glitch::before{color:var(--accent);animation:gl 4s steps(1) infinite}
-.glitch::after{color:#6cf;animation:gl 4s 0.12s steps(1) infinite reverse}
+    #bg-waves-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-/* ===== PROJECTS ===== */
-.proj{display:grid;grid-template-columns:1.7fr 1fr;gap:1.5rem}
-.card{border:1px solid var(--border);background:var(--surface);transition:transform .25s,border-color .25s}
-.card:hover{transform:translateY(-4px);border-color:var(--accent)}
-.feat{padding:2.5rem;border-radius:18px;box-shadow:var(--depth),var(--glow);grid-row:span 2;background:var(--ink);color:#fff;border-color:var(--ink)}
-.feat .cat{font:500 .85rem var(--mono);color:#c9b8ff}
-.feat h3{color:#fff;font-size:clamp(2.6rem,6vw,4.4rem);margin:.4rem 0 .6rem}
-.feat .tag{font:500 1.15rem var(--display);letter-spacing:-.01em;margin-bottom:1rem}
-.feat p.d{color:#ddd5f5;max-width:52ch}
-.err{margin:1.6rem 0;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:1rem 1.2rem;font:.85rem/1.8 var(--mono);overflow-x:auto}
-.err .bad{color:#ff9d94}.err .ok{color:#7ee787}
-.tags{display:flex;flex-wrap:wrap;gap:.6rem;list-style:none;padding:0;margin:0}
-.tags li{font:500 .75rem var(--mono);border:1px solid #cdbdff;color:#e6dcff;padding:.25rem .6rem;border-radius:4px}
-.tags li:nth-child(2){transform:rotate(-2deg)}
-.soon{padding:1.6rem;border-radius:6px;border-style:dashed;border-color:rgba(205,189,255,.3);background:rgba(255,255,255,.03)}
-.soon h3{font-size:1.6rem;margin-bottom:.5rem}
-.soon p{color:var(--muted);font-size:.95rem}
-.soon .mono{font-size:.8rem;margin-top:1rem;color:var(--accent-2)}
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(180px);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.18;
+    }
+    .glow-cyan {
+      width: 750px;
+      height: 750px;
+      top: -150px;
+      right: 5%;
+      background: #0284c7;
+    }
+    .glow-emerald {
+      width: 600px;
+      height: 600px;
+      bottom: -100px;
+      left: -10%;
+      background: #059669;
+    }
 
-/* ===== SKILLS ===== */
-h3.sec{font-size:1.7rem;margin:4rem 0 1.2rem}
-.learn{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem 3rem}
-.skill{display:flex;justify-content:space-between;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--border);font-weight:500}
-.chip{font:500 .75rem var(--mono);padding:.2rem .65rem;border-radius:99px;border:1px solid var(--border);color:var(--muted)}
-.chip[data-s=Exploring]{border-color:var(--accent-2);color:var(--accent-2)}
-.chip[data-s=Building]{background:var(--accent);border-color:var(--accent);color:#12082e}
-.duo{display:grid;grid-template-columns:1.3fr 1fr;gap:4rem;align-items:start}
-.tl{list-style:none;margin:0;padding:0 0 0 1.6rem;border-left:2px dashed var(--border)}
-.tl li{position:relative;padding-bottom:1.5rem}
-.tl li::before{content:"";position:absolute;left:calc(-1.6rem - 6px);top:.45rem;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--accent-2)}
-.tl li:first-child::before{background:var(--accent)}
-.tl b{color:var(--head);display:block;font:700 1.05rem var(--display);letter-spacing:-.02em}
-.tl span{color:var(--muted);font-size:.92rem}
-.status{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;font:.85rem/1.9 var(--mono);transform:rotate(-1deg);box-shadow:var(--depth)}
-.status .k{color:var(--accent-2)}.status .d{color:var(--muted)}
+    .vignette-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(circle at 65% 45%, transparent 35%, rgba(4, 6, 10, 0.88) 85%),
+                  linear-gradient(to bottom, rgba(4,6,10,0.2) 0%, rgba(4,6,10,0.95) 100%);
+    }
 
-/* ===== CONTACT ===== */
-.contact{display:grid;grid-template-columns:1.3fr 1fr;gap:4rem}
-.sub2{color:var(--muted);max-width:44ch;margin:-1rem 0 2rem}
-label{display:block;font-weight:500;margin-bottom:.35rem}
-input,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font:inherit;padding:.8rem 1rem;margin-bottom:.3rem}
-input:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(157,125,255,.25)}
-textarea{min-height:150px;resize:vertical}
-.field{margin-bottom:1rem}
-.msg{color:#ff8d84;font-size:.85rem;min-height:1.2em;display:block}
-#status{margin-top:1rem;min-height:1.5em}
-#status.ok{color:#7ee787}#status.bad{color:#ff8d84}
-.info{list-style:none;margin:0;padding:0}
-.info li{display:flex;align-items:center;gap:.9rem;padding:1rem 0;border-bottom:1px solid var(--border)}
-.info svg{width:22px;height:22px;flex:none;color:var(--accent)}
-.info a{text-decoration:none;word-break:break-all}.info a:hover{color:var(--accent-2)}
+    /* ===== NAVBAR ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.2rem 3rem;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(4, 6, 10, 0.72);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    nav {
+      max-width: 1560px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      color: var(--head);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-chip {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2.4rem;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover {
+      color: #fff;
+    }
+    
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.4rem 0.9rem;
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: #6ee7b7;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--emerald);
+      border-radius: 50%;
+      position: relative;
+    }
+    .pulse-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1.5px solid var(--emerald);
+      animation: pulse 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
 
-/* ===== FOOTER ===== */
-footer{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);font-size:.92rem}
-footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;justify-content:space-between}
-footer .ic{display:flex;gap:1rem}footer svg{width:20px;height:20px}
-footer a{text-decoration:none}footer a:hover{color:var(--text)}
+    /* ===== HERO SECTION ===== */
+    .hero {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 8rem 3rem 6rem;
+      display: grid;
+      grid-template-columns: 0.9fr 1.3fr;
+      align-items: center;
+      gap: 3rem;
+    }
 
-/* ===== MOTION ===== */
-@keyframes rise{to{opacity:1;transform:none}}
-@keyframes blink{50%{opacity:0}}
-@keyframes scroll{to{transform:translateX(-50%)}}
-@keyframes gl{0%,92%,100%{opacity:0}93%{opacity:.9;transform:translate(-2px,1px)}96%{opacity:.9;transform:translate(2px,-1px)}}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .rv{opacity:1!important;translate:none!important}.w,.cta,.term{opacity:1;transform:none}.term{transform:rotate(2deg)}
-}
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+      max-width: 540px;
+      z-index: 20;
+    }
 
-/* ===== CONTACT: glass fields, circuit traces, floating tools ===== */
-.ct{position:relative;overflow:hidden}.ct .wrap{position:relative}
-.ct-bg{position:absolute;inset:0;pointer-events:none}
-#circuitL{position:absolute;left:0;top:0;width:42%;height:100%;transform:scale(-1,-1);-webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%)}
-#circuit{position:absolute;right:0;top:0;width:78%;height:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}
-#circuit path,#circuitL path{fill:none;stroke:rgba(167,139,250,.38);stroke-width:1.2}
-#circuit circle,#circuitL circle{fill:#cbb8ff;filter:drop-shadow(0 0 5px #a78bfa)}
-.code{position:absolute;margin:0;font:11px/1.6 var(--mono);color:#8c85c9;opacity:.5;filter:blur(.6px)}
-.c1{right:16%;top:6%}.c2{right:12%;top:30%;font-size:15px;color:#6cb6ff;opacity:.85}.c3{right:34%;bottom:4%}.c4{left:1%;top:19%;font-size:10px}.c5{left:3%;top:51%;font-size:13px;color:#6cb6ff;opacity:.85}
-.tile{position:absolute;width:52px;height:52px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(205,189,255,.18);color:#c9b8ff;animation:float 7s ease-in-out infinite}
-.tile svg{width:24px;height:24px}
-.ct-title{display:flex;align-items:center;gap:1rem;text-shadow:0 0 30px rgba(180,150,255,.55)}
-.ct-title svg{flex:none;filter:drop-shadow(0 0 8px rgba(157,125,255,.7))}
-.sub2{font-size:1.15rem;color:#b9b2e0}
-label{font-weight:600;font-size:1.05rem}
-.inp{position:relative}
-.inp .ico{position:absolute;left:1rem;top:50%;translate:0 -50%;width:22px;height:22px;color:#c9b8ff;pointer-events:none;transition:color .2s}
-.inp.ta .ico{top:1.2rem;translate:none}
-.inp svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.inp:focus-within .ico{color:#fff}
-input,textarea{padding:1rem 1rem 1rem 3.4rem;background:rgba(255,255,255,.07);border:1px solid rgba(205,189,255,.28);border-radius:12px;backdrop-filter:blur(8px);transition:border-color .25s,box-shadow .25s,background .25s}
-textarea{min-height:170px}
-::placeholder{color:#a9a2d4;opacity:1}
-input:focus,textarea:focus{border-color:#b69cff;background:rgba(255,255,255,.1);box-shadow:0 0 0 2px rgba(169,139,255,.55),0 0 28px rgba(157,125,255,.5)}
-.sw{position:relative;display:inline-block;margin-top:.6rem}
-.sw::before,.sw::after{content:"";position:absolute;left:28%;top:50%;width:90px;height:90px;border-radius:50%;border:1px solid rgba(157,125,255,.5);translate:-50% -50%;opacity:0;animation:ring 3.2s ease-out infinite}
-.sw::after{animation-delay:1.6s}
-.btn.primary.send{position:relative;z-index:1;padding:1rem 2.2rem;border-radius:12px;color:#fff;background:linear-gradient(135deg,#7c4dff,#4f7dff);border:1px solid rgba(150,200,255,.85);box-shadow:0 0 0 6px rgba(157,125,255,.12),0 0 30px rgba(120,100,255,.6)}
-.btn.primary.send:hover{box-shadow:0 0 0 8px rgba(157,125,255,.18),0 0 44px rgba(120,120,255,.85)}
-.ct .info{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:.4rem 1.4rem;backdrop-filter:blur(8px)}
-.ct .info li:last-child{border:0}
-@keyframes float{50%{translate:0 -10px}}
-@keyframes ring{0%{scale:.5;opacity:.8}100%{scale:2.4;opacity:0}}
-@media (max-width:900px){.code,.tile{display:none}#circuit{opacity:.35}#circuitL{display:none}}
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.95rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      border-radius: 999px;
+      color: #6ee7b7;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      width: fit-content;
+      backdrop-filter: blur(12px);
+    }
+    .hero-pill span {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
 
-/* ===== Extra polish: glow headings, neon ring on DevFix ===== */
-html{scrollbar-color:#4b36a8 #0b0721}
-h2{text-shadow:0 0 40px rgba(157,125,255,.35)}.l2{text-shadow:0 0 40px rgba(157,125,255,.4)}
-.soon:hover{box-shadow:0 0 36px -8px rgba(157,125,255,.5)}
-@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
-.feat{position:relative}
-.feat::before{content:"";position:absolute;inset:-1px;border-radius:19px;padding:2px;pointer-events:none;background:conic-gradient(from var(--a),transparent 55%,#9d7dff,#58a6ff,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 5s linear infinite}
-@keyframes spin{to{--a:360deg}}
+    h1.hero-title {
+      font-size: clamp(3rem, 4.6vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      color: var(--head);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 70%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
 
-/* scroll reveals: opacity + translate only, so the card hover lift (transform) stays separate */
-.rv{opacity:0;translate:0 28px;transition:opacity .9s var(--ease),translate .9s var(--ease)}
-.rv.in{opacity:1;translate:0 0}
-.card.rv{transition:opacity .9s var(--ease),translate .9s var(--ease),transform .25s,border-color .25s}
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .hero-desc b {
+      color: var(--text-bright);
+      font-weight: 600;
+    }
 
-/* ===== PROJECTS: spring pop-in + hanging strings ===== */
-.card.rv{scale:.82;rotate:-3deg;transition:opacity .6s var(--ease),translate .9s var(--ease),scale .8s cubic-bezier(.34,1.56,.64,1),rotate .8s cubic-bezier(.34,1.56,.64,1),transform .25s,border-color .25s,box-shadow .25s}
-.card.rv:nth-child(2){rotate:3deg}
-.card.rv.in{scale:1;rotate:0deg}
-.card.rv.in h3{transform-origin:0 60%;animation:pop .8s cubic-bezier(.34,1.56,.64,1) .3s both}
-.card.rv.in .tags li{animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
-.card.rv.in .tags li:nth-child(1){animation-delay:.55s}.card.rv.in .tags li:nth-child(2){animation-delay:.65s}.card.rv.in .tags li:nth-child(3){animation-delay:.75s}
-.card.rv.in .err div{animation:linein .5s var(--ease) both}
-.card.rv.in .err div:nth-child(1){animation-delay:.7s}.card.rv.in .err div:nth-child(2){animation-delay:.9s}.card.rv.in .err div:nth-child(3){animation-delay:1.1s}
-.tags li{transition:translate .25s cubic-bezier(.34,1.56,.64,1)}
-.feat:hover .tags li:nth-child(odd){translate:0 -4px}.feat:hover .tags li:nth-child(even){translate:0 3px}
-.soon:hover{animation:wiggle .5s ease-in-out}
-.strings{position:absolute;left:0;right:0;top:100%;height:0;pointer-events:none}
-.str{position:absolute;top:-1px;width:0;height:var(--len);transform-origin:50% 0}
-.str::before{content:"";position:absolute;left:-1px;top:0;width:1.5px;height:100%;background:linear-gradient(#cdbdff,rgba(205,189,255,.3));transform-origin:50% 0}
-.str i{position:absolute;top:100%;left:0;translate:-50% -4px;white-space:nowrap;font:500 .75rem var(--mono);font-style:normal;padding:.3rem .65rem;border-radius:8px;color:#d9cfff;background:rgba(19,12,54,.92);border:1px solid rgba(205,189,255,.35);box-shadow:0 0 18px rgba(157,125,255,.35)}
-.str i.bad{color:#ff9d94}.str i.ok{color:#7ee787}
-.card.rv.in .str{animation:swing 3.4s ease-in-out var(--s) infinite alternate}
-.card.rv.in .str::before{animation:unspool .7s var(--ease) calc(.45s + var(--o)) both}
-.card.rv.in .str i{animation:pop .6s cubic-bezier(.34,1.56,.64,1) calc(.95s + var(--o)) both}
-@keyframes swing{from{rotate:-5deg}to{rotate:5deg}}
-@keyframes unspool{from{scale:1 0}}
-@keyframes pop{from{scale:0;opacity:0}}
-@keyframes linein{from{opacity:0;translate:-12px 0}}
-@keyframes wiggle{25%{rotate:-1.2deg}75%{rotate:1.2deg}}
-@media (max-width:900px){.strings{display:none}}
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-top: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.9rem 2rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #059669, #0284c7);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3);
+      filter: brightness(1.1);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-bright);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(14px);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      color: #fff;
+    }
 
-/* ===== PROJECTS: cursor reactions (JS sets --mx --my --px --py --rx --ry) ===== */
-.card{position:relative}
-.card:hover{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-6px)}
-.card.rv.in:hover{scale:1.025}
-.soon:hover{animation:none}
-.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(280px circle at var(--mx,50%) var(--my,50%),rgba(190,160,255,.26),transparent 62%)}
-.card:hover::after{opacity:1}
-.feat h3,.soon h3,.feat .err,.feat .tags{transition:translate .3s var(--ease)}
-.feat h3{translate:calc(var(--px,0)*12px) calc(var(--py,0)*6px)}
-.soon h3{translate:calc(var(--px,0)*8px) calc(var(--py,0)*5px)}
-.feat .err{translate:calc(var(--px,0)*-7px) calc(var(--py,0)*-4px)}
-.feat .tags{translate:calc(var(--px,0)*-12px) calc(var(--py,0)*-6px)}
-.str{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+    /* 3D LAPTOP STAGE */
+    .laptop-stage {
+      position: relative;
+      width: 100%;
+      height: 840px;
+      min-height: 750px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: visible;
+    }
 
-/* ===== HERO: side cards, stats row ===== */
-.hero-grid{display:grid;grid-template-columns:minmax(170px,260px) minmax(0,760px) minmax(170px,260px);justify-content:center;gap:1.6rem;align-items:center}
-.hero-main{container-type:inline-size;min-width:0}
-.fcard{position:relative;text-align:left;padding:1rem 1.15rem;border-radius:14px;background:rgba(255,255,255,.05);backdrop-filter:blur(14px);border:1px solid rgba(205,189,255,.16);box-shadow:var(--depth);opacity:0;transition:border-color .3s,box-shadow .3s;animation:rise .8s 1s forwards,float 7s ease-in-out 1.8s infinite}
-.fcard p{margin:0}
-.fl{transform:translate(-24px,12px);rotate:-2deg}
-.fr{transform:translate(24px,12px);rotate:2deg;border-color:rgba(157,125,255,.35);box-shadow:var(--depth),0 0 34px -12px rgba(157,125,255,.5);animation:rise .8s 1.15s forwards,float 8s ease-in-out 2.4s infinite}
-.fcard:hover{border-color:rgba(190,160,255,.55);box-shadow:var(--depth),0 0 36px -6px rgba(157,125,255,.55)}
-.fcard::after{content:"";position:absolute;top:50%;width:28px;height:1px}
-.fl::after{left:100%;background:linear-gradient(90deg,rgba(157,125,255,.7),transparent)}
-.fr::after{right:100%;background:linear-gradient(270deg,rgba(157,125,255,.7),transparent)}
-.fc-h{font:700 1.05rem var(--mono);color:var(--accent-2);margin-bottom:.6rem!important}
-.fc-t{font:.8rem/1.7 var(--mono);color:var(--muted)}.fc-t .p{color:var(--accent-2)}
-.fc-v{font:500 .95rem/1.4 var(--display);color:var(--head);margin:.15rem 0 .5rem!important}
-.fc-s{font:.8rem var(--mono);color:#7ee787}
-.fc-k{font:500 .72rem var(--mono);letter-spacing:.12em;color:var(--accent-2)}
-.fcard .fc-n{font:700 1.4rem/1.2 var(--display);color:var(--head);margin:.2rem 0 .6rem}
-.fc-r{font:.74rem/1.7 var(--mono);color:var(--muted)}
-.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;width:min(560px,100%);margin:2.2rem auto 0}
-.hs{text-align:left;padding:.8rem 1rem;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);backdrop-filter:blur(10px);opacity:0;transform:translateY(14px);animation:rise .7s calc(1.4s + var(--i)*.12s) forwards}
-.hs b{display:block;font:700 1.7rem/1 var(--display);color:var(--head)}
-.hs span{font-size:.85rem;color:var(--muted)}
-@media (max-width:1100px){
-  .hero-grid{grid-template-columns:1fr 1fr;gap:1rem;max-width:680px;margin-inline:auto;justify-content:normal}
-  .hero-main{grid-row:1;grid-column:1/-1}
-  .fl,.fr{grid-row:2;transform:none;rotate:0deg;animation:rise .8s 1s forwards}
-  .fl{grid-column:1}.fr{grid-column:2}
-  .fcard::after{display:none}
-}
-@media (max-width:640px){.fcard{display:none}}
-@media (max-width:480px){.logo{font-size:1rem;letter-spacing:.06em;white-space:nowrap}}
-@media (max-width:480px){.hstats{grid-template-columns:1fr}.hs{display:flex;align-items:baseline;gap:.8rem}.hs b{font-size:1.4rem}}
-@media (prefers-reduced-motion:reduce){.fcard,.hs{opacity:1;transform:none!important}}
+    #laptop-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      outline: none;
+      cursor: grab;
+      touch-action: none;
+    }
+    #laptop-canvas:active {
+      cursor: grabbing;
+    }
 
-/* ===== PICKED UP: zig-zag floating glass boxes ===== */
-@property --g{syntax:"<number>";initial-value:0;inherits:false}
-@property --h{syntax:"<number>";initial-value:0;inherits:false}
-.picked{position:relative;display:flex;flex-direction:column;gap:2.2rem;margin-top:2rem}
-.picked::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(205,189,255,.14);pointer-events:none}
-.pk{position:relative;width:min(42%,460px)}
-.pk:nth-child(odd){align-self:flex-start}
-.pk:nth-child(even){align-self:flex-end}
-.glass{padding:1.3rem 1.5rem;border-radius:16px;background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(205,189,255,.16);box-shadow:var(--depth),0 0 calc(26px + var(--g,0)*18px + var(--h,0)*22px) -8px rgba(157,125,255,calc(.28 + var(--g,0)*.22 + var(--h,0)*.3));animation:pkfloat var(--t,5s) ease-in-out var(--d,0s) infinite,pkglow 6s ease-in-out var(--d,0s) infinite;transition:--h .35s,border-color .35s,transform .35s var(--ease)}
-.glass:hover{--h:1;border-color:rgba(190,160,255,.5);transform:translateY(-4px)}
-.glass small{display:block;margin-bottom:.35rem;font:500 .72rem var(--mono);color:var(--accent-2)}
-.glass h4{margin:0 0 .35rem;font:600 1.2rem/1.25 var(--display);letter-spacing:-.02em;color:var(--head)}
-.glass p{margin:0;font-size:.95rem;color:var(--muted)}
-@keyframes pkfloat{50%{translate:0 -8px}}
-@keyframes pkglow{50%{--g:1}}
-@media (max-width:900px){.picked{gap:1.4rem}.picked::before{display:none}.pk{width:100%}}
+    .drag-instruction {
+      position: absolute;
+      bottom: 5%;
+      padding: 0.4rem 1.1rem;
+      background: rgba(4, 7, 14, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      font-size: 0.76rem;
+      color: #6ee7b7;
+      font-family: var(--font-mono);
+      pointer-events: none;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      z-index: 20;
+    }
 
-/* ===== DevFix link ===== */
-.ttl{display:flex;align-items:center;flex-wrap:wrap;gap:.2rem 1.2rem}
-.feat h3 a{color:inherit;text-decoration:none;background:linear-gradient(#cdb8ff,#cdb8ff) 0 100%/0 3px no-repeat;transition:background-size .3s var(--ease),color .3s}
-.feat h3 a:hover{background-size:100% 3px;color:#efe8ff}
-.demo{font:500 .8rem var(--mono);color:#fff;text-decoration:none;padding:.4rem .85rem;border-radius:99px;border:1px solid rgba(205,189,255,.45);background:rgba(255,255,255,.08);transition:background .25s,color .25s,box-shadow .25s,transform .25s}
-.demo:hover{background:var(--accent);color:#12082e;box-shadow:0 0 22px rgba(157,125,255,.6);transform:translateY(-2px)}
+    /* ===== SECTIONS ===== */
+    .section {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 9rem auto;
+      padding: 0 3rem;
+    }
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.38rem 0.95rem;
+      border-radius: 999px;
+      background: rgba(10, 16, 28, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan-bright);
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      width: fit-content;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .section-badge:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(14, 22, 38, 0.9);
+      transform: translateY(-1px);
+    }
+    .section-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+    }
+    .section-badge-num {
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .section-title {
+      font-size: clamp(2.2rem, 3.8vw, 3rem);
+      font-weight: 800;
+      color: var(--head);
+      letter-spacing: -0.03em;
+      margin-bottom: 2.8rem;
+    }
 
-/* ===== NAV: GitHub + LinkedIn icons, top right ===== */
-.nav-ic{display:flex;align-items:center;gap:.4rem;padding-left:1.4rem;border-left:1px solid var(--border)}
-.ni{display:grid;place-items:center;width:36px;height:36px;padding:0;border-radius:10px;color:var(--muted);transition:color .25s,background .25s,box-shadow .25s}
-.ni svg{width:20px;height:20px}
-.ni:hover{color:var(--head);background:rgba(157,125,255,.16);box-shadow:0 0 18px rgba(157,125,255,.35)}
-@media (min-width:761px){#menu{align-items:center}}
-@media (max-width:760px){.nav-ic{border-left:0;border-top:1px solid var(--border);margin-top:.3rem;padding:.8rem 0 .4rem}}
+    /* ===== FEATURED PROJECT CARD ===== */
+    .featured-hero-card {
+      background: rgba(10, 14, 24, 0.72);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 3.5rem;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .featured-hero-card:hover {
+      border-color: rgba(56, 189, 248, 0.25);
+      transform: translateY(-3px);
+    }
+    .project-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.4rem;
+    }
+    .pill-active {
+      padding: 0.3rem 0.8rem;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #6ee7b7;
+      font-weight: 600;
+    }
+    .featured-title {
+      font-size: clamp(1.9rem, 3vw, 2.5rem);
+      font-weight: 800;
+      color: var(--head);
+      line-height: 1.2;
+      margin-bottom: 1.1rem;
+    }
+    .featured-desc {
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .tag-cluster {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.4rem;
+    }
+    .tag-cluster span {
+      padding: 0.3rem 0.75rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--cyan);
+    }
 
-/* ===== GLASS PANELS: lighter on phones (desktop rules above stay as they are) ===== */
-@keyframes pkfloatm{50%{transform:translate3d(0,-4px,0)}}
-@media (max-width:768px){
-  .glass{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);background:rgba(255,255,255,.05);border-color:rgba(205,189,255,.14);box-shadow:0 8px 24px -16px rgba(0,0,0,.6),0 0 16px -10px rgba(157,125,255,.28);animation:none;transition:border-color .3s}
-  .glass.live{animation:pkfloatm calc(var(--t,5s) + 3s) ease-in-out var(--d,0s) infinite}
-  .glass:hover{--h:0;transform:none;border-color:rgba(205,189,255,.14)}
-}
-@media (prefers-reduced-motion: reduce){
-  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
-}
+    .demo-terminal {
+      background: #060912;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+    }
+    .term-bar {
+      background: #0b101c;
+      padding: 0.7rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .term-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .term-body {
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      line-height: 1.65;
+    }
+    .term-err { color: #f87171; }
+    .term-explain { color: #94a3b8; }
+    .term-fix { color: #4ade80; }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width:900px){
-  .about,.proj,.duo,.contact{grid-template-columns:1fr;gap:2.5rem}
-  .feat{grid-row:auto;padding:1.6rem}
-  .term{position:relative;margin-top:2.5rem;right:auto;bottom:auto}
-  .learn{grid-template-columns:1fr}
-  section{padding:5rem 0}
-}
-@media (max-width:760px){
-  #burger{display:block}
-  nav ul{display:none;position:absolute;top:70px;left:.75rem;right:.75rem;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--depth);padding:.5rem 1.25rem}
-  nav ul.open{display:flex}
-  nav ul a{display:block;padding:.8rem 0}
-}
-</style>
+    /* ===== ROADMAP TIMELINE GRID (SECTION 03) ===== */
+    .roadmap-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.6rem;
+    }
+
+    .step-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.6rem 2rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-card:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--head);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .step-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 99px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .badge-done { background: rgba(16, 185, 129, 0.1); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .badge-prog { background: rgba(56, 189, 248, 0.1); color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.25); }
+    .badge-queue { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+    .step-desc {
+      color: var(--text);
+      font-size: 0.94rem;
+      line-height: 1.65;
+    }
+
+    .step-card.next-step {
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      background: rgba(6, 12, 22, 0.5);
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 14px;
+      background: var(--cyan);
+      vertical-align: -2px;
+      margin-left: 5px;
+      animation: blinkCursor 1s steps(1) infinite;
+    }
+    @keyframes blinkCursor { 50% { opacity: 0; } }
+
+    /* ===== DEDICATED DEVELOPER TELEMETRY & WORKBENCH (SECTION 04) ===== */
+    .telemetry-subtitle {
+      font-size: 1.05rem;
+      color: var(--text);
+      max-width: 680px;
+      margin-top: -1.8rem;
+      margin-bottom: 2.8rem;
+      line-height: 1.7;
+    }
+
+    .telemetry-terminal-wrap {
+      max-width: 860px;
+      margin: 0 auto 3rem auto;
+      width: 100%;
+    }
+
+    /* Enhanced HUD Terminal */
+    .hud-terminal {
+      background: rgba(8, 12, 20, 0.88);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(25px);
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .hud-terminal:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+    .hud-header {
+      background: rgba(11, 16, 28, 0.95);
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .hud-dots { display: flex; gap: 6px; }
+    .hud-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .hud-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 0.8rem;
+    }
+    .hud-body {
+      padding: 1.8rem 2.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+    }
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.65rem;
+    }
+    .hud-key { color: var(--cyan); }
+    .hud-val { color: var(--text-bright); text-align: right; }
+
+    .hud-footer-cmd {
+      background: rgba(5, 8, 14, 0.95);
+      border-top: 1px solid var(--border-subtle);
+      padding: 1rem 2.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .hud-prompt { color: #6ee7b7; }
+    .hud-output { color: #94a3b8; font-size: 0.76rem; }
+
+    /* 4-Column Categorized Tech Stack Matrix */
+    .stack-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+      margin-bottom: 2.2rem;
+    }
+    .stack-cat-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.6rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.25s ease;
+    }
+    .stack-cat-card:hover {
+      border-color: rgba(56, 189, 248, 0.28);
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+    .stack-cat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stack-cat-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .stack-cat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      color: var(--text-bright);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      transition: all 0.2s;
+    }
+    .stack-cat-item:hover {
+      background: rgba(56, 189, 248, 0.06);
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+    .stack-item-tag {
+      font-size: 0.66rem;
+      color: #6ee7b7;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .stack-item-tag.cyan {
+      color: var(--cyan-bright);
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    /* 4-Tile High-Impact Metrics Bar */
+    .telemetry-metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+    }
+    .metric-tile {
+      background: rgba(8, 12, 20, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: all 0.25s ease;
+    }
+    .metric-tile:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+    .metric-tile-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .metric-tile-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--head);
+      letter-spacing: -0.02em;
+    }
+    .metric-tile-sub {
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    /* ===== BESPOKE PROFESSIONAL CONTACT SECTION ===== */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 4rem;
+      background: rgba(10, 14, 24, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 4rem;
+      backdrop-filter: blur(25px);
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+    }
+
+    .contact-info-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2.2rem;
+    }
+    .contact-lead {
+      color: var(--text);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+    
+    .copy-email-box {
+      background: rgba(14, 19, 32, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .copy-email-box:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(18, 26, 44, 0.85);
+      transform: translateY(-2px);
+    }
+    .copy-email-text {
+      font-family: var(--font-mono);
+      color: var(--head);
+      font-size: 0.95rem;
+      font-weight: 500;
+      word-break: break-all;
+    }
+    .copy-action-btn {
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .social-direct-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1.25rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-bright);
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .social-btn:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .social-btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+    .clean-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .form-group label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .form-input, .form-textarea {
+      background: rgba(6, 9, 16, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.95rem 1.1rem;
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 0.94rem;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+    }
+    .form-textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+    .form-status {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      min-height: 1.4rem;
+      margin-top: 0.4rem;
+    }
+    .form-status.success { color: #6ee7b7; }
+    .form-status.error { color: #f87171; }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--border-subtle);
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      background: rgba(4, 6, 10, 0.92);
+      backdrop-filter: blur(20px);
+    }
+
+    @media (max-width: 1100px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 7rem;
+        text-align: center;
+      }
+      .hero-content {
+        align-items: center;
+        max-width: 100%;
+      }
+      .hero-cta {
+        justify-content: center;
+      }
+      .laptop-stage {
+        height: 580px;
+        min-height: 480px;
+      }
+      .featured-hero-card {
+        grid-template-columns: 1fr;
+        padding: 2.5rem;
+      }
+      .roadmap-steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .stack-matrix-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .contact-layout {
+        grid-template-columns: 1fr;
+        padding: 2.4rem;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .stack-matrix-grid {
+        grid-template-columns: 1fr;
+      }
+      .hud-body {
+        padding: 1.2rem 1.2rem;
+      }
+      .hud-footer-cmd {
+        padding: 0.9rem 1.2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<canvas id="bg" aria-hidden="true"></canvas>
-<header>
-  <nav class="wrap" aria-label="Main">
-    <a href="#hero" class="logo" data-cfg="logo">ANMOL PORTFOLIO</a>
-    <button id="burger" aria-expanded="false" aria-controls="menu">Menu</button>
-    <ul id="menu">
-      <li><a class="link" href="#about">About</a></li>
-      <li><a class="link" href="#projects">Projects</a></li>
-      <li><a class="link" href="#skills">Skills</a></li>
-      <li><a class="link" href="#contact">Contact</a></li>
-      <li class="nav-ic" id="navIcons"></li>
-    </ul>
-  </nav>
-</header>
 
-<main>
-<section id="hero" aria-label="Intro">
-  <div class="wrap">
-    <div class="hero-grid">
-      <aside class="fcard fl" aria-label="Developer card">
-        <p class="fc-h">&lt; / &gt;</p>
-        <p class="fc-t"><span class="p">&gt;</span> currently_coding</p>
-        <p class="fc-v">C • Python • Linux • Git</p>
-        <p class="fc-s">status: learning...</p>
-      </aside>
-      <div class="hero-main">
-        <h1 id="h1">ANMOL KUMAR</h1>
-        <p class="sub">First-Year CSE Student • Programmer in Progress • Professional Bug Negotiator</p>
-        <div class="cta" id="heroCta"></div>
-        <div class="term" aria-label="Currently learning: C, Python, Linux, Git">
-          <div><span class="p">&gt;</span> currently_learning</div>
-          <div>C • Python • Linux • Git<span class="cur"></span></div>
-          <div class="d">a3f9c1e fix: forgot semicolon (again)</div>
-          <div class="d">7be02d4 fix: the fix for the fix</div>
+  <!-- Fullscreen Background Waves -->
+  <canvas id="bg-waves-canvas"></canvas>
+  <div class="ambient-glow glow-cyan"></div>
+  <div class="ambient-glow glow-emerald"></div>
+  <div class="vignette-overlay"></div>
+
+  <!-- Header -->
+  <header>
+    <nav>
+      <a href="#" class="brand">
+        <span class="brand-chip">&lt;AK /&gt;</span>
+        <span>ANMOL KUMAR</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#hero">Overview</a></li>
+        <li><a href="#featured">Featured</a></li>
+        <li><a href="#construction">Roadmap</a></li>
+        <li><a href="#telemetry">Telemetry</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li>
+          <div class="status-badge">
+            <span class="pulse-dot"></span>
+            <span>Available for projects</span>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 1. HERO SECTION -->
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span></span> First-Year CSE & Creative Coder
+        </div>
+
+        <h1 class="hero-title">
+          Turning curiosity & code <br>
+          into <span class="gradient-text">things that actually work</span>.
+        </h1>
+
+        <p class="hero-desc">
+          Hey, I'm <b>Anmol Kumar</b>. First-year CSE student exploring low-level systems, 
+          Linux, algorithms, and real-time graphics with WebGL and creative engineering.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#featured" class="btn btn-primary">
+            Explore DevFix <span>↓</span>
+          </a>
+          <a href="#contact" class="btn btn-secondary">
+            Get in Touch
+          </a>
         </div>
       </div>
-      <aside class="fcard fr" aria-label="Current build">
-        <p class="fc-k">BUILDING</p>
-        <p class="fc-n">Portfolio</p>
-        <p class="fc-r">Learning → C / Python / Linux</p>
-        <p class="fc-r">Next → Real-world projects</p>
-      </aside>
-    </div>
-    <div class="hstats" id="hstats"></div>
-  </div>
-</section>
 
-<div class="marq" aria-hidden="true"><div id="marq"></div></div>
+      <!-- Live Realistic 3D Laptop Stage -->
+      <div class="laptop-stage">
+        <canvas id="laptop-canvas"></canvas>
+        <div class="drag-instruction">
+          <span>👆 Drag freely in 360° • Zoom & Inspect Workstation</span>
+        </div>
+      </div>
+    </section>
 
-<section id="about">
-  <div class="wrap about">
-    <div>
-      <h2>About me</h2>
-      <p>Hey, I'm Anmol, but you can call me Aelric. I'm a first-year Computer Science student figuring out how computers actually work, one bug at a time.</p>
-      <p>I'm currently learning the fundamentals of programming, Linux, Git, and web development while building small projects along the way. I'm not here to pretend I know everything. I'm here to learn, build, break things, fix them, and hopefully not break them again.</p>
-    </div>
-    <div class="stats" id="stats"></div>
-  </div>
-</section>
+    <!-- 2. FEATURED PROJECT (SECTION 02) -->
+    <section class="section" id="featured">
+      <div class="section-badge">
+        <span class="section-badge-dot"></span>
+        <span class="section-badge-num">02</span>
+        <span>Flagship Project</span>
+      </div>
+      <h2 class="section-title">Featured Project</h2>
 
-<section id="projects">
-  <div class="wrap">
-    <h2>Projects</h2>
-    <div class="proj" id="projGrid"></div>
-  </div>
-</section>
+      <div class="featured-hero-card">
+        <div>
+          <div class="project-badge-row">
+            <span class="pill-active">● LIVE PLATFORM</span>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">v1.0 Launched</span>
+          </div>
 
-<section id="skills">
-  <div class="wrap">
-    <h2>Skills</h2>
-    <h3 class="sec" style="margin-top:0">What I'm learning</h3>
-    <div class="learn" id="learn"></div>
-    <h3 class="sec">What I've picked up so far</h3>
-    <div class="picked" id="picked"></div>
-    <div class="duo" style="margin-top:4rem">
-      <div><h3 class="sec" style="margin-top:0">Currently under construction</h3><ol class="tl" id="tl"></ol></div>
-      <div><h3 class="sec" style="margin-top:0">Developer status</h3>
-        <div class="status" id="devstatus"></div></div>
-    </div>
-  </div>
-</section>
+          <h3 class="featured-title">DevFix — Interactive Error Solver</h3>
 
-<section id="contact" class="ct">
-  <div class="ct-bg" id="ctBg" aria-hidden="true">
-    <svg id="circuit" viewBox="0 0 800 640" preserveAspectRatio="xMaxYMid slice"></svg>
-    <svg id="circuitL" viewBox="0 0 800 640" preserveAspectRatio="xMidYMid slice"></svg>
-    <pre class="code c1">var colors = {
-  project: 'nomal' {
-    return: 'hello.world';
-  };
-};</pre>
-    <pre class="code c2">{ project: '...' }</pre>
-    <pre class="code c3">let reports = {
-  connection: join => {
-    id: 'vector: something',
-    spot: 'new message',
-  }
-};</pre>
-    <pre class="code c4">const build = () => {
-  learn();
-  fix();
-};</pre>
-    <pre class="code c5">{ bug: '...' }</pre>
-  </div>
-  <div class="wrap">
-    <h2 class="ct-title"><svg viewBox="0 0 56 36" width="56" height="36" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path stroke="#9d7dff" d="M8 14l8-4.5 8 4.5v9l-8 4.5-8-4.5zM8 14l8 4.5 8-4.5M16 18.5v9"/><path stroke="#ffb27a" d="M44 9a7 7 0 0 0-4 12.7V25h8v-3.3A7 7 0 0 0 44 9zM40.5 28h7"/></svg>Let's Build Something</h2>
-    <p class="sub2">Have an idea, project, question, or just found a bug on this website? Send me a message.</p>
-    <div class="contact">
-      <form id="form" novalidate>
-        <div class="field"><label for="n">Name</label>
-          <div class="inp"><span class="ico" data-ic="user"></span><input id="n" name="name" placeholder="Your name" autocomplete="name" aria-describedby="n-e"></div><span class="msg" id="n-e"></span></div>
-        <div class="field"><label for="e">Email</label>
-          <div class="inp"><span class="ico" data-ic="mail"></span><input id="e" name="email" type="email" placeholder="you@example.com" autocomplete="email" aria-describedby="e-e"></div><span class="msg" id="e-e"></span></div>
-        <div class="field"><label for="m">Message</label>
-          <div class="inp ta"><span class="ico" data-ic="chat"></span><textarea id="m" name="message" placeholder="Tell me what's on your mind..." aria-describedby="m-e"></textarea></div><span class="msg" id="m-e"></span></div>
-        <span class="sw"><button class="btn primary send" type="submit">Send Message →</button></span>
-        <p id="status" role="status" aria-live="polite"></p>
-      </form>
-      <ul class="info" id="info"></ul>
-    </div>
-  </div>
-</section>
-</main>
+          <p class="featured-desc">
+            An educational developer platform built to teach students <i>why</i> code crashes occur 
+            instead of blindly copying paste answers. Provides root-cause diagnostics, memory inspection tips, 
+            and plain-English explanations for tricky bugs.
+          </p>
 
-<footer>
-  <div class="wrap">
-    <span id="copy"></span>
-    <span>Built while learning.</span>
-    <a href="#hero">Back to top</a>
-  </div>
-</footer>
+          <div class="tag-cluster">
+            <span>JavaScript</span>
+            <span>Algorithms</span>
+            <span>Problem Solving</span>
+            <span>Next.js / Vercel</span>
+          </div>
 
-<script>
-/* ===== EDITABLE CONFIG: all personal info lives here ===== */
-const CONFIG = {
-  name: "Anmol Kumar",
-  alias: "Aelric",
-  logo: "ANMOL PORTFOLIO", // shown top-left in the navbar
-  email: "anmolkumar2762@gmail.com",
-  github: "https://github.com/Anmolop97",
-  linkedin: "https://www.linkedin.com/in/anmol-kumar-784849412/",
-  year: 2026,
-  formspree: "" // optional: paste a Formspree URL to post the form there; empty = opens your mail app
-};
+          <div>
+            <a href="https://thehellspires.vercel.app/" target="_blank" class="btn btn-primary">
+              Launch Live App ↗
+            </a>
+          </div>
+        </div>
 
-/* ===== DATA: add to these arrays and the page updates ===== */
-const PROJECTS = [
-  { featured:true, title:"DevFix", category:"CODING ERROR SOLVER", url:"https://thehellspires.vercel.app/",
-    tagline:"Turn coding errors into understandable solutions.",
-    desc:"DevFix is a beginner-friendly project designed to help students understand programming errors instead of simply copying a solution. It explains common coding mistakes, possible causes, and practical fixes in a simple way.",
-    tags:["BEGINNER FRIENDLY","EDUCATIONAL","PROBLEM SOLVING"],
-    demo:[["bad","Segmentation fault (core dumped)"],["","what it means: you touched memory that isn't yours."],["ok","likely fix: check your array index before the loop ends."]],
-    strs:[["segfault","bad",14,64],["fixed","ok",38,104],["learn()","",62,76],["git push","",86,120]] },
-  { title:"Untitled project 2", desc:"Currently being built...", foot:"Project under construction. Bugs included.", strs:[] },
-  { title:"404", desc:"Another idea is loading...", foot:"Project not found (yet).", strs:[["404","bad",50,56]] }
-];
-const LEARNING = [["C Programming","Learning"],["Python Fundamentals","Learning"],["Linux","Exploring"],["Git & GitHub","Building"],["Web Development","Exploring"],["Problem Solving","Building"],["Programming Fundamentals","Learning"]];
-const PICKED = [ // [topic, small label, one-liner]
-  ["Fundamentals","Starting point","Write, compile, run, stare at the output. Repeat."],
-  ["Variables & Data Types","Fundamentals","Named boxes for values."],
-  ["Operators","Fundamentals","Math, comparisons, and = vs ==."],
-  ["Conditions","Fundamentals","Teaching a program to choose."],
-  ["Loops","Fundamentals","Repeat things, not mistakes."],
-  ["Functions","Fundamentals","Code I only write once."],
-  ["Algorithms","Problem Solving","Step-by-step recipes."],
-  ["Flowcharts","Problem Solving","Boxes and arrows before code."],
-  ["Basic Problem Solving","Problem Solving","Make it small, then solve it."],
-  ["Number Systems","Problem Solving","Binary, octal, hex by hand."],
-  ["Basic Git/GitHub Workflow","Tools","add, commit, push, pray."],
-  ["Linux Basics","Tools","The terminal and I talk now."]
-];
-const TIMELINE = [
-  ["Learning how computers and programming actually work","Turns out it's not magic. Mostly."],
-  ["C Programming","Pointers are next. Wish me luck."],
-  ["Linux + Git/GitHub","The terminal stopped being scary. Mostly."],
-  ["Building Projects","DevFix first, more in the queue."],
-  ["Exploring Web Development","Yes, this site counts as research."],
-  ["What's next?","<span class='cur'></span>"]
-];
-const STATUS = [["brain","Learning..."],["code","Probably has a bug"],["coffee","Optional"],["git","git push and pray"],["main_goal","Build things that are actually useful."]];
-const STATS = ["First-Year CSE Student","Learning Every Day","Building Real Projects","Professional Bug Creator"];
+        <div class="demo-terminal">
+          <div class="term-bar">
+            <span class="term-dot" style="background: #ef4444;"></span>
+            <span class="term-dot" style="background: #f59e0b;"></span>
+            <span class="term-dot" style="background: #10b981;"></span>
+            <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.4rem;">devfix_trace.log</span>
+          </div>
+          <div class="term-body">
+            <div class="term-err">&gt; Segmentation fault (core dumped)</div>
+            <div class="term-explain">&gt; Diagnostic: Accessed unallocated memory boundary. Array index out of bounds at line 42.</div>
+            <div class="term-fix">&gt; Fix: Verify loop condition (i &lt; size instead of i &lt;= size). Memory verified.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-/* ===== ICONS ===== */
-const ico = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-const IC = {
-  user: ico('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'),
-  chat: ico('<path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/>'),
-  bulb: ico('<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/>'),
-  gear: ico('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>'),
-  wrench: ico('<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'),
-  cloud: ico('<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>'),
-  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
-  github:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.600-.3-5.300-1.300-5.300-5.700 0-1.300.5-2.300 1.200-3.100-.1-.3-.5-1.500.1-3.100 0 0 1-.3 3.200 1.200a11 11 0 0 1 5.800 0c2.200-1.500 3.200-1.200 3.200-1.200.6 1.600.2 2.800.1 3.100.8.800 1.200 1.800 1.200 3.100 0 4.400-2.700 5.400-5.300 5.700.4.400.8 1.100.8 2.200v3.200c0 .3.2.7.8.6A11.500 11.500 0 0 0 12 .5z"/></svg>',
-  linkedin:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.600c.6-1 1.900-1.900 3.800-1.900 4 0 4.700 2.600 4.700 6V21h-4v-5c0-1.200 0-2.800-1.700-2.800s-2 1.300-2 2.700V21h-4z"/></svg>',
-  bug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="14" rx="5" ry="6"/><path d="M9 6l1.500 2M15 6l-1.500 2M7 12H3M17 12h4M7.500 17 4 19M16.500 17l3.500 2M12 8v12"/></svg>'
-};
+    <!-- 3. CURRENTLY UNDER CONSTRUCTION (SECTION 03) -->
+    <section class="section" id="construction">
+      <div class="section-badge">
+        <span class="section-badge-dot" style="background: var(--cyan); box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+        <span class="section-badge-num">03</span>
+        <span>Engineering Roadmap</span>
+      </div>
+      <h2 class="section-title">Currently Under Construction</h2>
 
-/* ===== COMPONENTS ===== */
-const Button = (label, href, primary) => `<a class="btn${primary ? " primary" : ""}" href="${href}">${label}</a>`;
-const StatCard = (t, i) => `<div class="stat">${i === 3 ? IC.bug + `<span class="glitch" data-t="${t}">${t}</span>` : t}</div>`;
-const SkillCard = ([n, s]) => `<div class="skill"><span>${n}</span><span class="chip" data-s="${s}">${s}</span></div>`;
-const TimelineItem = ([t, n]) => `<li><b>${t}</b><span>${n}</span></li>`;
-const Strings = a => `<div class="strings" aria-hidden="true">${a.map(([t, c, l, len], i) => `<span class="str" style="left:${l}%;--len:${len}px;--s:${-i * .7}s;--o:${i * .12}s"><i class="${c}">"${t}"</i></span>`).join("")}</div>`;
-const ProjectCard = p => p.featured
-  ? `<article class="card feat"><p class="cat">${p.category}</p><div class="ttl"><h3>${p.url ? `<a href="${p.url}" target="_blank" rel="noopener noreferrer">${p.title}</a>` : p.title}</h3>${p.url ? `<a class="demo" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${p.title} live demo (opens in a new tab)">Live Demo ↗</a>` : ""}</div><p class="tag">${p.tagline}</p><p class="d">${p.desc}</p>
-     <div class="err" aria-label="Example of a DevFix explanation">${p.demo.map(([c, l]) => `<div class="${c}">${l}</div>`).join("")}</div>
-     <ul class="tags">${p.tags.map(t => `<li>${t}</li>`).join("")}</ul>${Strings(p.strs)}</article>`
-  : `<article class="card soon"><h3>${p.title}</h3><p>${p.desc}</p><p class="mono">${p.foot}</p>${Strings(p.strs)}</article>`;
+      <div class="roadmap-steps-grid">
+        <!-- Step 1 -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">01.</span> Computer & Systems Fundamentals</span>
+            <span class="step-badge badge-done">FOUNDATION</span>
+          </div>
+          <p class="step-desc">Turns out it's not magic. Mostly logical gates, memory layout, binary arithmetic, and CPU instructions.</p>
+        </div>
 
-/* ===== RENDER ===== */
-const $ = id => document.getElementById(id);
-const href = v => v.startsWith("[") ? "#" : v;
-$("heroCta").innerHTML = Button("View My Projects", "#projects", true) + Button("Contact Me", "#contact");
-$("hstats").innerHTML = [["01", "First-Year CSE"], ["04+", "Technologies"], ["∞", "Bugs Fixed"]]
-  .map(([n, l], i) => `<div class="hs" style="--i:${i}"><b>${n}</b><span>${l}</span></div>`).join("");
-$("marq").innerHTML = ("<span>LEARNING • BREAKING • FIXING • BUILDING</span>").repeat(8);
-$("stats").innerHTML = STATS.map(StatCard).join("");
-$("projGrid").innerHTML = PROJECTS.map(ProjectCard).join("");
-$("learn").innerHTML = LEARNING.map(SkillCard).join("");
-$("picked").innerHTML = PICKED.map(([t, c, d], i) =>
-  `<div class="pk"><div class="glass" style="--d:${-i * .8}s;--t:${4.6 + (i % 3) * .5}s"><small>${c}</small><h4>${t}</h4><p>${d}</p></div></div>`).join("");
-$("tl").innerHTML = TIMELINE.map(TimelineItem).join("");
-$("devstatus").innerHTML = STATUS.map(([k, v]) => `<div><span class="k">${k}:</span> ${v}</div>`).join("");
-$("info").innerHTML = [
-  [IC.mail, CONFIG.name, null], [IC.mail, CONFIG.email, "mailto:" + CONFIG.email],
-  [IC.github, "GitHub", href(CONFIG.github)], [IC.linkedin, "LinkedIn", href(CONFIG.linkedin)]
-].map(([i, t, h]) => `<li>${i}${h ? `<a href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${t}</a>` : `<span>${t}</span>`}</li>`).join("");
-$("navIcons").innerHTML =
-  `<a class="ni" href="${href(CONFIG.github)}" aria-label="GitHub" target="_blank" rel="noopener">${IC.github}</a>` +
-  `<a class="ni" href="${href(CONFIG.linkedin)}" aria-label="LinkedIn" target="_blank" rel="noopener">${IC.linkedin}</a>`;
-$("copy").textContent = `${CONFIG.alias} © ${CONFIG.year}`;
-document.querySelector('[data-cfg="logo"]').textContent = CONFIG.logo;
+        <!-- Step 2 -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">02.</span> Low-Level C Programming</span>
+            <span class="step-badge badge-prog">IN PROGRESS</span>
+          </div>
+          <p class="step-desc">Deep diving into pointers, manual memory allocation, buffer management, and struct architectures.</p>
+        </div>
 
-/* Hero text reveal: split words, stagger them in */
-(() => {
-  const h = $("h1");
-  h.setAttribute("aria-label", h.textContent);
-  let i = 0;
-  const line = (cls, txt) => `<span class="ln ${cls}">` + txt.split(" ").map(w => `<span class="w${w === "KUMAR" ? " nm" : ""}" style="--i:${i++}" aria-hidden="true">${w}</span>`).join(" ") + `</span>`;
-  h.innerHTML = line("l2", "ANMOL KUMAR");
-})();
+        <!-- Step 3 -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">03.</span> Linux Kernel CLI & Git Workflows</span>
+            <span class="step-badge badge-prog">ACTIVE WORKFLOW</span>
+          </div>
+          <p class="step-desc">The terminal is my daily driver. Mastering pipes, grep, sed, vim motions, commit trees, and shell pipelines.</p>
+        </div>
 
-/* Audiowide is wide: if the name is wider than its column, shrink it so it never overflows */
-(() => {
-  const h = $("h1");
-  const fit = () => {
-    h.style.fontSize = "";
-    if (h.scrollWidth > h.clientWidth) h.style.fontSize = parseFloat(getComputedStyle(h).fontSize) * h.clientWidth / h.scrollWidth * .97 + "px";
-  };
-  fit(); addEventListener("resize", fit);
-  if (document.fonts) document.fonts.ready.then(fit);
-})();
+        <!-- Step 4 -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">04.</span> Building Real-World Products</span>
+            <span class="step-badge badge-done">DEPLOYED</span>
+          </div>
+          <p class="step-desc">DevFix launched first to diagnose real student bugs; systems utilities and compiler tools queued next.</p>
+        </div>
 
-/* Mobile menu */
-const burger = $("burger"), menu = $("menu");
-const setMenu = open => { menu.classList.toggle("open", open); burger.setAttribute("aria-expanded", open); };
-burger.addEventListener("click", () => setMenu(!menu.classList.contains("open")));
-menu.addEventListener("click", e => { if (e.target.tagName === "A") setMenu(false); });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { setMenu(false); burger.focus(); } });
+        <!-- Step 5 -->
+        <div class="step-card">
+          <div class="step-header">
+            <span class="step-title"><span class="step-num">05.</span> Real-Time WebGL & 3D Engineering</span>
+            <span class="step-badge badge-prog">IN THE LAB</span>
+          </div>
+          <p class="step-desc">This site is live research: Three.js math, interactive 3D laptop models, custom shaders, and silky 60fps renders.</p>
+        </div>
 
-/* Active section highlight */
-const links = [...document.querySelectorAll("nav a.link")];
-const io = new IntersectionObserver(es => es.forEach(e => {
-  if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
-}), { rootMargin: "-45% 0px -50% 0px" });
-document.querySelectorAll("main section").forEach(s => io.observe(s));
+        <!-- Step 6 -->
+        <div class="step-card next-step">
+          <div class="step-header">
+            <span class="step-title" style="color: var(--cyan);"><span class="step-num">06.</span> What's Next?</span>
+            <span class="step-badge badge-queue">QUEUED</span>
+          </div>
+          <p class="step-desc" style="font-family: var(--font-mono); color: #94a3b8;">
+            &gt; awaiting_next_engineering_breakthrough<span class="terminal-cursor"></span>
+          </p>
+        </div>
+      </div>
+    </section>
 
-/* Contact form: validate, then Formspree if configured, else mailto */
-$("form").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target, st = $("status"), v = {};
-  ["n", "e", "m"].forEach(k => v[k] = $(k).value.trim());
-  const errs = {
-    n: v.n ? "" : "Tell me your name, even a fake one.",
-    e: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.e) ? "" : "That email doesn't look right.",
-    m: v.m.length >= 10 ? "" : "Say a bit more (10+ characters)."
-  };
-  Object.keys(errs).forEach(k => { $(k + "-e").textContent = errs[k]; $(k).setAttribute("aria-invalid", !!errs[k]); });
-  if (Object.values(errs).some(Boolean)) { st.className = "bad"; st.textContent = "Fix the highlighted fields and try again."; return; }
-  if (CONFIG.formspree) {
-    try {
-      const r = await fetch(CONFIG.formspree, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(f) });
-      if (!r.ok) throw new Error();
-      st.className = "ok"; st.textContent = "Sent. I'll reply once I stop debugging."; f.reset();
-    } catch { st.className = "bad"; st.textContent = "Couldn't send that. Email me directly instead."; }
-  } else {
-    location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("Hello " + CONFIG.alias + ", from " + v.n)}&body=${encodeURIComponent(v.m + "\n\n" + v.n + " (" + v.e + ")")}`;
-    st.className = "ok"; st.textContent = "Opening your mail app. If nothing happens, email me directly.";
-  }
-});
+    <!-- 4. DEVELOPER TELEMETRY & WORKBENCH (SECTION 04) -->
+    <section class="section" id="telemetry">
+      <div class="section-badge">
+        <span class="section-badge-dot" style="background: var(--cyan); box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+        <span class="section-badge-num">04</span>
+        <span>Developer Telemetry</span>
+      </div>
+      <h2 class="section-title">Systems Workbench & Tech Stack</h2>
+      <p class="telemetry-subtitle">
+        A real-time overview of my environment, engineering principles, and current capabilities. 
+        Zero templates, zero black boxes — built with curiosity from first principles.
+      </p>
 
-/* ===== Contact decoration: icons, circuit traces, floating tool tiles ===== */
-document.querySelectorAll("[data-ic]").forEach(e => { e.innerHTML = IC[e.dataset.ic]; });
-(() => {
-  let h = "";
-  for (let i = 0; i < 14; i++) {
-    const y = 40 + i * 32, b = 70 + (i % 5) * 18, x1 = 640 - i * 6, x2 = 330 + i * 14;
-    h += `<path d="M800 ${y} H${x1} C${x1 - 60} ${y} ${x1 - 80} ${y + b} ${x1 - 160} ${y + b} H${x2}"/><circle cx="${x2}" cy="${y + b}" r="3"/>`;
-    if (i % 3 === 0) h += `<circle cx="${700 - i * 9}" cy="${y}" r="2.5"/>`;
-  }
-  $("circuit").innerHTML = $("circuitL").innerHTML = h;
-  $("ctBg").insertAdjacentHTML("beforeend",
-    [["bulb", "right", "7%", "4%", 0], ["gear", "right", "19%", "15%", 1.5], ["cloud", "right", "2%", "27%", 3], ["wrench", "right", "24%", "58%", 2], ["cloud", "right", "5%", "86%", 4.5],
-     ["wrench", "left", "3%", "6%", 1], ["gear", "left", "3%", "38%", 2.5], ["bulb", "left", "2%", "64%", .5], ["cloud", "left", "3%", "84%", 3.5]]
-      .map(([k, side, x, t, d]) => `<span class="tile" style="${side}:${x};top:${t};animation-delay:${d}s">${IC[k]}</span>`).join(""));
-})();
+      <!-- Centered Live HUD Terminal -->
+      <div class="telemetry-terminal-wrap">
+        <div class="hud-terminal">
+          <div class="hud-header">
+            <div class="hud-dots">
+              <span class="hud-dot" style="background: #ef4444;"></span>
+              <span class="hud-dot" style="background: #f59e0b;"></span>
+              <span class="hud-dot" style="background: #10b981;"></span>
+            </div>
+            <span class="hud-title">developer_telemetry.sh — zsh (x86_64)</span>
+          </div>
+          <div class="hud-body">
+            <div class="hud-row">
+              <span class="hud-key">operator</span>
+              <span class="hud-val">Anmol Kumar</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">education</span>
+              <span class="hud-val">First-Year CSE @ Core Systems</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">kernel_env</span>
+              <span class="hud-val">Linux 6.8 (Arch/Ubuntu) & macOS</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">primary_editor</span>
+              <span class="hud-val">Neovim / VS Code (Obsidian Theme)</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">code_health</span>
+              <span class="hud-val">99.4% • Resolving pointer edge-cases</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">coffee_level</span>
+              <span class="hud-val">Strategic • Fueling late-night builds</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-key">git_strategy</span>
+              <span class="hud-val">commit -m 'fixed memory leak for good'</span>
+            </div>
+            <div class="hud-row" style="border: none;">
+              <span class="hud-key">core_mission</span>
+              <span class="hud-val" style="color: #6ee7b7;">Build software that is actually useful</span>
+            </div>
+          </div>
+          <div class="hud-footer-cmd">
+            <div class="hud-prompt">anmol@dev-core:~$ ./verify_arena.sh --verbose</div>
+            <div class="hud-output">[ok] All memory boundaries safe. 0 memory leaks detected. System online.</div>
+          </div>
+        </div>
+      </div>
 
-/* ===== Animated background: always-moving constellation, data pulses, cursor light ===== */
-(() => {
-  const c = $("bg"), g = c.getContext("2d"), S = .6;
-  /* reduced-motion visitors get a calmer version, never a frozen one */
-  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches ? .35 : 1;
-  const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#0b0721";
-  const O = [["124,84,255", .7, .00045, .00035], ["40,110,255", .55, .00032, .0005], ["210,70,235", .4, .0004, .00028]];
-  /* nodes live in 0..1 space so resizing never breaks them; z gives each a parallax depth */
-  const N = Array.from({ length: 60 }, (_, i) => { const a = i * 2.4, v = .02 + .015 * (i % 3); return { x: (i * .618) % 1, y: (i * .382 + .13 * (i % 5)) % 1, vx: Math.cos(a) * v, vy: Math.sin(a) * v, z: .3 + .7 * ((i * 37) % 10) / 10 }; });
-  const M = { x: -999, y: -999 };
-  let W = 0, H = 0, last = 0, P = [];
-  const size = () => {
-    if (W && innerWidth * S === W && Math.abs(innerHeight * S - H) < 150 * S) return;
-    W = c.width = innerWidth * S; H = c.height = innerHeight * S;
-  };
-  addEventListener("pointermove", e => { M.x = e.clientX * S; M.y = e.clientY * S; });
-  document.addEventListener("mouseleave", () => { M.x = M.y = -999; });
-  const glow = (x, y, r, rgb, a) => {
-    const gr = g.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, `rgba(${rgb},${a})`); gr.addColorStop(1, `rgba(${rgb},0)`);
-    g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
-  };
-  const draw = t => {
-    const dt = Math.min((t - last) / 1000, .05) * calm; last = t;
-    g.globalCompositeOperation = "source-over"; g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    glow(W / 2, 0, Math.max(W, H) * .8, "110,50,200", .42);
-    g.globalCompositeOperation = "lighter";
-    O.forEach(([rgb, r, sx, sy], i) => glow(W * (.5 + .42 * Math.sin(t * sx * calm + i * 1.9)), H * (.5 + .4 * Math.cos(t * sy * calm + i * 2.7)), Math.max(W, H) * r, rgb, .14));
-    if (M.x > 0) glow(M.x, M.y, 260 * S, "157,125,255", .22);
-    g.globalCompositeOperation = "source-over"; g.lineWidth = .8;
-    const sy = scrollY * S * .2, R = 180 * S;
-    const pos = N.map(n => {
-      n.x += n.vx * dt; n.y += n.vy * dt;
-      if (n.x < 0 || n.x > 1) n.vx *= -1; if (n.y < 0 || n.y > 1) n.vy *= -1;
-      const px = n.x * W, py = (((n.y * H - sy * n.z) % H) + H) % H, dx = M.x - px, dy = M.y - py, d = Math.hypot(dx, dy);
-      if (d < R && d > 1) { const k = (1 - d / R) * dt * .9; n.x += dx / W * k; n.y += dy / H * k; }
-      n.x = Math.min(1, Math.max(0, n.x)); n.y = Math.min(1, Math.max(0, n.y));
-      return [px, py];
-    });
-    const L = Math.sqrt(W * H / N.length) * 1.6, E = [];
-    for (let i = 0; i < N.length; i++) for (let j = i + 1; j < N.length; j++) {
-      const d = Math.hypot(pos[i][0] - pos[j][0], pos[i][1] - pos[j][1]);
-      if (d < L) { E.push([i, j]); g.strokeStyle = `rgba(190,165,255,${(1 - d / L) * .38})`; g.beginPath(); g.moveTo(pos[i][0], pos[i][1]); g.lineTo(pos[j][0], pos[j][1]); g.stroke(); }
-    }
-    pos.forEach(([x, y]) => {
-      const d = Math.hypot(x - M.x, y - M.y);
-      if (d < L * 1.3) { g.strokeStyle = `rgba(230,215,255,${(1 - d / (L * 1.3)) * .6})`; g.beginPath(); g.moveTo(x, y); g.lineTo(M.x, M.y); g.stroke(); }
-    });
-    if (P.length < 18 && E.length && Math.random() < dt * 8) P.push({ e: E[Math.random() * E.length | 0], t: 0, s: .5 + Math.random() * .7 });
-    P = P.filter(p => {
-      p.t += dt * p.s; if (p.t >= 1) return false;
-      const a = pos[p.e[0]], b = pos[p.e[1]], x = a[0] + (b[0] - a[0]) * p.t, y = a[1] + (b[1] - a[1]) * p.t;
-      g.fillStyle = "rgba(190,160,255,.25)"; g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill();
-      g.fillStyle = "#fff"; g.beginPath(); g.arc(x, y, 1.6, 0, 7); g.fill();
-      return true;
-    });
-    pos.forEach(([x, y], i) => {
-      g.fillStyle = `rgba(215,200,255,${(i % 6 ? .45 : .8) + .25 * Math.sin(t * .002 + i)})`;
-      g.beginPath(); g.arc(x, y, i % 6 ? 1.5 : 2.8, 0, 7); g.fill();
-    });
-    const v = g.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .4, W / 2, H / 2, Math.max(W, H) * .8);
-    v.addColorStop(0, "rgba(4,2,16,0)"); v.addColorStop(1, "rgba(4,2,16,.6)"); g.fillStyle = v; g.fillRect(0, 0, W, H);
-  };
-  const loop = t => { draw(t); requestAnimationFrame(loop); };
-  size(); addEventListener("resize", size); requestAnimationFrame(loop);
-})();
+      <!-- 4-Column Categorized Tech Stack Matrix -->
+      <div class="stack-matrix-grid">
+        <!-- Cat 1 -->
+        <div class="stack-cat-card">
+          <div class="stack-cat-header">
+            <span>⚡</span>
+            <span>Low-Level Systems</span>
+          </div>
+          <div class="stack-cat-items">
+            <div class="stack-cat-item">
+              <span>C Programming</span>
+              <span class="stack-item-tag">CORE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Linux & Bash CLI</span>
+              <span class="stack-item-tag">DAILY</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Memory Allocation</span>
+              <span class="stack-item-tag">ACTIVE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>POSIX & System Calls</span>
+              <span class="stack-item-tag cyan">LAB</span>
+            </div>
+          </div>
+        </div>
 
-/* ===== Smooth scroll reveals (skipped when reduced motion is on) ===== */
-(() => {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const rv = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add("in"); rv.unobserve(e.target);
-    setTimeout(() => { e.target.style.transitionDelay = ""; }, 1500);
-  }), { threshold: .12 });
-  ["section .wrap > h2", "#skills .wrap > h3.sec", ".sub2", ".about > *", "#projGrid > *", ".learn > *", ".picked > *", ".duo > *", ".contact > *"].forEach(sel =>
-    document.querySelectorAll(sel).forEach((el, i) => { el.classList.add("rv"); el.style.transitionDelay = (i % 4) * 90 + "ms"; rv.observe(el); }));
-})();
+        <!-- Cat 2 -->
+        <div class="stack-cat-card">
+          <div class="stack-cat-header">
+            <span>🌐</span>
+            <span>Creative & 3D Web</span>
+          </div>
+          <div class="stack-cat-items">
+            <div class="stack-cat-item">
+              <span>Three.js & WebGL</span>
+              <span class="stack-item-tag">ACTIVE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>HTML5 Canvas 2D</span>
+              <span class="stack-item-tag">CORE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Modern JavaScript</span>
+              <span class="stack-item-tag">CORE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Next.js / React</span>
+              <span class="stack-item-tag cyan">PROD</span>
+            </div>
+          </div>
+        </div>
 
-/* ===== Projects: cards tilt/glow/parallax toward the cursor, hanging strings get pushed away ===== */
-(() => {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const sec = $("projects"), cards = [...$("projGrid").children], strs = [...sec.querySelectorAll(".str")];
-  const clear = c => ["--px", "--py", "--rx", "--ry"].forEach(k => c.style.removeProperty(k));
-  cards.forEach(c => c.addEventListener("pointerleave", () => clear(c)));
-  sec.addEventListener("pointermove", e => {
-    cards.forEach(c => {
-      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      if (x < 0 || x > 1 || y < 0 || y > 1) return;
-      c.style.setProperty("--mx", x * 100 + "%"); c.style.setProperty("--my", y * 100 + "%");
-      c.style.setProperty("--px", (x - .5) * 2); c.style.setProperty("--py", (y - .5) * 2);
-      c.style.setProperty("--rx", (.5 - y) * 10 + "deg"); c.style.setProperty("--ry", (x - .5) * 12 + "deg");
-    });
-    strs.forEach(el => {
-      const r = el.parentElement.getBoundingClientRect(), len = parseFloat(el.style.getPropertyValue("--len"));
-      const dx = r.left + r.width * parseFloat(el.style.left) / 100 - e.clientX, dy = r.top + len / 2 - e.clientY;
-      el.style.transform = `rotate(${Math.sign(dx) * Math.max(0, 1 - Math.hypot(dx, dy) / 260) * 30}deg)`;
-    });
-  });
-  sec.addEventListener("pointerleave", () => strs.forEach(el => { el.style.transform = ""; }));
-})();
+        <!-- Cat 3 -->
+        <div class="stack-cat-card">
+          <div class="stack-cat-header">
+            <span>🛠️</span>
+            <span>Developer Tooling</span>
+          </div>
+          <div class="stack-cat-items">
+            <div class="stack-cat-item">
+              <span>Git & GitHub</span>
+              <span class="stack-item-tag">CORE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>GCC / Clang Flags</span>
+              <span class="stack-item-tag">ACTIVE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Valgrind & GDB</span>
+              <span class="stack-item-tag">DEBUG</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Vercel Deployments</span>
+              <span class="stack-item-tag cyan">PROD</span>
+            </div>
+          </div>
+        </div>
 
-/* Phones: only panels near the viewport float (the CSS ignores .live on desktop) */
-(() => {
-  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("live", e.isIntersecting)), { rootMargin: "80px 0px" });
-  document.querySelectorAll(".glass").forEach(g => io.observe(g));
-})();
-</script>
+        <!-- Cat 4 -->
+        <div class="stack-cat-card">
+          <div class="stack-cat-header">
+            <span>🧠</span>
+            <span>Computer Science</span>
+          </div>
+          <div class="stack-cat-items">
+            <div class="stack-cat-item">
+              <span>Data Structures</span>
+              <span class="stack-item-tag">CORE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Algorithms & Trees</span>
+              <span class="stack-item-tag">ACTIVE</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Memory Layouts</span>
+              <span class="stack-item-tag">STUDY</span>
+            </div>
+            <div class="stack-cat-item">
+              <span>Problem Solving</span>
+              <span class="stack-item-tag cyan">DAILY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. BESPOKE CONTACT SECTION (SECTION 05) -->
+    <section class="section" id="contact">
+      <div class="section-badge">
+        <span class="section-badge-dot" style="background: #a78bfa; box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);"></span>
+        <span class="section-badge-num">05</span>
+        <span>Get in Touch</span>
+      </div>
+      <h2 class="section-title">Let's Build Something Together</h2>
+
+      <div class="contact-layout">
+        <div class="contact-info-col">
+          <div>
+            <p class="contact-lead">
+              Have an idea, project, or question about systems programming or 3D graphics? 
+              Or maybe you spotted a bug on this site? Reach out directly.
+            </p>
+          </div>
+
+          <div>
+            <p style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase;">Direct Email</p>
+            <div class="copy-email-box" id="copyEmailBtn" title="Click to copy email">
+              <span class="copy-email-text">anmolkumar2762@gmail.com</span>
+              <span class="copy-action-btn" id="copyBtnLabel">Copy ⧉</span>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase;">Profiles & Networks</p>
+            <div class="social-direct-grid">
+              <a href="https://github.com/Anmolop97" target="_blank" rel="noopener noreferrer" class="social-btn">
+                <svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+                GitHub
+              </a>
+
+              <a href="https://www.linkedin.com/in/anmol-kumar-784849412/" target="_blank" rel="noopener noreferrer" class="social-btn">
+                <svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6c.6-1 1.9-1.9 3.8-1.9 4 0 4.7 2.6 4.7 6V21h-4v-5c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z"/></svg>
+                LinkedIn
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <form class="clean-form" id="contactForm">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" class="form-input" placeholder="What should I call you?" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-input" placeholder="you@domain.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." required></textarea>
+          </div>
+
+          <div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+              Send Message →
+            </button>
+            <div class="form-status" id="formStatus"></div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Designed & Built by <b>Anmol Kumar</b> • First-Year CSE</p>
+    <p style="margin-top: 0.4rem; font-size: 0.8rem; color: #475569;">High-performance WebGL • Three.js • Clean Architecture</p>
+  </footer>
+
+  <!-- ================= THREE.JS & ADVANCED RIG SCRIPT ================= -->
+  <script>
+    /* 1. INTERACTIVE ONE-CLICK EMAIL COPY & CONTACT FORM */
+    (() => {
+      const copyBtn = document.getElementById('copyEmailBtn');
+      const label = document.getElementById('copyBtnLabel');
+      const email = 'anmolkumar2762@gmail.com';
+
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(email).then(() => {
+          label.textContent = 'Copied! ✓';
+          label.style.background = 'rgba(16, 185, 129, 0.2)';
+          label.style.color = '#6ee7b7';
+          setTimeout(() => {
+            label.textContent = 'Copy ⧉';
+            label.style.background = '';
+            label.style.color = '';
+          }, 2500);
+        });
+      });
+
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const n = document.getElementById('name').value.trim();
+        const em = document.getElementById('email').value.trim();
+        const msg = document.getElementById('message').value.trim();
+
+        if (!n || !em || !msg) {
+          status.className = 'form-status error';
+          status.textContent = 'Please fill out all fields.';
+          return;
+        }
+
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
+        window.location.href = mailtoLink;
+
+        status.className = 'form-status success';
+        status.textContent = 'Opening your email client... Or copy the email directly above!';
+      });
+    })();
+
+    /* 2. CALM & GENTLE BACKGROUND WAVES */
+    (() => {
+      const bgCanvas = document.getElementById('bg-waves-canvas');
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 1000);
+      camera.position.set(0, 36, 75);
+      camera.lookAt(0, -8, -15);
+
+      const renderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const WIDTH = 190, HEIGHT = 150, SEGS_X = 95, SEGS_Y = 75;
+      const geometry = new THREE.PlaneGeometry(WIDTH, HEIGHT, SEGS_X, SEGS_Y);
+      geometry.rotateX(-Math.PI / 2);
+
+      const waveMat = new THREE.MeshBasicMaterial({
+        color: 0x047857,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.11
+      });
+
+      const waveMesh = new THREE.Mesh(geometry, waveMat);
+      waveMesh.position.y = -18;
+      waveMesh.position.z = -10;
+      scene.add(waveMesh);
+
+      const crestMat = new THREE.PointsMaterial({
+        color: 0x38bdf8,
+        size: 1.0,
+        transparent: true,
+        opacity: 0.28,
+        blending: THREE.AdditiveBlending
+      });
+      const crestPoints = new THREE.Points(geometry, crestMat);
+      crestPoints.position.copy(waveMesh.position);
+      scene.add(crestPoints);
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      let clock = new THREE.Clock();
+      function renderWaves() {
+        requestAnimationFrame(renderWaves);
+        const t = clock.getElapsedTime() * 0.65;
+        const pos = geometry.attributes.position;
+
+        for (let i = 0; i < pos.count; i++) {
+          const u = pos.getX(i);
+          const v = pos.getZ(i);
+
+          const y = Math.sin(u * 0.08 + t) * 4.4 +
+                    Math.cos(v * 0.09 + t * 0.8) * 3.4 +
+                    Math.sin((u + v) * 0.05 + t * 1.3) * 2.2;
+
+          pos.setY(i, y);
+        }
+        pos.needsUpdate = true;
+        renderer.render(scene, camera);
+      }
+      renderWaves();
+    })();
+
+    /* ================================================================
+       3. ULTRA-REALISTIC WORKSTATION (ENGRAVED KEYBOARD + DEVFIX CAD/IDE SCREEN)
+       ================================================================ */
+    (() => {
+      const canvas = document.getElementById('laptop-canvas');
+      const container = canvas.parentElement;
+
+      const scene = new THREE.Scene();
+      
+      const camera = new THREE.PerspectiveCamera(36, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 1.3, 6.4);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.3;
+
+      const laptop = new THREE.Group();
+      laptop.scale.set(0.79, 0.79, 0.79);
+      scene.add(laptop);
+
+      // --- MATERIALS ---
+      const aluminumMaterial = new THREE.MeshStandardMaterial({
+        color: 0x181c25,
+        metalness: 0.88,
+        roughness: 0.28
+      });
+      const edgeMaterial = new THREE.MeshStandardMaterial({
+        color: 0x2d3748,
+        metalness: 0.9,
+        roughness: 0.15
+      });
+      const keyboardTrayMaterial = new THREE.MeshStandardMaterial({
+        color: 0x07090f,
+        metalness: 0.7,
+        roughness: 0.6
+      });
+
+      // --- A. LAPTOP BASE ---
+      const baseW = 3.2, baseH = 0.075, baseD = 2.15;
+      const baseMesh = new THREE.Mesh(new THREE.BoxGeometry(baseW, baseH, baseD), aluminumMaterial);
+      laptop.add(baseMesh);
+
+      const wellMesh = new THREE.Mesh(new THREE.BoxGeometry(2.7, 0.015, 1.15), keyboardTrayMaterial);
+      wellMesh.position.set(0, baseH / 2 + 0.005, -0.22);
+      laptop.add(wellMesh);
+
+      // --- B. ENGRAVED CHICLET KEYBOARD GENERATION ---
+      // We render crisp laser-etched font legends onto keycaps
+      const keyGroup = new THREE.Group();
+      keyGroup.position.set(0, baseH / 2 + 0.01, -0.22);
+      laptop.add(keyGroup);
+
+      // Standard keyboard layout matching photo
+      const layoutRows = [
+        ["Esc","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","Del"],
+        ["~","1","2","3","4","5","6","7","8","9","0","-","=","⌫"],
+        ["Tab","Q","W","E","R","T","Y","U","I","O","P","[","]","\\"],
+        ["Caps","A","S","D","F","G","H","J","K","L",";","'","Enter"],
+        ["Shift","Z","X","C","V","B","N","M",",",".","/","Shift"],
+        ["Ctrl","Fn","Win","Alt","SPACE","Alt","Ctrl","←","↑","↓","→"]
+      ];
+
+      // Generate a master texture canvas for engraved keys
+      const kbCanvas = document.createElement('canvas');
+      kbCanvas.width = 2048;
+      kbCanvas.height = 1024;
+      const kbCtx = kbCanvas.getContext('2d');
+
+      // Keycap material using high-res engraved canvas texture
+      const keycapTexture = new THREE.CanvasTexture(kbCanvas);
+      keycapTexture.anisotropy = 4;
+      const keycapMaterial = new THREE.MeshStandardMaterial({
+        map: keycapTexture,
+        metalness: 0.6,
+        roughness: 0.35
+      });
+
+      function drawEngravedKeyboard() {
+        kbCtx.fillStyle = '#0a0d14'; // Dark chiclet base
+        kbCtx.fillRect(0, 0, kbCanvas.width, kbCanvas.height);
+
+        // Draw individual beveled chiclet keys with laser-etched letters
+        const rowHeight = kbCanvas.height / 6;
+        for (let r = 0; r < layoutRows.length; r++) {
+          const row = layoutRows[r];
+          const colWidth = kbCanvas.width / row.length;
+
+          for (let c = 0; c < row.length; c++) {
+            const label = row[c];
+            let x = c * colWidth + 6;
+            let y = r * rowHeight + 6;
+            let w = colWidth - 12;
+            let h = rowHeight - 12;
+
+            // Spacebar elongation
+            if (label === "SPACE") {
+              w = colWidth * 4 - 12;
+            }
+
+            // Keycap bevel shape
+            kbCtx.fillStyle = '#121622';
+            kbCtx.beginPath();
+            kbCtx.roundRect ? kbCtx.roundRect(x, y, w, h, 8) : kbCtx.rect(x, y, w, h);
+            kbCtx.fill();
+
+            // Subtle key rim stroke
+            kbCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            kbCtx.lineWidth = 2;
+            kbCtx.stroke();
+
+            // Laser-Engraved crisp white/cyan symbol
+            kbCtx.fillStyle = label === "SPACE" ? 'transparent' : '#e2e8f0';
+            kbCtx.font = 'bold 24px monospace';
+            kbCtx.textAlign = 'center';
+            kbCtx.textBaseline = 'middle';
+            if (label !== "SPACE") {
+              kbCtx.fillText(label, x + w / 2, y + h / 2);
+            }
+          }
+        }
+        keycapTexture.needsUpdate = true;
+      }
+      drawEngravedKeyboard();
+
+      // Keyboard Mesh Plane on top of well
+      const keyboardPlaneGeo = new THREE.PlaneGeometry(2.68, 1.12);
+      const keyboardPlaneMesh = new THREE.Mesh(keyboardPlaneGeo, keycapMaterial);
+      keyboardPlaneMesh.rotation.x = -Math.PI / 2;
+      keyboardPlaneMesh.position.set(0, 0.005, 0);
+      keyGroup.add(keyboardPlaneMesh);
+
+      // Speaker Grill Strips
+      const speakerMat = new THREE.MeshBasicMaterial({ color: 0x090c14 });
+      const leftSpeaker = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.005, 1.1), speakerMat);
+      leftSpeaker.position.set(-1.43, baseH / 2 + 0.005, -0.22);
+      laptop.add(leftSpeaker);
+
+      const rightSpeaker = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.005, 1.1), speakerMat);
+      rightSpeaker.position.set(1.43, baseH / 2 + 0.005, -0.22);
+      laptop.add(rightSpeaker);
+
+      // Trackpad
+      const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.01, 0.62), new THREE.MeshStandardMaterial({
+        color: 0x121724, metalness: 0.6, roughness: 0.25
+      }));
+      trackpad.position.set(0, baseH / 2 + 0.005, 0.62);
+      laptop.add(trackpad);
+
+      // HINGE
+      const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 2.9, 32), edgeMaterial);
+      hinge.rotation.z = Math.PI / 2;
+      hinge.position.set(0, baseH / 2 + 0.02, -baseD / 2 + 0.04);
+      laptop.add(hinge);
+
+      // LID
+      const lidGroup = new THREE.Group();
+      lidGroup.position.set(0, baseH / 2 + 0.02, -baseD / 2 + 0.04);
+      laptop.add(lidGroup);
+
+      const lidW = baseW, lidH = 2.1, lidThick = 0.045;
+      const lidBack = new THREE.Mesh(new THREE.BoxGeometry(lidW, lidH, lidThick), aluminumMaterial);
+      lidBack.position.set(0, lidH / 2, 0);
+      lidGroup.add(lidBack);
+
+      // Ultra-thin minimal bezel frame
+      const bezelFrame = new THREE.Mesh(
+        new THREE.PlaneGeometry(lidW - 0.04, lidH - 0.04),
+        new THREE.MeshBasicMaterial({ color: 0x05070a })
+      );
+      bezelFrame.position.set(0, lidH / 2, 0.023);
+      lidGroup.add(bezelFrame);
+
+      // --- C. ULTRA-SHARP RETINA DARK CODE EDITOR SCREEN ---
+      // 2560x1632 resolution + 16x anisotropic filtering + bold typography = 100% crisp & zero blur
+      const screenW = lidW - 0.16, screenH = lidH - 0.16;
+      const screenCanvas = document.createElement('canvas');
+      screenCanvas.width = 2560;
+      screenCanvas.height = 1632;
+      const sCtx = screenCanvas.getContext('2d');
+
+      const screenTexture = new THREE.CanvasTexture(screenCanvas);
+      screenTexture.anisotropy = 16;
+      screenTexture.generateMipmaps = true;
+      screenTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      screenTexture.magFilter = THREE.LinearFilter;
+
+      const screenMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(screenW, screenH),
+        new THREE.MeshBasicMaterial({
+          map: screenTexture,
+          toneMapped: false
+        })
+      );
+      screenMesh.position.set(0, lidH / 2, 0.025);
+      lidGroup.add(screenMesh);
+      lidGroup.rotation.x = -Math.PI * 0.14;
+
+      // High-contrast, punchy C systems code tokens (12 clear, impactful lines)
+      const editorLines = [
+        { num: 1,  tokens: [{ text: "// DevFix Core Engine • Memory Safety", color: "#64748b" }] },
+        { num: 2,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<stdio.h>", color: "#2dd4bf" }] },
+        { num: 3,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<devfix/core.h>", color: "#2dd4bf" }] },
+        { num: 4,  tokens: [] },
+        { num: 5,  tokens: [{ text: "int ", color: "#2dd4bf" }, { text: "main", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "void", color: "#2dd4bf" }, { text: ") {", color: "#94a3b8" }] },
+        { num: 6,  tokens: [{ text: "    DevNode ", color: "#2dd4bf" }, { text: "*node", color: "#ffffff" }, { text: " = ", color: "#38bdf8" }, { text: "dev_init", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"devfix-core\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
+        { num: 7,  tokens: [{ text: "    if ", color: "#38bdf8" }, { text: "(", color: "#94a3b8" }, { text: "node->is_active", color: "#ffffff" }, { text: ") {", color: "#94a3b8" }] },
+        { num: 8,  tokens: [{ text: "        printf", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"Status: 100% OK • 60 FPS\\n\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
+        { num: 9,  tokens: [{ text: "        dev_launch_pipeline", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "node", color: "#ffffff" }, { text: ");", color: "#94a3b8" }] },
+        { num: 10, tokens: [{ text: "    }", color: "#94a3b8" }] },
+        { num: 11, tokens: [{ text: "    return ", color: "#38bdf8" }, { text: "0", color: "#7dd3fc" }, { text: ";", color: "#94a3b8" }], hasCursor: true },
+        { num: 12, tokens: [{ text: "}", color: "#94a3b8" }] }
+      ];
+
+      function renderCodeEditorScreen(cursorVisible) {
+        const W = screenCanvas.width, H = screenCanvas.height;
+
+        // 1. Pure near-black editor base
+        sCtx.fillStyle = '#050811';
+        sCtx.fillRect(0, 0, W, H);
+
+        // 2. Window Header / Tab Bar (Height: 96px)
+        const tabH = 96;
+        sCtx.fillStyle = '#080d1a';
+        sCtx.fillRect(0, 0, W, tabH);
+        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        sCtx.lineWidth = 2;
+        sCtx.beginPath();
+        sCtx.moveTo(0, tabH);
+        sCtx.lineTo(W, tabH);
+        sCtx.stroke();
+
+        // Window controls (mac-style traffic lights)
+        const dots = ['#ef4444', '#f59e0b', '#10b981'];
+        for (let d = 0; d < 3; d++) {
+          sCtx.beginPath();
+          sCtx.arc(50 + d * 36, tabH / 2, 10, 0, Math.PI * 2);
+          sCtx.fillStyle = dots[d];
+          sCtx.fill();
+        }
+
+        // Active Tab: devfix_core.c
+        const tabX = 185, tabW = 340;
+        sCtx.fillStyle = '#0d1526';
+        sCtx.fillRect(tabX, 0, tabW, tabH);
+        // Bright cyan active indicator line
+        sCtx.fillStyle = '#38bdf8';
+        sCtx.fillRect(tabX, 0, tabW, 5);
+
+        // Tab icon & filename
+        sCtx.font = 'bold 26px "JetBrains Mono", monospace';
+        sCtx.fillStyle = '#38bdf8';
+        sCtx.fillText('C', tabX + 32, 58);
+        sCtx.font = 'bold 27px "JetBrains Mono", monospace';
+        sCtx.fillStyle = '#ffffff';
+        sCtx.fillText('devfix_core.c', tabX + 70, 58);
+        sCtx.fillStyle = '#64748b';
+        sCtx.fillText('×', tabX + tabW - 40, 56);
+
+        // Inactive Tab
+        sCtx.fillStyle = '#475569';
+        sCtx.fillText('engine.h', tabX + tabW + 40, 58);
+
+        // Breadcrumb right
+        sCtx.fillStyle = '#475569';
+        sCtx.font = 'bold 24px "JetBrains Mono", monospace';
+        sCtx.fillText('src > core > devfix_core.c', W - 520, 58);
+
+        // Git indicator
+        sCtx.fillStyle = '#10b981';
+        sCtx.fillText('● main', W - 150, 58);
+
+        // 3. Line numbers gutter (Width: 140px)
+        const gutterW = 140;
+        sCtx.fillStyle = '#060a14';
+        sCtx.fillRect(0, tabH, gutterW, H - tabH - 72);
+        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        sCtx.beginPath();
+        sCtx.moveTo(gutterW, tabH);
+        sCtx.lineTo(gutterW, H - 72);
+        sCtx.stroke();
+
+        // 4. Render Code Lines (Bold, large 38px font)
+        const startY = tabH + 75;
+        const lineSpacing = 88;
+        const codeStartX = gutterW + 36;
+
+        let cursorX = 0, cursorY = 0;
+
+        for (let i = 0; i < editorLines.length; i++) {
+          const line = editorLines[i];
+          const y = startY + i * lineSpacing;
+
+          // Active line subtle highlight
+          if (line.hasCursor) {
+            sCtx.fillStyle = 'rgba(56, 189, 248, 0.09)';
+            sCtx.fillRect(gutterW, y - 52, W - gutterW, lineSpacing);
+          }
+
+          // Line number in gutter
+          const numStr = (line.num < 10 ? '0' : '') + line.num;
+          sCtx.font = 'bold 30px "JetBrains Mono", monospace';
+          sCtx.fillStyle = line.hasCursor ? '#38bdf8' : '#334155';
+          sCtx.fillText(numStr, 48, y);
+
+          // Tokens rendering with bold crisp typography
+          sCtx.font = 'bold 36px "JetBrains Mono", "Consolas", monospace';
+          let currentX = codeStartX;
+          for (let t = 0; t < line.tokens.length; t++) {
+            const token = line.tokens[t];
+            sCtx.fillStyle = token.color;
+            sCtx.fillText(token.text, currentX, y);
+            currentX += sCtx.measureText(token.text).width;
+          }
+
+          if (line.hasCursor) {
+            cursorX = currentX + 6;
+            cursorY = y - 44;
+          }
+        }
+
+        // 5. Subtle Blinking Cursor
+        if (cursorVisible && cursorX > 0) {
+          sCtx.save();
+          sCtx.fillStyle = '#38bdf8';
+          sCtx.shadowColor = 'rgba(56, 189, 248, 0.85)';
+          sCtx.shadowBlur = 14;
+          sCtx.fillRect(cursorX, cursorY, 18, 50);
+          sCtx.restore();
+        }
+
+        // 6. Bottom Status Bar (Height: 72px)
+        const barY = H - 72;
+        sCtx.fillStyle = '#080d1a';
+        sCtx.fillRect(0, barY, W, 72);
+        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        sCtx.beginPath();
+        sCtx.moveTo(0, barY);
+        sCtx.lineTo(W, barY);
+        sCtx.stroke();
+
+        // Normal mode pill
+        sCtx.fillStyle = 'rgba(16, 185, 129, 0.18)';
+        sCtx.fillRect(32, barY + 14, 130, 44);
+        sCtx.fillStyle = '#10b981';
+        sCtx.font = 'bold 22px "JetBrains Mono", monospace';
+        sCtx.fillText('NORMAL', 52, barY + 44);
+
+        sCtx.fillStyle = '#cbd5e1';
+        sCtx.font = 'bold 24px "JetBrains Mono", monospace';
+        sCtx.fillText('devfix_core.c', 190, barY + 45);
+        sCtx.fillText('UTF-8', 460, barY + 45);
+        sCtx.fillText('C (Clang 17)', 600, barY + 45);
+
+        sCtx.fillStyle = '#64748b';
+        sCtx.fillText('Ln 11, Col 15', W - 420, barY + 45);
+        sCtx.fillText('Spaces: 4', W - 240, barY + 45);
+        sCtx.fillStyle = '#10b981';
+        sCtx.fillText('● 0 err', W - 90, barY + 45);
+      }
+
+      // Initial render so display is razor-sharp immediately
+      renderCodeEditorScreen(true);
+      screenTexture.needsUpdate = true;
+
+      // LIGHTS & SHADOW
+      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const keyLight = new THREE.DirectionalLight(0xdbeafe, 1.8);
+      keyLight.position.set(5, 6, 5);
+      scene.add(keyLight);
+      const rimLight = new THREE.DirectionalLight(0x06b6d4, 2.0);
+      rimLight.position.set(-5, 4, -3);
+      scene.add(rimLight);
+
+      // Gentle Screen Glow Light casting soft teal/cyan radiance onto keyboard
+      const screenGlowLight = new THREE.PointLight(0x2dd4bf, 1.6, 4.2);
+      screenGlowLight.position.set(0, baseH / 2 + 0.6, -0.2);
+      laptop.add(screenGlowLight);
+
+      const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.9), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5 }));
+      shadow.rotation.x = -Math.PI / 2;
+      shadow.position.y = -baseH / 2 - 0.01;
+      laptop.add(shadow);
+
+      laptop.rotation.x = 0.35;
+      laptop.rotation.y = -0.52;
+
+      let isDragging = false, prevMouse = { x: 0, y: 0 }, mouseNorm = { x: 0, y: 0 }, targetRot = { x: 0.35, y: -0.52 };
+
+      window.addEventListener('pointermove', (e) => {
+        mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        if (isDragging) {
+          targetRot.y += (e.clientX - prevMouse.x) * 0.007;
+          targetRot.x += (e.clientY - prevMouse.y) * 0.007;
+          prevMouse = { x: e.clientX, y: e.clientY };
+        }
+      });
+      canvas.addEventListener('pointerdown', (e) => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
+      window.addEventListener('pointerup', () => { isDragging = false; });
+      window.addEventListener('resize', () => {
+        if (!container) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      // Mobile-optimized animation loop: cursor blinks every 520ms without 60fps texture upload churn
+      let clock2 = new THREE.Clock();
+      let lastCursorBlink = 0;
+      let cursorVisibleState = true;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const elapsed = clock2.getElapsedTime();
+
+        // Subtle, lightweight cursor blink (updates texture only ~1.9 times/sec)
+        if (elapsed - lastCursorBlink > 0.52) {
+          lastCursorBlink = elapsed;
+          cursorVisibleState = !cursorVisibleState;
+          renderCodeEditorScreen(cursorVisibleState);
+          screenTexture.needsUpdate = true;
+        }
+
+        if (!isDragging) {
+          laptop.rotation.y += (targetRot.y + mouseNorm.x * 0.28 - laptop.rotation.y) * 0.05;
+          laptop.rotation.x += (targetRot.x - mouseNorm.y * 0.28 - laptop.rotation.x) * 0.05;
+        } else {
+          laptop.rotation.y += (targetRot.y - laptop.rotation.y) * 0.1;
+          laptop.rotation.x += (targetRot.x - laptop.rotation.x) * 0.1;
+        }
+        laptop.position.y = Math.sin(elapsed * 1.5) * 0.08;
+        renderer.render(scene, camera);
+      }
+      animate();
+    })();
+  </script>
 </body>
 </html>
