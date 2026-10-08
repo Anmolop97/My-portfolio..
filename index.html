@@ -129,67 +129,100 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 100;
-      padding: 1.2rem 3rem;
+      z-index: 1000;
+      padding: 0.8rem 2.2rem;
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      background: rgba(4, 6, 10, 0.72);
+      background: rgba(4, 6, 10, 0.78);
       border-bottom: 1px solid var(--border-subtle);
+      transition: all 0.3s ease;
     }
     nav {
-      max-width: 1560px;
+      max-width: 1240px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1.2rem;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.75rem;
       text-decoration: none;
       color: var(--head);
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       letter-spacing: -0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .brand-chip {
       font-family: var(--font-mono);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.6rem;
+      font-size: 0.74rem;
+      padding: 0.22rem 0.55rem;
       border-radius: 6px;
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid rgba(16, 185, 129, 0.25);
       color: #6ee7b7;
+      letter-spacing: 0.02em;
     }
+
+    /* Floating Capsule Nav Links (Desktop) */
     .nav-links {
       display: flex;
       list-style: none;
-      gap: 2.4rem;
+      gap: 0.25rem;
       align-items: center;
+      background: rgba(14, 20, 32, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 999px;
+      padding: 0.25rem 0.4rem;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .nav-links li {
+      margin: 0;
     }
     .nav-links a {
+      display: inline-block;
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.92rem;
+      font-size: 0.86rem;
       font-weight: 500;
-      transition: color 0.25s;
+      padding: 0.35rem 0.95rem;
+      border-radius: 999px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
     }
     .nav-links a:hover {
       color: #fff;
+      background: rgba(255, 255, 255, 0.06);
     }
-    
+
+    /* Right Nav Actions */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
     .status-badge {
       display: flex;
       align-items: center;
       gap: 0.55rem;
-      padding: 0.4rem 0.9rem;
-      background: rgba(16, 185, 129, 0.06);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      height: 36px;
+      padding: 0 0.95rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.22);
       border-radius: 999px;
       font-family: var(--font-mono);
       font-size: 0.76rem;
       color: #6ee7b7;
+      white-space: nowrap;
+      user-select: none;
     }
     .pulse-dot {
       width: 7px;
@@ -197,6 +230,7 @@
       background: var(--emerald);
       border-radius: 50%;
       position: relative;
+      flex-shrink: 0;
     }
     .pulse-dot::after {
       content: '';
@@ -211,72 +245,225 @@
       100% { transform: scale(2.4); opacity: 0; }
     }
 
-    /* ===== NAV ACTIONS & SOUND CONTROLLER ===== */
-    .nav-actions {
+    /* Sleek 36px Circular Glass Sound Controller */
+    .sound-toggle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(14, 20, 32, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      padding: 0;
+      position: relative;
+    }
+    .sound-toggle-btn:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      color: var(--text-bright);
+      background: rgba(18, 26, 42, 0.9);
+      transform: translateY(-1px);
+    }
+    .sound-toggle-btn.is-playing {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.1);
+      color: #6ee7b7;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+    }
+
+    .sound-icon-mute {
+      display: block;
+      transition: transform 0.2s;
+    }
+    .sound-toggle-btn.is-playing .sound-icon-mute {
+      display: none;
+    }
+
+    /* Animated Equalizer Bars when Playing */
+    .sound-bars {
+      display: none;
+      align-items: flex-end;
+      gap: 2.2px;
+      width: 14px;
+      height: 12px;
+    }
+    .sound-toggle-btn.is-playing .sound-bars {
+      display: inline-flex;
+    }
+    .sound-bars .bar {
+      width: 2.5px;
+      height: 3px;
+      background: #10b981;
+      border-radius: 1px;
+    }
+    .sound-toggle-btn.is-playing .sound-bars .bar-1 {
+      animation: soundBarDance 0.85s ease-in-out infinite alternate;
+    }
+    .sound-toggle-btn.is-playing .sound-bars .bar-2 {
+      animation: soundBarDance 0.65s ease-in-out 0.25s infinite alternate;
+    }
+    .sound-toggle-btn.is-playing .sound-bars .bar-3 {
+      animation: soundBarDance 0.95s ease-in-out 0.15s infinite alternate;
+    }
+
+    @keyframes soundBarDance {
+      0% { height: 3px; }
+      50% { height: 12px; }
+      100% { height: 4px; }
+    }
+
+    /* Mobile Hamburger Menu Toggle Button (hidden on desktop) */
+    .mobile-menu-btn {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(14, 20, 32, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-bright);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      flex-direction: column;
+      gap: 4.5px;
+      padding: 0;
+      transition: all 0.22s ease;
+    }
+    .mobile-menu-btn .menu-line {
+      width: 14px;
+      height: 1.5px;
+      background: #e2e8f0;
+      border-radius: 1px;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    }
+    .mobile-menu-btn.is-open {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(20, 30, 48, 0.9);
+    }
+    .mobile-menu-btn.is-open .menu-line:nth-child(1) {
+      transform: translateY(3px) rotate(45deg);
+    }
+    .mobile-menu-btn.is-open .menu-line:nth-child(2) {
+      transform: translateY(-3px) rotate(-45deg);
+    }
+
+    /* Mobile Menu Backdrop */
+    .mobile-menu-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 998;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Mobile Menu Drawer */
+    .mobile-menu-drawer {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      background: rgba(6, 10, 18, 0.97);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.1rem 1.25rem 1.6rem;
+      transform: translateY(-115%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+    }
+    .mobile-menu-drawer.is-open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-drawer-status {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.95rem;
+      background: rgba(16, 185, 129, 0.07);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: #6ee7b7;
+      margin-bottom: 1.1rem;
+      width: fit-content;
+    }
+    .mobile-nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1.2rem;
+    }
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .mobile-nav-link:active,
+    .mobile-nav-link:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+    .mobile-nav-link-content {
       display: flex;
       align-items: center;
       gap: 0.85rem;
     }
-
-    .sound-toggle-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      padding: 0.38rem 0.85rem;
-      border-radius: 999px;
-      background: rgba(12, 16, 26, 0.75);
-      border: 1px solid var(--border-subtle);
-      color: var(--muted);
+    .mobile-nav-num {
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      user-select: none;
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
     }
-    .sound-toggle-btn:hover {
-      border-color: rgba(56, 189, 248, 0.3);
-      color: var(--text-bright);
-      background: rgba(16, 22, 36, 0.9);
-      transform: translateY(-1px);
+    .mobile-nav-text {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--head);
+      letter-spacing: -0.01em;
     }
-    .sound-toggle-btn.is-playing {
-      border-color: rgba(16, 185, 129, 0.35);
-      background: rgba(16, 185, 129, 0.08);
-      color: #6ee7b7;
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    .mobile-nav-arrow {
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: transform 0.2s ease, color 0.2s ease;
     }
-
-    /* Animated Equalizer Bars */
-    .sound-bars {
-      display: inline-flex;
-      align-items: flex-end;
-      gap: 2.5px;
-      width: 14px;
-      height: 12px;
+    .mobile-nav-link:hover .mobile-nav-arrow {
+      transform: translateX(3px);
+      color: var(--cyan);
     }
-    .sound-bars .bar {
-      width: 2px;
-      height: 3px;
-      background: var(--muted);
-      border-radius: 1px;
-      transition: height 0.2s, background 0.2s;
-    }
-    .sound-toggle-btn.is-playing .sound-bars .bar {
-      background: #10b981;
-      animation: soundBarDance 1s ease-in-out infinite alternate;
-    }
-    .sound-toggle-btn.is-playing .sound-bars .bar-1 { animation-delay: 0.1s; animation-duration: 0.85s; }
-    .sound-toggle-btn.is-playing .sound-bars .bar-2 { animation-delay: 0.35s; animation-duration: 0.65s; }
-    .sound-toggle-btn.is-playing .sound-bars .bar-3 { animation-delay: 0.15s; animation-duration: 0.95s; }
-    .sound-toggle-btn.is-playing .sound-bars .bar-4 { animation-delay: 0.45s; animation-duration: 0.75s; }
-
-    @keyframes soundBarDance {
-      0% { height: 3px; }
-      50% { height: 11px; }
-      100% { height: 5px; }
+    .mobile-drawer-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
     }
 
     /* Ambient Audio Toast Notification */
@@ -1058,28 +1245,34 @@
 
     @media (max-width: 900px) {
       header {
-        padding: 0.85rem 1.2rem;
+        padding: 0.65rem 1.15rem;
       }
-      /* Prevent navbar overlap on mobile - show only brand and live status pill */
-      .nav-links li:not(:last-child) {
-        display: none;
-      }
-      .brand {
-        font-size: 1rem;
-        gap: 0.6rem;
+      /* Clean uncluttered mobile header: hide desktop inline links & status badge */
+      .nav-links {
+        display: none !important;
       }
       .status-badge {
-        padding: 0.35rem 0.75rem;
+        display: none !important;
+      }
+      .brand {
+        font-size: 0.98rem;
+        gap: 0.55rem;
+      }
+      .brand-chip {
         font-size: 0.72rem;
+        padding: 0.2rem 0.5rem;
       }
       .nav-actions {
-        gap: 0.5rem;
+        gap: 0.55rem;
       }
       .sound-toggle-btn {
-        padding: 0.35rem 0.65rem;
+        width: 34px;
+        height: 34px;
       }
-      .sound-toggle-btn .sound-label {
-        display: none; /* Compact icon-only visualizer on mobile */
+      .mobile-menu-btn {
+        display: flex;
+        width: 34px;
+        height: 34px;
       }
       .audio-toast {
         bottom: 1.2rem;
@@ -1093,7 +1286,7 @@
       
       .hero {
         grid-template-columns: 1fr;
-        padding-top: 5.6rem;
+        padding-top: 5.2rem;
         padding-bottom: 2.2rem;
         gap: 1.5rem;
         text-align: center;
@@ -1107,15 +1300,19 @@
         font-size: 0.75rem;
         padding: 0.35rem 0.8rem;
       }
+      /* Prevent unnatural line breaks on mobile devices */
+      h1.hero-title br {
+        display: none;
+      }
       h1.hero-title {
-        font-size: clamp(2rem, 7.2vw, 2.7rem);
-        line-height: 1.14;
+        font-size: clamp(1.9rem, 7vw, 2.45rem);
+        line-height: 1.18;
         letter-spacing: -0.025em;
       }
       .hero-desc {
         font-size: 0.94rem;
         line-height: 1.62;
-        max-width: 94%;
+        max-width: 96%;
         margin: 0 auto;
       }
       .hero-cta {
@@ -1224,9 +1421,10 @@
   <div class="ambient-glow glow-emerald"></div>
   <div class="vignette-overlay"></div>
 
-  <!-- Hidden Background Ambient Audio (leberch ambient track) -->
+  <!-- Hidden Background Ambient Audio (leberch ambient track with cloud fallback) -->
   <audio id="ambientAudio" loop preload="auto">
     <source src="ambient.mp3" type="audio/mpeg">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Ambient Audio Experience Toast Prompt -->
@@ -1250,6 +1448,7 @@
         <span>ANMOL KUMAR</span>
       </a>
 
+      <!-- Desktop Floating Nav Capsule -->
       <ul class="nav-links">
         <li><a href="#hero">Overview</a></li>
         <li><a href="#featured">Featured</a></li>
@@ -1259,24 +1458,97 @@
       </ul>
 
       <div class="nav-actions">
-        <!-- Interactive Sound Equalizer Toggle -->
-        <button id="soundToggleBtn" class="sound-toggle-btn" aria-label="Toggle ambient soundtrack" title="Toggle ambient sound">
+        <!-- Minimalist Sound Toggle -->
+        <button id="soundToggleBtn" class="sound-toggle-btn" aria-label="Toggle ambient soundtrack" title="Play ambient soundtrack">
+          <svg class="sound-icon-mute" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
           <span class="sound-bars" aria-hidden="true">
             <span class="bar bar-1"></span>
             <span class="bar bar-2"></span>
             <span class="bar bar-3"></span>
-            <span class="bar bar-4"></span>
           </span>
-          <span class="sound-label">SOUND</span>
         </button>
 
+        <!-- Live Status Pill (Desktop) -->
         <div class="status-badge">
           <span class="pulse-dot"></span>
           <span class="status-text">Available</span>
         </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open mobile navigation menu" aria-expanded="false">
+          <span class="menu-line"></span>
+          <span class="menu-line"></span>
+        </button>
       </div>
     </nav>
   </header>
+
+  <!-- Mobile Navigation Drawer & Backdrop -->
+  <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+  <div id="mobileMenuDrawer" class="mobile-menu-drawer" aria-label="Mobile Navigation">
+    <div class="mobile-drawer-status">
+      <span class="pulse-dot"></span>
+      <span>Available for Summer 2026 Internships</span>
+    </div>
+
+    <ul class="mobile-nav-list">
+      <li>
+        <a href="#hero" class="mobile-nav-link">
+          <div class="mobile-nav-link-content">
+            <span class="mobile-nav-num">01</span>
+            <span class="mobile-nav-text">Overview</span>
+          </div>
+          <span class="mobile-nav-arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="#featured" class="mobile-nav-link">
+          <div class="mobile-nav-link-content">
+            <span class="mobile-nav-num">02</span>
+            <span class="mobile-nav-text">Featured Project (DevFix)</span>
+          </div>
+          <span class="mobile-nav-arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="#construction" class="mobile-nav-link">
+          <div class="mobile-nav-link-content">
+            <span class="mobile-nav-num">03</span>
+            <span class="mobile-nav-text">Engineering Roadmap</span>
+          </div>
+          <span class="mobile-nav-arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="#telemetry" class="mobile-nav-link">
+          <div class="mobile-nav-link-content">
+            <span class="mobile-nav-num">04</span>
+            <span class="mobile-nav-text">Telemetry & Architecture</span>
+          </div>
+          <span class="mobile-nav-arrow">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="#contact" class="mobile-nav-link">
+          <div class="mobile-nav-link-content">
+            <span class="mobile-nav-num">05</span>
+            <span class="mobile-nav-text">Initiate Contact</span>
+          </div>
+          <span class="mobile-nav-arrow">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="mobile-drawer-footer">
+      <a href="mailto:anmol.builds@gmail.com" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem 1rem;">
+        Send Direct Email ↗
+      </a>
+    </div>
+  </div>
 
   <main>
     <!-- 1. HERO SECTION -->
@@ -2314,7 +2586,6 @@
     (() => {
       const audio = document.getElementById('ambientAudio');
       const toggleBtn = document.getElementById('soundToggleBtn');
-      const soundLabel = toggleBtn ? toggleBtn.querySelector('.sound-label') : null;
       const toast = document.getElementById('audioToast');
       const toastPlayBtn = document.getElementById('audioToastPlayBtn');
       const toastDismissBtn = document.getElementById('audioToastDismissBtn');
@@ -2347,7 +2618,8 @@
         audio.play().then(() => {
           isPlaying = true;
           toggleBtn.classList.add('is-playing');
-          if (soundLabel) soundLabel.textContent = 'SOUND: ON';
+          toggleBtn.setAttribute('title', 'Pause ambient soundtrack');
+          toggleBtn.setAttribute('aria-label', 'Pause ambient soundtrack');
           fadeAudio(TARGET_VOL, 1200);
           if (toast) toast.classList.add('hidden');
         }).catch((err) => {
@@ -2360,7 +2632,8 @@
           audio.pause();
           isPlaying = false;
           toggleBtn.classList.remove('is-playing');
-          if (soundLabel) soundLabel.textContent = 'SOUND: OFF';
+          toggleBtn.setAttribute('title', 'Play ambient soundtrack');
+          toggleBtn.setAttribute('aria-label', 'Play ambient soundtrack');
         });
       }
 
@@ -2390,6 +2663,58 @@
           toast.classList.add('hidden');
         }
       }, 14000);
+    })();
+
+    /* ================================================================
+       6. MOBILE NAVIGATION DRAWER CONTROLLER
+       ================================================================ */
+    (() => {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileDrawer = document.getElementById('mobileMenuDrawer');
+      const mobileBackdrop = document.getElementById('mobileMenuBackdrop');
+      const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+      if (!mobileMenuBtn || !mobileDrawer) return;
+
+      function openDrawer() {
+        mobileMenuBtn.classList.add('is-open');
+        mobileMenuBtn.setAttribute('aria-expanded', 'true');
+        mobileDrawer.classList.add('is-open');
+        if (mobileBackdrop) mobileBackdrop.classList.add('is-open');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling while open
+      }
+
+      function closeDrawer() {
+        mobileMenuBtn.classList.remove('is-open');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        mobileDrawer.classList.remove('is-open');
+        if (mobileBackdrop) mobileBackdrop.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      mobileMenuBtn.addEventListener('click', () => {
+        if (mobileDrawer.classList.contains('is-open')) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      });
+
+      if (mobileBackdrop) {
+        mobileBackdrop.addEventListener('click', closeDrawer);
+      }
+
+      mobileLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          closeDrawer();
+        });
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileDrawer.classList.contains('is-open')) {
+          closeDrawer();
+        }
+      });
     })();
   </script>
 </body>
