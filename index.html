@@ -9,7 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
+  <!-- Three.js with multi-CDN fallback for 100% production reliability -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>');
+    }
+  </script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
+    }
+  </script>
 
   <style>
     /* ===== CALM, SOPHISTICATED OBSIDIAN PALETTE ===== */
@@ -329,7 +340,7 @@
       height: 100% !important;
       outline: none;
       cursor: grab;
-      touch-action: none;
+      touch-action: pan-y;
     }
     #laptop-canvas:active {
       cursor: grabbing;
@@ -905,48 +916,144 @@
       backdrop-filter: blur(20px);
     }
 
-    @media (max-width: 1100px) {
+    @media (max-width: 900px) {
+      header {
+        padding: 0.85rem 1.2rem;
+      }
+      /* Prevent navbar overlap on mobile - show only brand and live status pill */
+      .nav-links li:not(:last-child) {
+        display: none;
+      }
+      .brand {
+        font-size: 1rem;
+        gap: 0.6rem;
+      }
+      .status-badge {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.72rem;
+      }
+      
       .hero {
         grid-template-columns: 1fr;
-        padding-top: 7rem;
+        padding-top: 5.6rem;
+        padding-bottom: 2.2rem;
+        gap: 1.5rem;
         text-align: center;
       }
       .hero-content {
         align-items: center;
         max-width: 100%;
+        gap: 1.15rem;
+      }
+      .hero-pill {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.8rem;
+      }
+      h1.hero-title {
+        font-size: clamp(2rem, 7.2vw, 2.7rem);
+        line-height: 1.14;
+        letter-spacing: -0.025em;
+      }
+      .hero-desc {
+        font-size: 0.94rem;
+        line-height: 1.62;
+        max-width: 94%;
+        margin: 0 auto;
       }
       .hero-cta {
-        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        gap: 0.75rem;
+        margin: 0 auto;
       }
+      .hero-cta .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.85rem 1.4rem;
+      }
+      
+      /* Mobile 3D Laptop Stage: scaled comfortably so it doesn't dominate or block gestures */
       .laptop-stage {
-        height: 580px;
-        min-height: 480px;
+        height: 380px;
+        min-height: 330px;
+        margin-top: 0.5rem;
+      }
+      .drag-instruction {
+        bottom: 2%;
+        font-size: 0.68rem;
+        padding: 0.3rem 0.8rem;
+      }
+
+      .section {
+        margin: 4.8rem auto;
+        padding: 0 1.2rem;
+      }
+      .section-title {
+        font-size: 1.85rem;
       }
       .featured-hero-card {
         grid-template-columns: 1fr;
-        padding: 2.5rem;
+        padding: 1.6rem;
+        gap: 1.6rem;
       }
+      .diag-terminal {
+        padding: 1.1rem;
+      }
+      .diag-line {
+        font-size: 0.75rem;
+      }
+      
       .roadmap-steps-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
       }
-      .stack-matrix-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .step-card {
+        padding: 1.3rem;
       }
-      .contact-layout {
-        grid-template-columns: 1fr;
-        padding: 2.4rem;
-      }
-    }
 
-    @media (max-width: 650px) {
-      .stack-matrix-grid {
-        grid-template-columns: 1fr;
+      .telemetry-subtitle {
+        margin-top: -1rem;
+        margin-bottom: 2rem;
+        font-size: 0.92rem;
+      }
+      .telemetry-terminal-wrap {
+        margin-bottom: 2rem;
       }
       .hud-body {
-        padding: 1.2rem 1.2rem;
+        padding: 1.2rem 1.3rem;
+        gap: 0.85rem;
+        font-size: 0.8rem;
+      }
+      .hud-row {
+        flex-direction: column;
+        gap: 0.2rem;
+        align-items: flex-start;
+      }
+      .hud-val {
+        text-align: left;
       }
       .hud-footer-cmd {
-        padding: 0.9rem 1.2rem;
+        padding: 0.85rem 1.3rem;
+        font-size: 0.75rem;
+      }
+      .stack-matrix-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .stack-cat-card {
+        padding: 1.3rem;
+      }
+
+      .contact-layout {
+        grid-template-columns: 1fr;
+        padding: 1.6rem;
+        gap: 2rem;
+      }
+      .copy-email-chip {
+        flex-wrap: wrap;
+        width: 100%;
       }
     }
   </style>
@@ -1015,7 +1122,7 @@
       <div class="laptop-stage">
         <canvas id="laptop-canvas"></canvas>
         <div class="drag-instruction">
-          <span>👆 Drag freely in 360° • Zoom & Inspect Workstation</span>
+          <span>👆 Drag in 360° • Scroll down freely</span>
         </div>
       </div>
     </section>
@@ -1433,9 +1540,11 @@
       });
     })();
 
-    /* 2. CALM & GENTLE BACKGROUND WAVES */
-    (() => {
+    /* 2. CALM & GENTLE BACKGROUND WAVES (ORIGINAL PARAMETERS RESTORED) */
+    function initBackgroundWaves() {
       const bgCanvas = document.getElementById('bg-waves-canvas');
+      if (!bgCanvas) return;
+
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 1000);
       camera.position.set(0, 36, 75);
@@ -1463,7 +1572,7 @@
 
       const crestMat = new THREE.PointsMaterial({
         color: 0x38bdf8,
-        size: 1.0,
+        size: 0.85,
         transparent: true,
         opacity: 0.28,
         blending: THREE.AdditiveBlending
@@ -1498,29 +1607,36 @@
         renderer.render(scene, camera);
       }
       renderWaves();
-    })();
+    }
 
     /* ================================================================
        3. ULTRA-REALISTIC WORKSTATION (ENGRAVED KEYBOARD + DEVFIX CAD/IDE SCREEN)
        ================================================================ */
-    (() => {
+    function initLaptopStage() {
       const canvas = document.getElementById('laptop-canvas');
+      if (!canvas) return;
       const container = canvas.parentElement;
+
+      // Defensive sizing fallback for network load and mobile screens
+      let cw = (container && container.clientWidth > 50) ? container.clientWidth : 720;
+      let ch = (container && container.clientHeight > 50) ? container.clientHeight : 780;
 
       const scene = new THREE.Scene();
       
-      const camera = new THREE.PerspectiveCamera(36, container.clientWidth / container.clientHeight, 0.1, 100);
-      camera.position.set(0, 1.3, 6.4);
+      const isMobile = window.innerWidth <= 860;
+      const initScale = isMobile ? 0.58 : 0.79;
+      const camera = new THREE.PerspectiveCamera(36, cw / ch, 0.1, 100);
+      camera.position.set(0, isMobile ? 1.0 : 1.3, isMobile ? 7.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(cw, ch);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.3;
 
       const laptop = new THREE.Group();
-      laptop.scale.set(0.79, 0.79, 0.79);
+      laptop.scale.set(initScale, initScale, initScale);
       scene.add(laptop);
 
       // --- MATERIALS ---
@@ -1571,9 +1687,11 @@
       kbCanvas.height = 1024;
       const kbCtx = kbCanvas.getContext('2d');
 
-      // Keycap material using high-res engraved canvas texture
+      // Keycap material using high-res engraved canvas texture (WebGL 1 & 2 safe)
       const keycapTexture = new THREE.CanvasTexture(kbCanvas);
-      keycapTexture.anisotropy = 4;
+      keycapTexture.generateMipmaps = false;
+      keycapTexture.minFilter = THREE.LinearFilter;
+      keycapTexture.magFilter = THREE.LinearFilter;
       const keycapMaterial = new THREE.MeshStandardMaterial({
         map: keycapTexture,
         metalness: 0.6,
@@ -1684,9 +1802,8 @@
       const sCtx = screenCanvas.getContext('2d');
 
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
-      screenTexture.anisotropy = 16;
-      screenTexture.generateMipmaps = true;
-      screenTexture.minFilter = THREE.LinearMipmapLinearFilter;
+      screenTexture.generateMipmaps = false;
+      screenTexture.minFilter = THREE.LinearFilter;
       screenTexture.magFilter = THREE.LinearFilter;
 
       const screenMesh = new THREE.Mesh(
@@ -1890,24 +2007,72 @@
       laptop.rotation.y = -0.52;
 
       let isDragging = false, prevMouse = { x: 0, y: 0 }, mouseNorm = { x: 0, y: 0 }, targetRot = { x: 0.35, y: -0.52 };
+      let isTouch = false, touchStart = { x: 0, y: 0 }, touchLock3D = false;
+
+      canvas.addEventListener('pointerdown', (e) => {
+        isTouch = (e.pointerType === 'touch');
+        isDragging = true;
+        touchLock3D = false;
+        touchStart = { x: e.clientX, y: e.clientY };
+        prevMouse = { x: e.clientX, y: e.clientY };
+      });
 
       window.addEventListener('pointermove', (e) => {
-        mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        if (!isTouch) {
+          mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
+          mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        }
         if (isDragging) {
-          targetRot.y += (e.clientX - prevMouse.x) * 0.007;
-          targetRot.x += (e.clientY - prevMouse.y) * 0.007;
+          const dx = e.clientX - prevMouse.x;
+          const dy = e.clientY - prevMouse.y;
+
+          if (isTouch) {
+            // Determine whether user wants to scroll page or rotate 3D laptop
+            const totalDx = Math.abs(e.clientX - touchStart.x);
+            const totalDy = Math.abs(e.clientY - touchStart.y);
+
+            // If gesture is mainly vertical, release 3D drag so page scrolls smoothly!
+            if (!touchLock3D && totalDy > totalDx && totalDy > 7) {
+              isDragging = false;
+              return;
+            }
+            if (totalDx > 9) {
+              touchLock3D = true; // Lock into horizontal 3D rotation
+            }
+            targetRot.y += dx * 0.009;
+          } else {
+            targetRot.y += dx * 0.007;
+            targetRot.x += dy * 0.007;
+          }
           prevMouse = { x: e.clientX, y: e.clientY };
         }
       });
-      canvas.addEventListener('pointerdown', (e) => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
-      window.addEventListener('pointerup', () => { isDragging = false; });
-      window.addEventListener('resize', () => {
-        if (!container) return;
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-      });
+
+      window.addEventListener('pointerup', () => { isDragging = false; touchLock3D = false; });
+      window.addEventListener('pointercancel', () => { isDragging = false; touchLock3D = false; });
+
+      function handleResize() {
+        if (!container || !camera || !renderer) return;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w > 50 && h > 50) {
+          camera.aspect = w / h;
+          const isMobile = window.innerWidth <= 860;
+          const scale = isMobile ? 0.58 : 0.79;
+          laptop.scale.set(scale, scale, scale);
+          if (isMobile) {
+            camera.position.set(0, 1.0, 7.2);
+          } else {
+            camera.position.set(0, 1.3, 6.4);
+          }
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        }
+      }
+      window.addEventListener('resize', handleResize);
+      setTimeout(handleResize, 150);
+      setTimeout(handleResize, 600);
+      setTimeout(handleResize, 1500);
 
       // Mobile-optimized animation loop: cursor blinks every 520ms without 60fps texture upload churn
       let clock2 = new THREE.Clock();
@@ -1937,7 +2102,23 @@
         renderer.render(scene, camera);
       }
       animate();
-    })();
+    }
+
+    /* 4. MASTER PRODUCTION BOOTSTRAPPER (WITH AUTO-RETRY) */
+    function boot3D() {
+      if (typeof THREE === 'undefined') {
+        setTimeout(boot3D, 150);
+        return;
+      }
+      try { initBackgroundWaves(); } catch (err) { console.warn("Waves error:", err); }
+      try { initLaptopStage(); } catch (err) { console.warn("Laptop error:", err); }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot3D);
+    } else {
+      boot3D();
+    }
   </script>
 </body>
 </html>
