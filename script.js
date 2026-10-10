@@ -252,31 +252,31 @@
           const curRx = orb.baseR * expansion;
           const curRy = curRx * orb.ecc;
 
-          // User requested: 3rd, 4th, 5th line opacity increased + all lines more glowing!
+          // Enhanced radiant opacity & vibrant celestial presence across all lines
           let ringAlpha;
           if (i <= 1) {
-            // Lines 1 & 2 (Inner): Normal radiant opacity
-            ringAlpha = 0.65 * dynamicFlare;
+            // Lines 1 & 2 (Inner): Radiant glowing cyan
+            ringAlpha = 0.85 * dynamicFlare;
           } else if (i <= 4) {
-            // Lines 3, 4, 5: Increased opacity as requested!
-            ringAlpha = 0.78 * dynamicFlare;
+            // Lines 3, 4, 5 (Focal hero sweeps): Crisp luminous neon
+            ringAlpha = 0.95 * dynamicFlare;
           } else {
-            // Lines 6 onwards (outer): Soft background depth fade
-            const depthFade = 0.44 - (i - 5) * 0.018;
+            // Lines 6 onwards (outer sweep lines): Clear, luminous presence
+            const depthFade = 0.74 - (i - 5) * 0.025;
             ringAlpha = depthFade * dynamicFlare;
           }
-          ringAlpha = Math.min(Math.max(ringAlpha, 0.18), 0.88);
+          ringAlpha = Math.min(Math.max(ringAlpha, 0.48), 1.0);
 
           // Rich Frosted Glass & Electric Cyan Gradient with enhanced luminosity
           const grad = ctx.createLinearGradient(
             originX, originY,
             originX - curRx * 0.85, originY + curRy * 1.55
           );
-          grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.35})`);
+          grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.68})`);
           grad.addColorStop(0.28, `rgba(255, 255, 255, ${ringAlpha * 1.0})`); // Pure glowing white frost crest
-          grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.95})`); // Intense electric cyan
-          grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.80})`); // Starlight aurora teal
-          grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.28})`);
+          grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.98})`); // Vibrant electric cyan
+          grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.90})`); // Starlight aurora teal
+          grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.62})`);
 
           // 1. Primary Orbit Track - Enhanced Glowing Aura
           ctx.save();
@@ -284,25 +284,21 @@
           if (orb.dash) ctx.setLineDash(orb.dash);
           ctx.ellipse(originX, originY, curRx, curRy, rot, 0, Math.PI * 2);
           ctx.strokeStyle = grad;
-          ctx.lineWidth = orb.lineWidth;
-          if (i <= 4) {
-            ctx.shadowColor = 'rgba(56, 189, 248, 0.82)'; // Rich neon cyan glow on primary focal orbits
-            ctx.shadowBlur = 14;
-          }
+          ctx.lineWidth = orb.lineWidth * 1.15;
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.85)'; // Neon cyan glow on all orbits
+          ctx.shadowBlur = i <= 4 ? 16 : 10;
           ctx.stroke();
           ctx.restore();
 
-          // 2. Companion Guide Track (Twin wire: 1.3px with luminous aura)
+          // 2. Companion Guide Track (Twin wire: 1.4px with luminous aura)
           if (orb.hasCompanion) {
             ctx.save();
             ctx.beginPath();
             ctx.ellipse(originX, originY, curRx + 5.5, (curRx + 5.5) * orb.ecc, rot, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.52})`;
-            ctx.lineWidth = 1.3;
-            if (i <= 4) {
-              ctx.shadowColor = 'rgba(56, 189, 248, 0.55)';
-              ctx.shadowBlur = 8;
-            }
+            ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.72})`;
+            ctx.lineWidth = 1.4;
+            ctx.shadowColor = 'rgba(56, 189, 248, 0.65)';
+            ctx.shadowBlur = 8;
             ctx.stroke();
             ctx.restore();
           }
@@ -520,13 +516,11 @@
         if (isRunning) return;
         isRunning = true;
         startTime = performance.now();
-        canvas.classList.add('is-ready');
         requestAnimationFrame(draw);
       };
 
-      if (!document.getElementById('brandIntroOverlay')) {
-        window.__startSpaceOrbitRings();
-      }
+      // Launch celestial space orbit rings immediately in background for zero-delay handoff
+      window.__startSpaceOrbitRings();
     }
 
     // Fade out drag instruction badge on initial scroll
@@ -783,9 +777,8 @@
         renderOrb();
       };
 
-      if (!document.getElementById('brandIntroOverlay')) {
-        window.__startSmallOrb();
-      }
+      // Start quantum sound core orb immediately in background for zero-delay handoff
+      window.__startSmallOrb();
     }
 
 /* ==================== laptop.js ==================== */
@@ -1687,11 +1680,11 @@
         laptopObserver.observe(canvas);
       }
 
-      // Silky Smooth & Elegant Unfold & Boot Timeline Parameters (No snap, purely organic & fluid)
-      const T_FOLD_PAUSE     = 0.08;  // Gentle settling pause on entrance: 0.08s
-      const T_UNFOLD_DUR     = 1.15;  // Buttery-smooth opening duration: 1.15s
-      const T_OPEN_OFF_PAUSE = 0.12;  // Natural boot wake delay: 0.12s
-      const T_POWER_DUR      = 0.65;  // Silky smooth OLED display fade: 0.65s
+      // Silky Smooth & Elegant Unfold & Boot Timeline Parameters (Instant handoff, purely organic & fluid)
+      const T_FOLD_PAUSE     = 0.0;   // Instant unfold handoff as intro dissolves: 0.0s
+      const T_UNFOLD_DUR     = 1.05;  // Buttery-smooth opening duration: 1.05s
+      const T_OPEN_OFF_PAUSE = 0.05;  // Natural boot wake delay: 0.05s
+      const T_POWER_DUR      = 0.55;  // Silky smooth OLED display fade: 0.55s
 
       const tUnfoldStart = T_FOLD_PAUSE;
       const tUnfoldEnd   = tUnfoldStart + T_UNFOLD_DUR;
@@ -2149,15 +2142,17 @@
     if (isCompleted) return;
     isCompleted = true;
 
-    // Silky smooth GPU depth dissolve into hero workstation
+    // 1. Instantly trigger 3D laptop unfold & scenes the exact millisecond dissolve begins!
+    if (typeof window.__start3DScenes === 'function') {
+      window.__start3DScenes();
+    }
+
+    // 2. Silky smooth GPU depth dissolve into hero workstation
     overlay.classList.add('is-zoom-through');
     document.body.style.overflow = '';
+
     setTimeout(() => {
       overlay.remove();
-      // Seamlessly start 3D scenes
-      if (typeof window.__start3DScenes === 'function') {
-        window.__start3DScenes();
-      }
     }, 650);
   }
 
