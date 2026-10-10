@@ -5,11 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Anmol Kumar | Creative Developer</title>
   <meta name="description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
+  <meta name="author" content="Anmol Kumar">
+  <meta name="theme-color" content="#04060a">
+
+  <!-- Open Graph / Meta for Social Previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Anmol Kumar | Creative Developer">
+  <meta property="og:description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
+  <meta property="og:image" content="assets/images/logo.png">
+
+  <!-- Typography & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  
-  <!-- Three.js with multi-CDN fallback for 100% production reliability -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Three.js (Hardware-accelerated 3D Engine with CDN fallbacks) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     if (typeof THREE === 'undefined') {
@@ -21,1408 +34,132 @@
       document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
     }
   </script>
-
-  <style>
-    /* ===== CALM, SOPHISTICATED OBSIDIAN PALETTE ===== */
-    :root {
-      --bg: #04060a;
-      --surface: rgba(12, 16, 26, 0.68);
-      --surface-hover: rgba(16, 22, 36, 0.82);
-      --surface-border: rgba(56, 189, 248, 0.12);
-      --border-subtle: rgba(255, 255, 255, 0.06);
-      --head: #f8fafc;
-      --text: #94a3b8;
-      --text-bright: #e2e8f0;
-      --muted: #64748b;
-      --cyan: #38bdf8;
-      --cyan-bright: #7dd3fc;
-      --emerald: #10b981;
-      --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html {
-      color-scheme: dark;
-      scroll-behavior: smooth;
-      scrollbar-width: thin;
-      scrollbar-color: #1e293b #04060a;
-    }
-
-    /* ===== SLEEK CUSTOM SCROLLBAR ===== */
-    ::-webkit-scrollbar {
-      width: 7px;
-      height: 7px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #04060a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: background 0.2s ease;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-    }
-    ::-webkit-scrollbar-button {
-      display: none !important;
-      width: 0;
-      height: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-main);
-      overflow-x: hidden;
-      min-height: 100vh;
-      line-height: 1.7;
-    }
-
-    #bg-waves-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .ambient-glow {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(180px);
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0.18;
-    }
-    .glow-cyan {
-      width: 750px;
-      height: 750px;
-      top: -150px;
-      right: 5%;
-      background: #0284c7;
-    }
-    .glow-emerald {
-      width: 600px;
-      height: 600px;
-      bottom: -100px;
-      left: -10%;
-      background: #059669;
-    }
-
-    .vignette-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
-      background: radial-gradient(circle at 65% 45%, transparent 35%, rgba(4, 6, 10, 0.88) 85%),
-                  linear-gradient(to bottom, rgba(4,6,10,0.2) 0%, rgba(4,6,10,0.95) 100%);
-    }
-
-    /* ===== NAVBAR ===== */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 0.8rem 2.2rem;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      background: rgba(4, 6, 10, 0.78);
-      border-bottom: 1px solid var(--border-subtle);
-      transition: all 0.3s ease;
-    }
-    nav {
-      max-width: 1240px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1.2rem;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      text-decoration: none;
-      color: var(--head);
-      font-weight: 700;
-      font-size: 1.05rem;
-      letter-spacing: -0.02em;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .brand-chip {
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      padding: 0.22rem 0.55rem;
-      border-radius: 6px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      color: #6ee7b7;
-      letter-spacing: 0.02em;
-    }
-
-    /* Floating Capsule Nav Links (Desktop) */
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 0.25rem;
-      align-items: center;
-      background: rgba(14, 20, 32, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 999px;
-      padding: 0.25rem 0.4rem;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
-    .nav-links li {
-      margin: 0;
-    }
-    .nav-links a {
-      display: inline-block;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.86rem;
-      font-weight: 500;
-      padding: 0.35rem 0.95rem;
-      border-radius: 999px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      white-space: nowrap;
-    }
-    .nav-links a:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    /* Right Nav Actions */
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      height: 36px;
-      padding: 0 0.95rem;
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      color: #6ee7b7;
-      white-space: nowrap;
-      user-select: none;
-    }
-    .pulse-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--emerald);
-      border-radius: 50%;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .pulse-dot::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 1.5px solid var(--emerald);
-      animation: pulse 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(0.6); opacity: 1; }
-      100% { transform: scale(2.4); opacity: 0; }
-    }
-
-    /* Sleek 36px Circular Glass Sound Controller */
-    .sound-toggle-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(14, 20, 32, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      user-select: none;
-      padding: 0;
-      position: relative;
-    }
-    .sound-toggle-btn:hover {
-      border-color: rgba(56, 189, 248, 0.35);
-      color: var(--text-bright);
-      background: rgba(18, 26, 42, 0.9);
-      transform: translateY(-1px);
-    }
-    .sound-toggle-btn.is-playing {
-      border-color: rgba(16, 185, 129, 0.4);
-      background: rgba(16, 185, 129, 0.1);
-      color: #6ee7b7;
-      box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
-    }
-
-    .sound-icon-mute {
-      display: block;
-      transition: transform 0.2s;
-    }
-    .sound-toggle-btn.is-playing .sound-icon-mute {
-      display: none;
-    }
-
-    /* Animated Equalizer Bars when Playing */
-    .sound-bars {
-      display: none;
-      align-items: flex-end;
-      gap: 2.2px;
-      width: 14px;
-      height: 12px;
-    }
-    .sound-toggle-btn.is-playing .sound-bars {
-      display: inline-flex;
-    }
-    .sound-bars .bar {
-      width: 2.5px;
-      height: 3px;
-      background: #10b981;
-      border-radius: 1px;
-    }
-    .sound-toggle-btn.is-playing .sound-bars .bar-1 {
-      animation: soundBarDance 0.85s ease-in-out infinite alternate;
-    }
-    .sound-toggle-btn.is-playing .sound-bars .bar-2 {
-      animation: soundBarDance 0.65s ease-in-out 0.25s infinite alternate;
-    }
-    .sound-toggle-btn.is-playing .sound-bars .bar-3 {
-      animation: soundBarDance 0.95s ease-in-out 0.15s infinite alternate;
-    }
-
-    @keyframes soundBarDance {
-      0% { height: 3px; }
-      50% { height: 12px; }
-      100% { height: 4px; }
-    }
-
-    /* Mobile Hamburger Menu Toggle Button (hidden on desktop) */
-    .mobile-menu-btn {
-      display: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(14, 20, 32, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-bright);
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      flex-direction: column;
-      gap: 4.5px;
-      padding: 0;
-      transition: all 0.22s ease;
-    }
-    .mobile-menu-btn .menu-line {
-      width: 14px;
-      height: 1.5px;
-      background: #e2e8f0;
-      border-radius: 1px;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-    }
-    .mobile-menu-btn.is-open {
-      border-color: rgba(56, 189, 248, 0.4);
-      background: rgba(20, 30, 48, 0.9);
-    }
-    .mobile-menu-btn.is-open .menu-line:nth-child(1) {
-      transform: translateY(3px) rotate(45deg);
-    }
-    .mobile-menu-btn.is-open .menu-line:nth-child(2) {
-      transform: translateY(-3px) rotate(-45deg);
-    }
-
-    /* Mobile Menu Backdrop */
-    .mobile-menu-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 998;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .mobile-menu-backdrop.is-open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Mobile Menu Drawer */
-    .mobile-menu-drawer {
-      position: fixed;
-      top: 56px;
-      left: 0;
-      right: 0;
-      z-index: 999;
-      background: rgba(6, 10, 18, 0.97);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 1.1rem 1.25rem 1.6rem;
-      transform: translateY(-115%);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
-    }
-    .mobile-menu-drawer.is-open {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .mobile-drawer-status {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.55rem 0.95rem;
-      background: rgba(16, 185, 129, 0.07);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      color: #6ee7b7;
-      margin-bottom: 1.1rem;
-      width: fit-content;
-    }
-    .mobile-nav-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      margin-bottom: 1.2rem;
-    }
-    .mobile-nav-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .mobile-nav-link:active,
-    .mobile-nav-link:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(56, 189, 248, 0.2);
-    }
-    .mobile-nav-link-content {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-    .mobile-nav-num {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--cyan);
-      background: rgba(56, 189, 248, 0.1);
-      padding: 0.15rem 0.45rem;
-      border-radius: 4px;
-    }
-    .mobile-nav-text {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--head);
-      letter-spacing: -0.01em;
-    }
-    .mobile-nav-arrow {
-      color: var(--muted);
-      font-size: 0.85rem;
-      transition: transform 0.2s ease, color 0.2s ease;
-    }
-    .mobile-nav-link:hover .mobile-nav-arrow {
-      transform: translateX(3px);
-      color: var(--cyan);
-    }
-    .mobile-drawer-footer {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    /* Ambient Audio Toast Notification */
-    .audio-toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 999;
-      pointer-events: auto;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .audio-toast.hidden {
-      opacity: 0;
-      transform: translateY(20px) scale(0.95);
-      pointer-events: none;
-    }
-    .audio-toast-inner {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      padding: 0.65rem 1.1rem;
-      border-radius: 999px;
-      background: rgba(8, 12, 20, 0.92);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
-    }
-    .audio-toast-icon { font-size: 1.1rem; }
-    .audio-toast-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.25;
-      font-family: var(--font-mono);
-    }
-    .audio-toast-title {
-      font-size: 0.76rem;
-      color: var(--head);
-      font-weight: 600;
-    }
-    .audio-toast-sub {
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
-    .audio-toast-btn {
-      background: linear-gradient(135deg, #0284c7, #0d9488);
-      border: none;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.35rem 0.8rem;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: transform 0.2s, filter 0.2s;
-    }
-    .audio-toast-btn:hover {
-      filter: brightness(1.15);
-      transform: scale(1.04);
-    }
-    .audio-toast-close {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0 0.25rem;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-    .audio-toast-close:hover {
-      color: #fff;
-    }
-
-    /* ===== HERO SECTION ===== */
-    .hero {
-      position: relative;
-      z-index: 10;
-      min-height: 100vh;
-      max-width: 1560px;
-      margin: 0 auto;
-      padding: 8rem 3rem 6rem;
-      display: grid;
-      grid-template-columns: 0.9fr 1.3fr;
-      align-items: center;
-      gap: 3rem;
-    }
-
-    .hero-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1.6rem;
-      max-width: 540px;
-      z-index: 20;
-    }
-
-    .hero-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.4rem 0.95rem;
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 999px;
-      color: #6ee7b7;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      width: fit-content;
-      backdrop-filter: blur(12px);
-    }
-    .hero-pill span {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #10b981;
-    }
-
-    h1.hero-title {
-      font-size: clamp(3rem, 4.6vw, 4.4rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.035em;
-      color: var(--head);
-    }
-    .gradient-text {
-      background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 70%, #38bdf8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: inline-block;
-    }
-
-    .hero-desc {
-      font-size: 1.1rem;
-      color: var(--text);
-      line-height: 1.8;
-    }
-    .hero-desc b {
-      color: var(--text-bright);
-      font-weight: 600;
-    }
-
-    .hero-cta {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      margin-top: 0.6rem;
-      flex-wrap: wrap;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.9rem 2rem;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      border: none;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #059669, #0284c7);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3);
-      filter: brightness(1.1);
-    }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-bright);
-      border: 1px solid var(--border-subtle);
-      backdrop-filter: blur(14px);
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.18);
-      transform: translateY(-2px);
-      color: #fff;
-    }
-
-    /* 3D LAPTOP STAGE */
-    .laptop-stage {
-      position: relative;
-      width: 100%;
-      height: 840px;
-      min-height: 750px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: visible;
-    }
-
-    #laptop-canvas {
-      width: 100% !important;
-      height: 100% !important;
-      outline: none;
-      cursor: grab;
-      touch-action: pan-y;
-    }
-    #laptop-canvas:active {
-      cursor: grabbing;
-    }
-
-    .drag-instruction {
-      position: absolute;
-      bottom: 5%;
-      padding: 0.4rem 1.1rem;
-      background: rgba(4, 7, 14, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 99px;
-      font-size: 0.76rem;
-      color: #6ee7b7;
-      font-family: var(--font-mono);
-      pointer-events: none;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-      z-index: 20;
-    }
-
-    /* ===== SECTIONS ===== */
-    .section {
-      position: relative;
-      z-index: 10;
-      max-width: 1400px;
-      margin: 9rem auto;
-      padding: 0 3rem;
-    }
-    .section-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.38rem 0.95rem;
-      border-radius: 999px;
-      background: rgba(10, 16, 28, 0.75);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--cyan-bright);
-      letter-spacing: 0.05em;
-      margin-bottom: 1rem;
-      width: fit-content;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .section-badge:hover {
-      border-color: rgba(56, 189, 248, 0.45);
-      background: rgba(14, 22, 38, 0.9);
-      transform: translateY(-1px);
-    }
-    .section-badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
-    }
-    .section-badge-num {
-      color: #94a3b8;
-      font-weight: 700;
-    }
-    .section-title {
-      font-size: clamp(2.2rem, 3.8vw, 3rem);
-      font-weight: 800;
-      color: var(--head);
-      letter-spacing: -0.03em;
-      margin-bottom: 2.8rem;
-    }
-
-    /* ===== FEATURED PROJECT CARD ===== */
-    .featured-hero-card {
-      background: rgba(10, 14, 24, 0.72);
-      border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      padding: 3.5rem;
-      backdrop-filter: blur(25px);
-      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
-      display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 3.5rem;
-      align-items: center;
-      transition: all 0.3s;
-    }
-    .featured-hero-card:hover {
-      border-color: rgba(56, 189, 248, 0.25);
-      transform: translateY(-3px);
-    }
-    .project-badge-row {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      margin-bottom: 1.4rem;
-    }
-    .pill-active {
-      padding: 0.3rem 0.8rem;
-      border-radius: 99px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      color: #6ee7b7;
-      font-weight: 600;
-    }
-    .featured-title {
-      font-size: clamp(1.9rem, 3vw, 2.5rem);
-      font-weight: 800;
-      color: var(--head);
-      line-height: 1.2;
-      margin-bottom: 1.1rem;
-    }
-    .featured-desc {
-      color: var(--text);
-      font-size: 1.05rem;
-      line-height: 1.8;
-      margin-bottom: 2rem;
-    }
-    .tag-cluster {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-      margin-bottom: 2.4rem;
-    }
-    .tag-cluster span {
-      padding: 0.3rem 0.75rem;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      font-size: 0.8rem;
-      font-family: var(--font-mono);
-      color: var(--cyan);
-    }
-
-    .demo-terminal {
-      background: #060912;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
-      font-family: var(--font-mono);
-      font-size: 0.84rem;
-    }
-    .term-bar {
-      background: #0b101c;
-      padding: 0.7rem 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .term-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .term-body {
-      padding: 1.6rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-      line-height: 1.65;
-    }
-    .term-err { color: #f87171; }
-    .term-explain { color: #94a3b8; }
-    .term-fix { color: #4ade80; }
-
-    /* ===== ROADMAP TIMELINE GRID (SECTION 03) ===== */
-    .roadmap-steps-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.6rem;
-    }
-
-    .step-card {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 1.6rem 2rem;
-      backdrop-filter: blur(20px);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-    .step-card:hover {
-      border-color: rgba(56, 189, 248, 0.3);
-      background: var(--surface-hover);
-      transform: translateY(-2px);
-    }
-
-    .step-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.8rem;
-    }
-    .step-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--head);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .step-num {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--cyan);
-      font-weight: 700;
-    }
-    .step-badge {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      padding: 0.2rem 0.65rem;
-      border-radius: 99px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-    .badge-done { background: rgba(16, 185, 129, 0.1); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
-    .badge-prog { background: rgba(56, 189, 248, 0.1); color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.25); }
-    .badge-queue { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.2); }
-
-    .step-desc {
-      color: var(--text);
-      font-size: 0.94rem;
-      line-height: 1.65;
-    }
-
-    .step-card.next-step {
-      border: 1px dashed rgba(56, 189, 248, 0.3);
-      background: rgba(6, 12, 22, 0.5);
-    }
-    .terminal-cursor {
-      display: inline-block;
-      width: 7px;
-      height: 14px;
-      background: var(--cyan);
-      vertical-align: -2px;
-      margin-left: 5px;
-      animation: blinkCursor 1s steps(1) infinite;
-    }
-    @keyframes blinkCursor { 50% { opacity: 0; } }
-
-    /* ===== DEDICATED DEVELOPER TELEMETRY & WORKBENCH (SECTION 04) ===== */
-    .telemetry-subtitle {
-      font-size: 1.05rem;
-      color: var(--text);
-      max-width: 680px;
-      margin-top: -1.8rem;
-      margin-bottom: 2.8rem;
-      line-height: 1.7;
-    }
-
-    .telemetry-terminal-wrap {
-      max-width: 860px;
-      margin: 0 auto 3rem auto;
-      width: 100%;
-    }
-
-    /* Enhanced HUD Terminal */
-    .hud-terminal {
-      background: rgba(8, 12, 20, 0.88);
-      border: 1px solid var(--border-subtle);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(25px);
-      display: flex;
-      flex-direction: column;
-      transition: border-color 0.25s ease, transform 0.25s ease;
-    }
-    .hud-terminal:hover {
-      border-color: rgba(56, 189, 248, 0.3);
-      transform: translateY(-2px);
-    }
-    .hud-header {
-      background: rgba(11, 16, 28, 0.95);
-      padding: 0.85rem 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-    .hud-dots { display: flex; gap: 6px; }
-    .hud-dot { width: 9px; height: 9px; border-radius: 50%; }
-    .hud-title {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-left: 0.8rem;
-    }
-    .hud-body {
-      padding: 1.8rem 2.2rem;
-      font-family: var(--font-mono);
-      font-size: 0.86rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      flex: 1;
-    }
-    .hud-row {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
-      padding-bottom: 0.65rem;
-    }
-    .hud-key { color: var(--cyan); }
-    .hud-val { color: var(--text-bright); text-align: right; }
-
-    .hud-footer-cmd {
-      background: rgba(5, 8, 14, 0.95);
-      border-top: 1px solid var(--border-subtle);
-      padding: 1rem 2.2rem;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-    .hud-prompt { color: #6ee7b7; }
-    .hud-output { color: #94a3b8; font-size: 0.76rem; }
-
-    /* 4-Column Categorized Tech Stack Matrix */
-    .stack-matrix-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.4rem;
-      margin-bottom: 2.2rem;
-    }
-    .stack-cat-card {
-      background: var(--surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 1.6rem;
-      backdrop-filter: blur(20px);
-      transition: all 0.25s ease;
-    }
-    .stack-cat-card:hover {
-      border-color: rgba(56, 189, 248, 0.28);
-      background: var(--surface-hover);
-      transform: translateY(-2px);
-    }
-    .stack-cat-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      color: var(--cyan);
-      font-weight: 700;
-      margin-bottom: 1.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .stack-cat-items {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-    .stack-cat-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.84rem;
-      color: var(--text-bright);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 0.5rem 0.8rem;
-      border-radius: 8px;
-      font-family: var(--font-mono);
-      transition: all 0.2s;
-    }
-    .stack-cat-item:hover {
-      background: rgba(56, 189, 248, 0.06);
-      border-color: rgba(56, 189, 248, 0.2);
-    }
-    .stack-item-tag {
-      font-size: 0.66rem;
-      color: #6ee7b7;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 0.15rem 0.45rem;
-      border-radius: 4px;
-      border: 1px solid rgba(16, 185, 129, 0.25);
-    }
-    .stack-item-tag.cyan {
-      color: var(--cyan-bright);
-      background: rgba(56, 189, 248, 0.1);
-      border-color: rgba(56, 189, 248, 0.25);
-    }
-
-    /* 4-Tile High-Impact Metrics Bar */
-    .telemetry-metrics-bar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.4rem;
-    }
-    .metric-tile {
-      background: rgba(8, 12, 20, 0.75);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 1.4rem 1.6rem;
-      backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      transition: all 0.25s ease;
-    }
-    .metric-tile:hover {
-      border-color: rgba(56, 189, 248, 0.3);
-      transform: translateY(-2px);
-    }
-    .metric-tile-label {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .metric-tile-val {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--head);
-      letter-spacing: -0.02em;
-    }
-    .metric-tile-sub {
-      font-size: 0.8rem;
-      color: var(--text);
-      line-height: 1.4;
-    }
-
-    /* ===== BESPOKE PROFESSIONAL CONTACT SECTION ===== */
-    .contact-layout {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 4rem;
-      background: rgba(10, 14, 24, 0.7);
-      border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      padding: 4rem;
-      backdrop-filter: blur(25px);
-      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
-    }
-
-    .contact-info-col {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 2.2rem;
-    }
-    .contact-lead {
-      color: var(--text);
-      font-size: 1.08rem;
-      line-height: 1.8;
-    }
-    
-    .copy-email-box {
-      background: rgba(14, 19, 32, 0.7);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      cursor: pointer;
-      transition: all 0.25s;
-    }
-    .copy-email-box:hover {
-      border-color: rgba(56, 189, 248, 0.3);
-      background: rgba(18, 26, 44, 0.85);
-      transform: translateY(-2px);
-    }
-    .copy-email-text {
-      font-family: var(--font-mono);
-      color: var(--head);
-      font-size: 0.95rem;
-      font-weight: 500;
-      word-break: break-all;
-    }
-    .copy-action-btn {
-      padding: 0.35rem 0.8rem;
-      border-radius: 6px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      color: var(--cyan);
-      font-family: var(--font-mono);
-      font-size: 0.74rem;
-      font-weight: 600;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .social-direct-grid {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .social-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.7rem 1.25rem;
-      border-radius: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-bright);
-      font-size: 0.88rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.25s;
-    }
-    .social-btn:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-    .social-btn svg { width: 17px; height: 17px; fill: currentColor; }
-
-    .clean-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-    .form-group label {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--muted);
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .form-input, .form-textarea {
-      background: rgba(6, 9, 16, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 0.95rem 1.1rem;
-      color: #fff;
-      font-family: var(--font-main);
-      font-size: 0.94rem;
-      transition: all 0.2s;
-      outline: none;
-    }
-    .form-input:focus, .form-textarea:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
-    }
-    .form-textarea {
-      min-height: 140px;
-      resize: vertical;
-    }
-    .form-status {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      min-height: 1.4rem;
-      margin-top: 0.4rem;
-    }
-    .form-status.success { color: #6ee7b7; }
-    .form-status.error { color: #f87171; }
-
-    /* FOOTER */
-    footer {
-      position: relative;
-      z-index: 10;
-      border-top: 1px solid var(--border-subtle);
-      padding: 3.5rem 2.5rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-      background: rgba(4, 6, 10, 0.92);
-      backdrop-filter: blur(20px);
-    }
-
-    @media (max-width: 900px) {
-      header {
-        padding: 0.65rem 1.15rem;
-      }
-      /* Clean uncluttered mobile header: hide desktop inline links & status badge */
-      .nav-links {
-        display: none !important;
-      }
-      .status-badge {
-        display: none !important;
-      }
-      .brand {
-        font-size: 0.98rem;
-        gap: 0.55rem;
-      }
-      .brand-chip {
-        font-size: 0.72rem;
-        padding: 0.2rem 0.5rem;
-      }
-      .nav-actions {
-        gap: 0.55rem;
-      }
-      .sound-toggle-btn {
-        width: 34px;
-        height: 34px;
-      }
-      .mobile-menu-btn {
-        display: flex;
-        width: 34px;
-        height: 34px;
-      }
-      .audio-toast {
-        bottom: 1.2rem;
-        right: 1.2rem;
-        left: 1.2rem;
-      }
-      .audio-toast-inner {
-        padding: 0.55rem 0.9rem;
-        gap: 0.65rem;
-      }
-      
-      .hero {
-        grid-template-columns: 1fr;
-        padding-top: 5.2rem;
-        padding-bottom: 2.2rem;
-        gap: 1.5rem;
-        text-align: center;
-      }
-      .hero-content {
-        align-items: center;
-        max-width: 100%;
-        gap: 1.15rem;
-      }
-      .hero-pill {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.8rem;
-      }
-      /* Prevent unnatural line breaks on mobile devices */
-      h1.hero-title br {
-        display: none;
-      }
-      h1.hero-title {
-        font-size: clamp(1.9rem, 7vw, 2.45rem);
-        line-height: 1.18;
-        letter-spacing: -0.025em;
-      }
-      .hero-desc {
-        font-size: 0.94rem;
-        line-height: 1.62;
-        max-width: 96%;
-        margin: 0 auto;
-      }
-      .hero-cta {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        max-width: 320px;
-        gap: 0.75rem;
-        margin: 0 auto;
-      }
-      .hero-cta .btn {
-        width: 100%;
-        justify-content: center;
-        padding: 0.85rem 1.4rem;
-      }
-      
-      /* Mobile 3D Laptop Stage: scaled comfortably so it doesn't dominate or block gestures */
-      .laptop-stage {
-        height: 380px;
-        min-height: 330px;
-        margin-top: 0.5rem;
-      }
-      .drag-instruction {
-        bottom: 2%;
-        font-size: 0.68rem;
-        padding: 0.3rem 0.8rem;
-      }
-
-      .section {
-        margin: 4.8rem auto;
-        padding: 0 1.2rem;
-      }
-      .section-title {
-        font-size: 1.85rem;
-      }
-      .featured-hero-card {
-        grid-template-columns: 1fr;
-        padding: 1.6rem;
-        gap: 1.6rem;
-      }
-      .diag-terminal {
-        padding: 1.1rem;
-      }
-      .diag-line {
-        font-size: 0.75rem;
-      }
-      
-      .roadmap-steps-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .step-card {
-        padding: 1.3rem;
-      }
-
-      .telemetry-subtitle {
-        margin-top: -1rem;
-        margin-bottom: 2rem;
-        font-size: 0.92rem;
-      }
-      .telemetry-terminal-wrap {
-        margin-bottom: 2rem;
-      }
-      .hud-body {
-        padding: 1.2rem 1.3rem;
-        gap: 0.85rem;
-        font-size: 0.8rem;
-      }
-      .hud-row {
-        flex-direction: column;
-        gap: 0.2rem;
-        align-items: flex-start;
-      }
-      .hud-val {
-        text-align: left;
-      }
-      .hud-footer-cmd {
-        padding: 0.85rem 1.3rem;
-        font-size: 0.75rem;
-      }
-      .stack-matrix-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .stack-cat-card {
-        padding: 1.3rem;
-      }
-
-      .contact-layout {
-        grid-template-columns: 1fr;
-        padding: 1.6rem;
-        gap: 2rem;
-      }
-      .copy-email-chip {
-        flex-wrap: wrap;
-        width: 100%;
-      }
-    }
-  </style>
 </head>
 <body>
 
-  <!-- Fullscreen Background Waves -->
-  <canvas id="bg-waves-canvas"></canvas>
+  <!-- ===== CINEMATIC BRAND INTRO PRELOADER OVERLAY ===== -->
+  <div id="brandIntroOverlay" class="brand-intro-overlay" role="dialog" aria-label="Brand Introduction">
+    <!-- Font pre-warm element to eliminate runtime font decode hitches -->
+    <span style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;font-family:var(--font-mono);" aria-hidden="true">&gt; sys.boot</span>
+    <div class="brand-intro-glow" id="introGlow"></div>
+
+    <div class="brand-intro-stage" id="introStage">
+      <!-- DUAL-WING DELTA EMBLEM -->
+      <div class="brand-intro-emblem" id="introEmblem">
+        <!-- ROTATING ORBITAL HUD GYRO-RING -->
+        <div class="intro-hud-ring" id="introHudRing">
+          <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="250" cy="250" r="238" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.6" stroke-dasharray="14 10" />
+            <path d="M 250 12 A 238 238 0 0 1 488 250" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+            <path d="M 250 488 A 238 238 0 0 1 12 250" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+            <line x1="250" y1="0" x2="250" y2="20" stroke="#f0f9ff" stroke-width="2.5" />
+            <line x1="250" y1="480" x2="250" y2="500" stroke="#f0f9ff" stroke-width="2.5" />
+            <line x1="0" y1="250" x2="20" y2="250" stroke="#f0f9ff" stroke-width="2.5" />
+            <line x1="480" y1="250" x2="500" y2="250" stroke="#f0f9ff" stroke-width="2.5" />
+            <circle cx="250" cy="250" r="185" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.2" stroke-dasharray="6 6" />
+          </svg>
+        </div>
+
+        <!-- ELECTROMAGNETIC IMPACT SHOCKWAVE -->
+        <div class="intro-shockwave" id="introShockwave"></div>
+
+        <div class="intro-sheen-beam" id="introSheenBeam"></div>
+        <svg viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="introTitaniumLeft" x1="20" y1="20" x2="120" y2="230" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="30%" stop-color="#cbd5e1"/>
+              <stop offset="65%" stop-color="#64748b"/>
+              <stop offset="100%" stop-color="#1e293b"/>
+            </linearGradient>
+            <linearGradient id="introTitaniumRight" x1="230" y1="20" x2="130" y2="230" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="30%" stop-color="#94a3b8"/>
+              <stop offset="70%" stop-color="#475569"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+            <linearGradient id="introCoreGrad" x1="125" y1="70" x2="125" y2="200" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#e2e8f0"/>
+              <stop offset="50%" stop-color="#64748b"/>
+              <stop offset="100%" stop-color="#0f172a"/>
+            </linearGradient>
+            <linearGradient id="introChamferStroke" x1="20" y1="20" x2="230" y2="230" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)"/>
+              <stop offset="45%" stop-color="rgba(56, 189, 248, 0.75)"/>
+              <stop offset="100%" stop-color="rgba(255, 255, 255, 0.15)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Left Wing Blade -->
+          <g class="intro-wing-left">
+            <path d="M 122 18 L 28 212 L 68 212 L 122 84 Z" 
+                  fill="url(#introTitaniumLeft)" 
+                  stroke="url(#introChamferStroke)" 
+                  stroke-width="1.3" 
+                  stroke-linejoin="round"/>
+            <path class="intro-seam-glow" d="M 28 212 L 122 18" 
+                  stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round"/>
+            <path class="intro-seam-core" d="M 28 212 L 122 18" 
+                  stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+
+          <!-- Right Wing Blade -->
+          <g class="intro-wing-right">
+            <path d="M 128 18 L 222 212 L 182 212 L 128 84 Z" 
+                  fill="url(#introTitaniumRight)" 
+                  stroke="url(#introChamferStroke)" 
+                  stroke-width="1.3" 
+                  stroke-linejoin="round"/>
+            <path class="intro-seam-glow" d="M 222 212 L 128 18" 
+                  stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round"/>
+            <path class="intro-seam-core" d="M 222 212 L 128 18" 
+                  stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+
+          <!-- Center Core Arrow Crossbar -->
+          <g class="intro-core-arrow">
+            <polygon points="125,72 82,155 110,155 110,212 140,212 140,155 168,155" 
+                     fill="url(#introCoreGrad)" 
+                     stroke="url(#introChamferStroke)" 
+                     stroke-width="1.3" 
+                     stroke-linejoin="round"/>
+            <line class="intro-seam-glow" x1="82" y1="155" x2="168" y2="155" 
+                  stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+            <line class="intro-seam-core" x1="82" y1="155" x2="168" y2="155" 
+                  stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Wordmark ANMOL -->
+      <div class="brand-intro-wordmark" id="introWordmark">
+        <div class="intro-wordmark-laser" id="introLaser"></div>
+        <span class="intro-letter">A</span>
+        <span class="intro-letter">N</span>
+        <span class="intro-letter">M</span>
+        <span class="intro-letter">O</span>
+        <span class="intro-letter">L</span>
+      </div>
+
+      <!-- Developer Terminal Boot Line (Zero Reflow) -->
+      <div class="intro-boot-line" id="introBootLine">
+        <span style="color:#38bdf8; font-weight:600;">&gt;&nbsp;</span>
+        <span style="color:#cbd5e1; font-weight:500;">sys.boot(&quot;anmol-os&quot;)</span>
+        <span class="cursor-blink"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glassy Celestial Space Orbit Rings Canvas (Originated from Top-Right Corner) -->
+  <canvas id="space-orbit-canvas"></canvas>
+
   <div class="ambient-glow glow-cyan"></div>
   <div class="ambient-glow glow-emerald"></div>
   <div class="vignette-overlay"></div>
 
-  <!-- Hidden Background Ambient Audio (leberch ambient track with cloud fallback) -->
-  <audio id="ambientAudio" loop preload="auto">
+  <!-- Hidden Background Ambient Audio (Deferred network load on user interaction) -->
+  <audio id="ambientAudio" loop preload="none">
+    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
     <source src="ambient.mp3" type="audio/mpeg">
     <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
   </audio>
@@ -1444,11 +181,15 @@
   <header>
     <nav>
       <a href="#" class="brand">
-        <span class="brand-chip">&lt;AK /&gt;</span>
-        <span>ANMOL KUMAR</span>
+        <span class="brand-logo-badge">
+          <img src="assets/images/logo.png" onerror="this.src='logo.png'" class="brand-logo-img" alt="Anmol Kumar">
+        </span>
+        <span class="brand-text-glow">ANMOL KUMAR</span>
       </a>
 
-      <!-- Desktop Floating Nav Capsule -->
+      <span class="nav-divider" aria-hidden="true"></span>
+
+      <!-- Desktop Nav Links -->
       <ul class="nav-links">
         <li><a href="#hero">Overview</a></li>
         <li><a href="#featured">Featured</a></li>
@@ -1457,21 +198,9 @@
         <li><a href="#contact">Contact</a></li>
       </ul>
 
-      <div class="nav-actions">
-        <!-- Minimalist Sound Toggle -->
-        <button id="soundToggleBtn" class="sound-toggle-btn" aria-label="Toggle ambient soundtrack" title="Play ambient soundtrack">
-          <svg class="sound-icon-mute" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-          <span class="sound-bars" aria-hidden="true">
-            <span class="bar bar-1"></span>
-            <span class="bar bar-2"></span>
-            <span class="bar bar-3"></span>
-          </span>
-        </button>
+      <span class="nav-divider" aria-hidden="true"></span>
 
+      <div class="nav-actions">
         <!-- Live Status Pill (Desktop) -->
         <div class="status-badge">
           <span class="pulse-dot"></span>
@@ -1554,8 +283,22 @@
     <!-- 1. HERO SECTION -->
     <section class="hero" id="hero">
       <div class="hero-content">
-        <div class="hero-pill">
-          <span></span> First-Year CSE & Creative Coder
+        <!-- Cyber Acoustic Quantum Core (Audio Controller & Reactor) -->
+        <div class="shiny-orb-widget" id="quantumOrbWidget" role="button" aria-label="Toggle ambient soundtrack" tabindex="0" title="Click to play ambient soundtrack">
+          <div class="orb-canvas-frame" id="orbCanvasFrame">
+            <div class="orb-soundwave-ring ring-1"></div>
+            <div class="orb-soundwave-ring ring-2"></div>
+            <canvas id="hero-orb-canvas" width="84" height="84"></canvas>
+          </div>
+          <div class="orb-audio-tag">
+            <span class="orb-audio-icon">🎧</span>
+            <span class="orb-audio-state" id="orbAudioStateText">SOUND CORE // TAP TO PLAY</span>
+            <span class="orb-audio-bars" id="orbAudioBars">
+              <span class="bar bar-1"></span>
+              <span class="bar bar-2"></span>
+              <span class="bar bar-3"></span>
+            </span>
+          </div>
         </div>
 
         <h1 class="hero-title">
@@ -1732,6 +475,11 @@
               <span class="hud-dot" style="background: #10b981;"></span>
             </div>
             <span class="hud-title">developer_telemetry.sh — zsh (x86_64)</span>
+            <div class="hud-status-chips">
+              <span class="hud-chip green">● LIVE METRICS</span>
+              <span class="hud-chip cyan">RAM 128MB</span>
+              <span class="hud-chip">LATENCY 0.8ms</span>
+            </div>
           </div>
           <div class="hud-body">
             <div class="hud-row">
@@ -1880,6 +628,30 @@
           </div>
         </div>
       </div>
+
+      <!-- 4-Tile High-Impact Systems Metrics Bar -->
+      <div class="telemetry-metrics-bar">
+        <div class="metric-tile">
+          <span class="metric-tile-label">01 // RENDERING</span>
+          <span class="metric-tile-val">60-120 FPS</span>
+          <span class="metric-tile-sub">Sub-millisecond WebGL frame budget</span>
+        </div>
+        <div class="metric-tile">
+          <span class="metric-tile-label">02 // MEMORY</span>
+          <span class="metric-tile-val">Zero Leaks</span>
+          <span class="metric-tile-sub">Direct GPU texture reuse & static buffers</span>
+        </div>
+        <div class="metric-tile">
+          <span class="metric-tile-label">03 // STACK</span>
+          <span class="metric-tile-val">C + Linux</span>
+          <span class="metric-tile-sub">POSIX primitives & manual heap management</span>
+        </div>
+        <div class="metric-tile">
+          <span class="metric-tile-label">04 // FOUNDATION</span>
+          <span class="metric-tile-val">1st Principles</span>
+          <span class="metric-tile-sub">Built with curiosity from bare metal up</span>
+        </div>
+      </div>
     </section>
 
     <!-- 5. BESPOKE CONTACT SECTION (SECTION 05) -->
@@ -1956,766 +728,8 @@
     <p style="margin-top: 0.4rem; font-size: 0.8rem; color: #475569;">High-performance WebGL • Three.js • Clean Architecture</p>
   </footer>
 
-  <!-- ================= THREE.JS & ADVANCED RIG SCRIPT ================= -->
-  <script>
-    /* 1. INTERACTIVE ONE-CLICK EMAIL COPY & CONTACT FORM */
-    (() => {
-      const copyBtn = document.getElementById('copyEmailBtn');
-      const label = document.getElementById('copyBtnLabel');
-      const email = 'anmolkumar2762@gmail.com';
 
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(email).then(() => {
-          label.textContent = 'Copied! ✓';
-          label.style.background = 'rgba(16, 185, 129, 0.2)';
-          label.style.color = '#6ee7b7';
-          setTimeout(() => {
-            label.textContent = 'Copy ⧉';
-            label.style.background = '';
-            label.style.color = '';
-          }, 2500);
-        });
-      });
-
-      const form = document.getElementById('contactForm');
-      const status = document.getElementById('formStatus');
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const n = document.getElementById('name').value.trim();
-        const em = document.getElementById('email').value.trim();
-        const msg = document.getElementById('message').value.trim();
-
-        if (!n || !em || !msg) {
-          status.className = 'form-status error';
-          status.textContent = 'Please fill out all fields.';
-          return;
-        }
-
-        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
-        window.location.href = mailtoLink;
-
-        status.className = 'form-status success';
-        status.textContent = 'Opening your email client... Or copy the email directly above!';
-      });
-    })();
-
-    /* 2. CALM & GENTLE BACKGROUND WAVES (ORIGINAL PARAMETERS RESTORED) */
-    function initBackgroundWaves() {
-      const bgCanvas = document.getElementById('bg-waves-canvas');
-      if (!bgCanvas) return;
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 1000);
-      camera.position.set(0, 36, 75);
-      camera.lookAt(0, -8, -15);
-
-      const renderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-      const WIDTH = 190, HEIGHT = 150, SEGS_X = 95, SEGS_Y = 75;
-      const geometry = new THREE.PlaneGeometry(WIDTH, HEIGHT, SEGS_X, SEGS_Y);
-      geometry.rotateX(-Math.PI / 2);
-
-      const waveMat = new THREE.MeshBasicMaterial({
-        color: 0x047857,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.11
-      });
-
-      const waveMesh = new THREE.Mesh(geometry, waveMat);
-      waveMesh.position.y = -18;
-      waveMesh.position.z = -10;
-      scene.add(waveMesh);
-
-      const crestMat = new THREE.PointsMaterial({
-        color: 0x38bdf8,
-        size: 0.85,
-        transparent: true,
-        opacity: 0.28,
-        blending: THREE.AdditiveBlending
-      });
-      const crestPoints = new THREE.Points(geometry, crestMat);
-      crestPoints.position.copy(waveMesh.position);
-      scene.add(crestPoints);
-
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      let clock = new THREE.Clock();
-      function renderWaves() {
-        requestAnimationFrame(renderWaves);
-        const t = clock.getElapsedTime() * 0.65;
-        const pos = geometry.attributes.position;
-
-        for (let i = 0; i < pos.count; i++) {
-          const u = pos.getX(i);
-          const v = pos.getZ(i);
-
-          const y = Math.sin(u * 0.08 + t) * 4.4 +
-                    Math.cos(v * 0.09 + t * 0.8) * 3.4 +
-                    Math.sin((u + v) * 0.05 + t * 1.3) * 2.2;
-
-          pos.setY(i, y);
-        }
-        pos.needsUpdate = true;
-        renderer.render(scene, camera);
-      }
-      renderWaves();
-    }
-
-    /* ================================================================
-       3. ULTRA-REALISTIC WORKSTATION (ENGRAVED KEYBOARD + DEVFIX CAD/IDE SCREEN)
-       ================================================================ */
-    function initLaptopStage() {
-      const canvas = document.getElementById('laptop-canvas');
-      if (!canvas) return;
-      const container = canvas.parentElement;
-
-      // Defensive sizing fallback for network load and mobile screens
-      let cw = (container && container.clientWidth > 50) ? container.clientWidth : 720;
-      let ch = (container && container.clientHeight > 50) ? container.clientHeight : 780;
-
-      const scene = new THREE.Scene();
-      
-      const isMobile = window.innerWidth <= 860;
-      const initScale = isMobile ? 0.58 : 0.79;
-      const camera = new THREE.PerspectiveCamera(36, cw / ch, 0.1, 100);
-      camera.position.set(0, isMobile ? 1.0 : 1.3, isMobile ? 7.2 : 6.4);
-      camera.lookAt(0, 0, 0);
-
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(cw, ch);
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.3;
-
-      const laptop = new THREE.Group();
-      laptop.scale.set(initScale, initScale, initScale);
-      scene.add(laptop);
-
-      // --- MATERIALS ---
-      const aluminumMaterial = new THREE.MeshStandardMaterial({
-        color: 0x181c25,
-        metalness: 0.88,
-        roughness: 0.28
-      });
-      const edgeMaterial = new THREE.MeshStandardMaterial({
-        color: 0x2d3748,
-        metalness: 0.9,
-        roughness: 0.15
-      });
-      const keyboardTrayMaterial = new THREE.MeshStandardMaterial({
-        color: 0x07090f,
-        metalness: 0.7,
-        roughness: 0.6
-      });
-
-      // --- A. LAPTOP BASE ---
-      const baseW = 3.2, baseH = 0.075, baseD = 2.15;
-      const baseMesh = new THREE.Mesh(new THREE.BoxGeometry(baseW, baseH, baseD), aluminumMaterial);
-      laptop.add(baseMesh);
-
-      const wellMesh = new THREE.Mesh(new THREE.BoxGeometry(2.7, 0.015, 1.15), keyboardTrayMaterial);
-      wellMesh.position.set(0, baseH / 2 + 0.005, -0.22);
-      laptop.add(wellMesh);
-
-      // --- B. ENGRAVED CHICLET KEYBOARD GENERATION ---
-      // We render crisp laser-etched font legends onto keycaps
-      const keyGroup = new THREE.Group();
-      keyGroup.position.set(0, baseH / 2 + 0.01, -0.22);
-      laptop.add(keyGroup);
-
-      // Standard keyboard layout matching photo
-      const layoutRows = [
-        ["Esc","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","Del"],
-        ["~","1","2","3","4","5","6","7","8","9","0","-","=","⌫"],
-        ["Tab","Q","W","E","R","T","Y","U","I","O","P","[","]","\\"],
-        ["Caps","A","S","D","F","G","H","J","K","L",";","'","Enter"],
-        ["Shift","Z","X","C","V","B","N","M",",",".","/","Shift"],
-        ["Ctrl","Fn","Win","Alt","SPACE","Alt","Ctrl","←","↑","↓","→"]
-      ];
-
-      // Generate a master texture canvas for engraved keys
-      const kbCanvas = document.createElement('canvas');
-      kbCanvas.width = 2048;
-      kbCanvas.height = 1024;
-      const kbCtx = kbCanvas.getContext('2d');
-
-      // Keycap material using high-res engraved canvas texture (WebGL 1 & 2 safe)
-      const keycapTexture = new THREE.CanvasTexture(kbCanvas);
-      keycapTexture.generateMipmaps = false;
-      keycapTexture.minFilter = THREE.LinearFilter;
-      keycapTexture.magFilter = THREE.LinearFilter;
-      const keycapMaterial = new THREE.MeshStandardMaterial({
-        map: keycapTexture,
-        metalness: 0.6,
-        roughness: 0.35
-      });
-
-      function drawEngravedKeyboard() {
-        kbCtx.fillStyle = '#0a0d14'; // Dark chiclet base
-        kbCtx.fillRect(0, 0, kbCanvas.width, kbCanvas.height);
-
-        // Draw individual beveled chiclet keys with laser-etched letters
-        const rowHeight = kbCanvas.height / 6;
-        for (let r = 0; r < layoutRows.length; r++) {
-          const row = layoutRows[r];
-          const colWidth = kbCanvas.width / row.length;
-
-          for (let c = 0; c < row.length; c++) {
-            const label = row[c];
-            let x = c * colWidth + 6;
-            let y = r * rowHeight + 6;
-            let w = colWidth - 12;
-            let h = rowHeight - 12;
-
-            // Spacebar elongation
-            if (label === "SPACE") {
-              w = colWidth * 4 - 12;
-            }
-
-            // Keycap bevel shape
-            kbCtx.fillStyle = '#121622';
-            kbCtx.beginPath();
-            kbCtx.roundRect ? kbCtx.roundRect(x, y, w, h, 8) : kbCtx.rect(x, y, w, h);
-            kbCtx.fill();
-
-            // Subtle key rim stroke
-            kbCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-            kbCtx.lineWidth = 2;
-            kbCtx.stroke();
-
-            // Laser-Engraved crisp white/cyan symbol
-            kbCtx.fillStyle = label === "SPACE" ? 'transparent' : '#e2e8f0';
-            kbCtx.font = 'bold 24px monospace';
-            kbCtx.textAlign = 'center';
-            kbCtx.textBaseline = 'middle';
-            if (label !== "SPACE") {
-              kbCtx.fillText(label, x + w / 2, y + h / 2);
-            }
-          }
-        }
-        keycapTexture.needsUpdate = true;
-      }
-      drawEngravedKeyboard();
-
-      // Keyboard Mesh Plane on top of well
-      const keyboardPlaneGeo = new THREE.PlaneGeometry(2.68, 1.12);
-      const keyboardPlaneMesh = new THREE.Mesh(keyboardPlaneGeo, keycapMaterial);
-      keyboardPlaneMesh.rotation.x = -Math.PI / 2;
-      keyboardPlaneMesh.position.set(0, 0.005, 0);
-      keyGroup.add(keyboardPlaneMesh);
-
-      // Speaker Grill Strips
-      const speakerMat = new THREE.MeshBasicMaterial({ color: 0x090c14 });
-      const leftSpeaker = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.005, 1.1), speakerMat);
-      leftSpeaker.position.set(-1.43, baseH / 2 + 0.005, -0.22);
-      laptop.add(leftSpeaker);
-
-      const rightSpeaker = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.005, 1.1), speakerMat);
-      rightSpeaker.position.set(1.43, baseH / 2 + 0.005, -0.22);
-      laptop.add(rightSpeaker);
-
-      // Trackpad
-      const trackpad = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.01, 0.62), new THREE.MeshStandardMaterial({
-        color: 0x121724, metalness: 0.6, roughness: 0.25
-      }));
-      trackpad.position.set(0, baseH / 2 + 0.005, 0.62);
-      laptop.add(trackpad);
-
-      // HINGE
-      const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 2.9, 32), edgeMaterial);
-      hinge.rotation.z = Math.PI / 2;
-      hinge.position.set(0, baseH / 2 + 0.02, -baseD / 2 + 0.04);
-      laptop.add(hinge);
-
-      // LID
-      const lidGroup = new THREE.Group();
-      lidGroup.position.set(0, baseH / 2 + 0.02, -baseD / 2 + 0.04);
-      laptop.add(lidGroup);
-
-      const lidW = baseW, lidH = 2.1, lidThick = 0.045;
-      const lidBack = new THREE.Mesh(new THREE.BoxGeometry(lidW, lidH, lidThick), aluminumMaterial);
-      lidBack.position.set(0, lidH / 2, 0);
-      lidGroup.add(lidBack);
-
-      // Ultra-thin minimal bezel frame
-      const bezelFrame = new THREE.Mesh(
-        new THREE.PlaneGeometry(lidW - 0.04, lidH - 0.04),
-        new THREE.MeshBasicMaterial({ color: 0x05070a })
-      );
-      bezelFrame.position.set(0, lidH / 2, 0.023);
-      lidGroup.add(bezelFrame);
-
-      // --- C. ULTRA-SHARP RETINA DARK CODE EDITOR SCREEN ---
-      // 2560x1632 resolution + 16x anisotropic filtering + bold typography = 100% crisp & zero blur
-      const screenW = lidW - 0.16, screenH = lidH - 0.16;
-      const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 2560;
-      screenCanvas.height = 1632;
-      const sCtx = screenCanvas.getContext('2d');
-
-      const screenTexture = new THREE.CanvasTexture(screenCanvas);
-      screenTexture.generateMipmaps = false;
-      screenTexture.minFilter = THREE.LinearFilter;
-      screenTexture.magFilter = THREE.LinearFilter;
-
-      const screenMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(screenW, screenH),
-        new THREE.MeshBasicMaterial({
-          map: screenTexture,
-          toneMapped: false
-        })
-      );
-      screenMesh.position.set(0, lidH / 2, 0.025);
-      lidGroup.add(screenMesh);
-      lidGroup.rotation.x = -Math.PI * 0.14;
-
-      // High-contrast, punchy C systems code tokens (12 clear, impactful lines)
-      const editorLines = [
-        { num: 1,  tokens: [{ text: "// DevFix Core Engine • Memory Safety", color: "#64748b" }] },
-        { num: 2,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<stdio.h>", color: "#2dd4bf" }] },
-        { num: 3,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<devfix/core.h>", color: "#2dd4bf" }] },
-        { num: 4,  tokens: [] },
-        { num: 5,  tokens: [{ text: "int ", color: "#2dd4bf" }, { text: "main", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "void", color: "#2dd4bf" }, { text: ") {", color: "#94a3b8" }] },
-        { num: 6,  tokens: [{ text: "    DevNode ", color: "#2dd4bf" }, { text: "*node", color: "#ffffff" }, { text: " = ", color: "#38bdf8" }, { text: "dev_init", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"devfix-core\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
-        { num: 7,  tokens: [{ text: "    if ", color: "#38bdf8" }, { text: "(", color: "#94a3b8" }, { text: "node->is_active", color: "#ffffff" }, { text: ") {", color: "#94a3b8" }] },
-        { num: 8,  tokens: [{ text: "        printf", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"Status: 100% OK • 60 FPS\\n\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
-        { num: 9,  tokens: [{ text: "        dev_launch_pipeline", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "node", color: "#ffffff" }, { text: ");", color: "#94a3b8" }] },
-        { num: 10, tokens: [{ text: "    }", color: "#94a3b8" }] },
-        { num: 11, tokens: [{ text: "    return ", color: "#38bdf8" }, { text: "0", color: "#7dd3fc" }, { text: ";", color: "#94a3b8" }], hasCursor: true },
-        { num: 12, tokens: [{ text: "}", color: "#94a3b8" }] }
-      ];
-
-      function renderCodeEditorScreen(cursorVisible) {
-        const W = screenCanvas.width, H = screenCanvas.height;
-
-        // 1. Pure near-black editor base
-        sCtx.fillStyle = '#050811';
-        sCtx.fillRect(0, 0, W, H);
-
-        // 2. Window Header / Tab Bar (Height: 96px)
-        const tabH = 96;
-        sCtx.fillStyle = '#080d1a';
-        sCtx.fillRect(0, 0, W, tabH);
-        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-        sCtx.lineWidth = 2;
-        sCtx.beginPath();
-        sCtx.moveTo(0, tabH);
-        sCtx.lineTo(W, tabH);
-        sCtx.stroke();
-
-        // Window controls (mac-style traffic lights)
-        const dots = ['#ef4444', '#f59e0b', '#10b981'];
-        for (let d = 0; d < 3; d++) {
-          sCtx.beginPath();
-          sCtx.arc(50 + d * 36, tabH / 2, 10, 0, Math.PI * 2);
-          sCtx.fillStyle = dots[d];
-          sCtx.fill();
-        }
-
-        // Active Tab: devfix_core.c
-        const tabX = 185, tabW = 340;
-        sCtx.fillStyle = '#0d1526';
-        sCtx.fillRect(tabX, 0, tabW, tabH);
-        // Bright cyan active indicator line
-        sCtx.fillStyle = '#38bdf8';
-        sCtx.fillRect(tabX, 0, tabW, 5);
-
-        // Tab icon & filename
-        sCtx.font = 'bold 26px "JetBrains Mono", monospace';
-        sCtx.fillStyle = '#38bdf8';
-        sCtx.fillText('C', tabX + 32, 58);
-        sCtx.font = 'bold 27px "JetBrains Mono", monospace';
-        sCtx.fillStyle = '#ffffff';
-        sCtx.fillText('devfix_core.c', tabX + 70, 58);
-        sCtx.fillStyle = '#64748b';
-        sCtx.fillText('×', tabX + tabW - 40, 56);
-
-        // Inactive Tab
-        sCtx.fillStyle = '#475569';
-        sCtx.fillText('engine.h', tabX + tabW + 40, 58);
-
-        // Breadcrumb right
-        sCtx.fillStyle = '#475569';
-        sCtx.font = 'bold 24px "JetBrains Mono", monospace';
-        sCtx.fillText('src > core > devfix_core.c', W - 520, 58);
-
-        // Git indicator
-        sCtx.fillStyle = '#10b981';
-        sCtx.fillText('● main', W - 150, 58);
-
-        // 3. Line numbers gutter (Width: 140px)
-        const gutterW = 140;
-        sCtx.fillStyle = '#060a14';
-        sCtx.fillRect(0, tabH, gutterW, H - tabH - 72);
-        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-        sCtx.beginPath();
-        sCtx.moveTo(gutterW, tabH);
-        sCtx.lineTo(gutterW, H - 72);
-        sCtx.stroke();
-
-        // 4. Render Code Lines (Bold, large 38px font)
-        const startY = tabH + 75;
-        const lineSpacing = 88;
-        const codeStartX = gutterW + 36;
-
-        let cursorX = 0, cursorY = 0;
-
-        for (let i = 0; i < editorLines.length; i++) {
-          const line = editorLines[i];
-          const y = startY + i * lineSpacing;
-
-          // Active line subtle highlight
-          if (line.hasCursor) {
-            sCtx.fillStyle = 'rgba(56, 189, 248, 0.09)';
-            sCtx.fillRect(gutterW, y - 52, W - gutterW, lineSpacing);
-          }
-
-          // Line number in gutter
-          const numStr = (line.num < 10 ? '0' : '') + line.num;
-          sCtx.font = 'bold 30px "JetBrains Mono", monospace';
-          sCtx.fillStyle = line.hasCursor ? '#38bdf8' : '#334155';
-          sCtx.fillText(numStr, 48, y);
-
-          // Tokens rendering with bold crisp typography
-          sCtx.font = 'bold 36px "JetBrains Mono", "Consolas", monospace';
-          let currentX = codeStartX;
-          for (let t = 0; t < line.tokens.length; t++) {
-            const token = line.tokens[t];
-            sCtx.fillStyle = token.color;
-            sCtx.fillText(token.text, currentX, y);
-            currentX += sCtx.measureText(token.text).width;
-          }
-
-          if (line.hasCursor) {
-            cursorX = currentX + 6;
-            cursorY = y - 44;
-          }
-        }
-
-        // 5. Subtle Blinking Cursor
-        if (cursorVisible && cursorX > 0) {
-          sCtx.save();
-          sCtx.fillStyle = '#38bdf8';
-          sCtx.shadowColor = 'rgba(56, 189, 248, 0.85)';
-          sCtx.shadowBlur = 14;
-          sCtx.fillRect(cursorX, cursorY, 18, 50);
-          sCtx.restore();
-        }
-
-        // 6. Bottom Status Bar (Height: 72px)
-        const barY = H - 72;
-        sCtx.fillStyle = '#080d1a';
-        sCtx.fillRect(0, barY, W, 72);
-        sCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-        sCtx.beginPath();
-        sCtx.moveTo(0, barY);
-        sCtx.lineTo(W, barY);
-        sCtx.stroke();
-
-        // Normal mode pill
-        sCtx.fillStyle = 'rgba(16, 185, 129, 0.18)';
-        sCtx.fillRect(32, barY + 14, 130, 44);
-        sCtx.fillStyle = '#10b981';
-        sCtx.font = 'bold 22px "JetBrains Mono", monospace';
-        sCtx.fillText('NORMAL', 52, barY + 44);
-
-        sCtx.fillStyle = '#cbd5e1';
-        sCtx.font = 'bold 24px "JetBrains Mono", monospace';
-        sCtx.fillText('devfix_core.c', 190, barY + 45);
-        sCtx.fillText('UTF-8', 460, barY + 45);
-        sCtx.fillText('C (Clang 17)', 600, barY + 45);
-
-        sCtx.fillStyle = '#64748b';
-        sCtx.fillText('Ln 11, Col 15', W - 420, barY + 45);
-        sCtx.fillText('Spaces: 4', W - 240, barY + 45);
-        sCtx.fillStyle = '#10b981';
-        sCtx.fillText('● 0 err', W - 90, barY + 45);
-      }
-
-      // Initial render so display is razor-sharp immediately
-      renderCodeEditorScreen(true);
-      screenTexture.needsUpdate = true;
-
-      // LIGHTS & SHADOW
-      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-      const keyLight = new THREE.DirectionalLight(0xdbeafe, 1.8);
-      keyLight.position.set(5, 6, 5);
-      scene.add(keyLight);
-      const rimLight = new THREE.DirectionalLight(0x06b6d4, 2.0);
-      rimLight.position.set(-5, 4, -3);
-      scene.add(rimLight);
-
-      // Gentle Screen Glow Light casting soft teal/cyan radiance onto keyboard
-      const screenGlowLight = new THREE.PointLight(0x2dd4bf, 1.6, 4.2);
-      screenGlowLight.position.set(0, baseH / 2 + 0.6, -0.2);
-      laptop.add(screenGlowLight);
-
-      const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.9), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5 }));
-      shadow.rotation.x = -Math.PI / 2;
-      shadow.position.y = -baseH / 2 - 0.01;
-      laptop.add(shadow);
-
-      laptop.rotation.x = 0.35;
-      laptop.rotation.y = -0.52;
-
-      let isDragging = false, prevMouse = { x: 0, y: 0 }, mouseNorm = { x: 0, y: 0 }, targetRot = { x: 0.35, y: -0.52 };
-      let isTouch = false, touchStart = { x: 0, y: 0 }, touchLock3D = false;
-
-      canvas.addEventListener('pointerdown', (e) => {
-        isTouch = (e.pointerType === 'touch');
-        isDragging = true;
-        touchLock3D = false;
-        touchStart = { x: e.clientX, y: e.clientY };
-        prevMouse = { x: e.clientX, y: e.clientY };
-      });
-
-      window.addEventListener('pointermove', (e) => {
-        if (!isTouch) {
-          mouseNorm.x = (e.clientX / window.innerWidth) * 2 - 1;
-          mouseNorm.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        }
-        if (isDragging) {
-          const dx = e.clientX - prevMouse.x;
-          const dy = e.clientY - prevMouse.y;
-
-          if (isTouch) {
-            // Determine whether user wants to scroll page or rotate 3D laptop
-            const totalDx = Math.abs(e.clientX - touchStart.x);
-            const totalDy = Math.abs(e.clientY - touchStart.y);
-
-            // If gesture is mainly vertical, release 3D drag so page scrolls smoothly!
-            if (!touchLock3D && totalDy > totalDx && totalDy > 7) {
-              isDragging = false;
-              return;
-            }
-            if (totalDx > 9) {
-              touchLock3D = true; // Lock into horizontal 3D rotation
-            }
-            targetRot.y += dx * 0.009;
-          } else {
-            targetRot.y += dx * 0.007;
-            targetRot.x += dy * 0.007;
-          }
-          prevMouse = { x: e.clientX, y: e.clientY };
-        }
-      });
-
-      window.addEventListener('pointerup', () => { isDragging = false; touchLock3D = false; });
-      window.addEventListener('pointercancel', () => { isDragging = false; touchLock3D = false; });
-
-      function handleResize() {
-        if (!container || !camera || !renderer) return;
-        const w = container.clientWidth;
-        const h = container.clientHeight;
-        if (w > 50 && h > 50) {
-          camera.aspect = w / h;
-          const isMobile = window.innerWidth <= 860;
-          const scale = isMobile ? 0.58 : 0.79;
-          laptop.scale.set(scale, scale, scale);
-          if (isMobile) {
-            camera.position.set(0, 1.0, 7.2);
-          } else {
-            camera.position.set(0, 1.3, 6.4);
-          }
-          camera.updateProjectionMatrix();
-          renderer.setSize(w, h);
-        }
-      }
-      window.addEventListener('resize', handleResize);
-      setTimeout(handleResize, 150);
-      setTimeout(handleResize, 600);
-      setTimeout(handleResize, 1500);
-
-      // Mobile-optimized animation loop: cursor blinks every 520ms without 60fps texture upload churn
-      let clock2 = new THREE.Clock();
-      let lastCursorBlink = 0;
-      let cursorVisibleState = true;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        const elapsed = clock2.getElapsedTime();
-
-        // Subtle, lightweight cursor blink (updates texture only ~1.9 times/sec)
-        if (elapsed - lastCursorBlink > 0.52) {
-          lastCursorBlink = elapsed;
-          cursorVisibleState = !cursorVisibleState;
-          renderCodeEditorScreen(cursorVisibleState);
-          screenTexture.needsUpdate = true;
-        }
-
-        if (!isDragging) {
-          laptop.rotation.y += (targetRot.y + mouseNorm.x * 0.28 - laptop.rotation.y) * 0.05;
-          laptop.rotation.x += (targetRot.x - mouseNorm.y * 0.28 - laptop.rotation.x) * 0.05;
-        } else {
-          laptop.rotation.y += (targetRot.y - laptop.rotation.y) * 0.1;
-          laptop.rotation.x += (targetRot.x - laptop.rotation.x) * 0.1;
-        }
-        laptop.position.y = Math.sin(elapsed * 1.5) * 0.08;
-        renderer.render(scene, camera);
-      }
-      animate();
-    }
-
-    /* 4. MASTER PRODUCTION BOOTSTRAPPER (WITH AUTO-RETRY) */
-    function boot3D() {
-      if (typeof THREE === 'undefined') {
-        setTimeout(boot3D, 150);
-        return;
-      }
-      try { initBackgroundWaves(); } catch (err) { console.warn("Waves error:", err); }
-      try { initLaptopStage(); } catch (err) { console.warn("Laptop error:", err); }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', boot3D);
-    } else {
-      boot3D();
-    }
-
-    /* ================================================================
-       5. SEAMLESS AMBIENT SOUND CONTROLLER (LEBERCH AMBIENT TRACK)
-       ================================================================ */
-    (() => {
-      const audio = document.getElementById('ambientAudio');
-      const toggleBtn = document.getElementById('soundToggleBtn');
-      const toast = document.getElementById('audioToast');
-      const toastPlayBtn = document.getElementById('audioToastPlayBtn');
-      const toastDismissBtn = document.getElementById('audioToastDismissBtn');
-
-      if (!audio || !toggleBtn) return;
-
-      let isPlaying = false;
-      const TARGET_VOL = 0.22; // Comfortable, non-intrusive 22% background volume
-      audio.volume = 0; // Starts at 0 for silky smooth fade-in
-
-      function fadeAudio(targetVolume, durationMs, onDone) {
-        const startVol = audio.volume;
-        const diff = targetVolume - startVol;
-        const steps = 25;
-        const stepTime = durationMs / steps;
-        let currentStep = 0;
-
-        const timer = setInterval(() => {
-          currentStep++;
-          audio.volume = Math.max(0, Math.min(1, startVol + diff * (currentStep / steps)));
-          if (currentStep >= steps) {
-            clearInterval(timer);
-            audio.volume = targetVolume;
-            if (onDone) onDone();
-          }
-        }, stepTime);
-      }
-
-      function startPlayback() {
-        audio.play().then(() => {
-          isPlaying = true;
-          toggleBtn.classList.add('is-playing');
-          toggleBtn.setAttribute('title', 'Pause ambient soundtrack');
-          toggleBtn.setAttribute('aria-label', 'Pause ambient soundtrack');
-          fadeAudio(TARGET_VOL, 1200);
-          if (toast) toast.classList.add('hidden');
-        }).catch((err) => {
-          console.log("Audio awaiting user interaction:", err.message);
-        });
-      }
-
-      function pausePlayback() {
-        fadeAudio(0, 600, () => {
-          audio.pause();
-          isPlaying = false;
-          toggleBtn.classList.remove('is-playing');
-          toggleBtn.setAttribute('title', 'Play ambient soundtrack');
-          toggleBtn.setAttribute('aria-label', 'Play ambient soundtrack');
-        });
-      }
-
-      function togglePlayback() {
-        if (isPlaying) {
-          pausePlayback();
-        } else {
-          startPlayback();
-        }
-      }
-
-      toggleBtn.addEventListener('click', togglePlayback);
-
-      if (toastPlayBtn) {
-        toastPlayBtn.addEventListener('click', startPlayback);
-      }
-
-      if (toastDismissBtn) {
-        toastDismissBtn.addEventListener('click', () => {
-          if (toast) toast.classList.add('hidden');
-        });
-      }
-
-      // Gracefully hide toast after 14 seconds if untouched
-      setTimeout(() => {
-        if (!isPlaying && toast) {
-          toast.classList.add('hidden');
-        }
-      }, 14000);
-    })();
-
-    /* ================================================================
-       6. MOBILE NAVIGATION DRAWER CONTROLLER
-       ================================================================ */
-    (() => {
-      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-      const mobileDrawer = document.getElementById('mobileMenuDrawer');
-      const mobileBackdrop = document.getElementById('mobileMenuBackdrop');
-      const mobileLinks = document.querySelectorAll('.mobile-nav-link');
-
-      if (!mobileMenuBtn || !mobileDrawer) return;
-
-      function openDrawer() {
-        mobileMenuBtn.classList.add('is-open');
-        mobileMenuBtn.setAttribute('aria-expanded', 'true');
-        mobileDrawer.classList.add('is-open');
-        if (mobileBackdrop) mobileBackdrop.classList.add('is-open');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling while open
-      }
-
-      function closeDrawer() {
-        mobileMenuBtn.classList.remove('is-open');
-        mobileMenuBtn.setAttribute('aria-expanded', 'false');
-        mobileDrawer.classList.remove('is-open');
-        if (mobileBackdrop) mobileBackdrop.classList.remove('is-open');
-        document.body.style.overflow = '';
-      }
-
-      mobileMenuBtn.addEventListener('click', () => {
-        if (mobileDrawer.classList.contains('is-open')) {
-          closeDrawer();
-        } else {
-          openDrawer();
-        }
-      });
-
-      if (mobileBackdrop) {
-        mobileBackdrop.addEventListener('click', closeDrawer);
-      }
-
-      mobileLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-          closeDrawer();
-        });
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && mobileDrawer.classList.contains('is-open')) {
-          closeDrawer();
-        }
-      });
-    })();
-  </script>
+  <!-- ================= MASTER JAVASCRIPT ================= -->
+  <script src="script.js"></script>
 </body>
 </html>
