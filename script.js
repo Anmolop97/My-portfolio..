@@ -1,4 +1,4 @@
-﻿
+
 
 /* ==================== space-rings.js ==================== */
 /* ================================================================
@@ -1872,119 +1872,163 @@
 
 /* ==================== audio.js ==================== */
 /* ================================================================
-       5. SEAMLESS AMBIENT SOUND CONTROLLER (DRIVEN BY QUANTUM ORB CORE)
-       ================================================================ */
-    (() => {
-      const audio = document.getElementById('ambientAudio');
-      const orbWidget = document.getElementById('quantumOrbWidget');
-      const orbStateText = document.getElementById('orbAudioStateText');
-      const toast = document.getElementById('audioToast');
-      const toastPlayBtn = document.getElementById('audioToastPlayBtn');
-      const toastDismissBtn = document.getElementById('audioToastDismissBtn');
+   5. SEAMLESS AMBIENT SOUND CONTROLLER (DRIVEN BY QUANTUM ORB CORE)
+   ================================================================ */
+(() => {
+  const audio = document.getElementById('ambientAudio');
+  const orbWidget = document.getElementById('quantumOrbWidget');
+  const orbStateText = document.getElementById('orbAudioStateText');
+  const toast = document.getElementById('audioToast');
+  const toastPlayBtn = document.getElementById('audioToastPlayBtn');
+  const toastDismissBtn = document.getElementById('audioToastDismissBtn');
 
-      if (!audio) return;
+  if (!audio) return;
 
-      let isPlaying = false;
-      const TARGET_VOL = 0.22; // Comfortable, non-intrusive 22% background volume
-      audio.volume = 0; // Starts at 0 for silky smooth fade-in
+  // Pre-prime audio buffer in background for zero-latency start
+  try { audio.load(); } catch (_) {}
 
-      function fadeAudio(targetVolume, durationMs, onDone) {
-        const startVol = audio.volume;
-        const diff = targetVolume - startVol;
-        const steps = 25;
-        const stepTime = durationMs / steps;
-        let currentStep = 0;
+  let isPlaying = false;
+  let isActivating = false;
+  let fadeTimer = null;
+  const TARGET_VOL = 0.22; // Comfortable, non-intrusive 22% background volume
+  audio.volume = 0; // Starts at 0 for silky smooth fade-in
 
-        const timer = setInterval(() => {
-          currentStep++;
-          audio.volume = Math.max(0, Math.min(1, startVol + diff * (currentStep / steps)));
-          if (currentStep >= steps) {
-            clearInterval(timer);
-            audio.volume = targetVolume;
-            if (onDone) onDone();
-          }
-        }, stepTime);
+  function triggerWidgetClickFx() {
+    if (!orbWidget) return;
+    orbWidget.classList.remove('is-clicked', 'ripple-active');
+    void orbWidget.offsetWidth; // Force CSS reflow to replay spring & shockwave
+    orbWidget.classList.add('is-clicked', 'ripple-active');
+    setTimeout(() => {
+      if (orbWidget) orbWidget.classList.remove('ripple-active');
+    }, 650);
+  }
+
+  function fadeAudio(targetVolume, durationMs, onDone) {
+    if (fadeTimer) clearInterval(fadeTimer);
+    const startVol = audio.volume;
+    const diff = targetVolume - startVol;
+    const steps = 25;
+    const stepTime = durationMs / steps;
+    let currentStep = 0;
+
+    fadeTimer = setInterval(() => {
+      currentStep++;
+      audio.volume = Math.max(0, Math.min(1, startVol + diff * (currentStep / steps)));
+      if (currentStep >= steps) {
+        clearInterval(fadeTimer);
+        fadeTimer = null;
+        audio.volume = targetVolume;
+        if (onDone) onDone();
       }
+    }, stepTime);
+  }
 
-      function updateUI(playing) {
-        if (orbWidget) {
-          if (playing) {
-            orbWidget.classList.add('is-audio-playing');
-            orbWidget.setAttribute('title', 'Click to pause ambient soundtrack');
-            if (orbStateText) orbStateText.textContent = 'AUDIO ACTIVE // TAP TO PAUSE';
-          } else {
-            orbWidget.classList.remove('is-audio-playing');
-            orbWidget.setAttribute('title', 'Click to play ambient soundtrack');
-            if (orbStateText) orbStateText.textContent = 'SOUND CORE // TAP TO PLAY';
-          }
-        }
-        if (typeof window.__setOrbAudioPlaying === 'function') {
-          window.__setOrbAudioPlaying(playing);
-        }
+  function updateUI(playing) {
+    if (orbWidget) {
+      orbWidget.classList.remove('is-activating');
+      if (playing) {
+        orbWidget.classList.add('is-audio-playing');
+        orbWidget.setAttribute('title', 'Click to pause ambient soundtrack');
+        if (orbStateText) orbStateText.textContent = 'AUDIO ACTIVE // TAP TO PAUSE';
+      } else {
+        orbWidget.classList.remove('is-audio-playing');
+        orbWidget.setAttribute('title', 'Click to play ambient soundtrack');
+        if (orbStateText) orbStateText.textContent = 'SOUND CORE // TAP TO PLAY';
       }
+    }
+    if (typeof window.__setOrbAudioPlaying === 'function') {
+      window.__setOrbAudioPlaying(playing);
+    }
+  }
 
-      function startPlayback() {
-        audio.play().then(() => {
-          isPlaying = true;
-          updateUI(true);
-          fadeAudio(TARGET_VOL, 1200);
-          if (toast) toast.classList.add('hidden');
-        }).catch((err) => {
-          console.log("Audio awaiting user interaction:", err.message);
-        });
+  function startPlayback() {
+    if (isPlaying) return;
+    isActivating = true;
+
+    // Instant 0ms visual activation feedback
+    if (orbWidget) {
+      orbWidget.classList.add('is-activating');
+      if (orbStateText) orbStateText.textContent = 'INITIALIZING CORE...';
+    }
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isPlaying = true;
+        isActivating = false;
+        updateUI(true);
+        fadeAudio(TARGET_VOL, 800);
+        if (toast) toast.classList.add('hidden');
+      }).catch((err) => {
+        isActivating = false;
+        if (orbWidget) orbWidget.classList.remove('is-activating');
+        console.log("Audio awaiting user interaction / deferred:", err.message);
+      });
+    }
+  }
+
+  function pausePlayback() {
+    if (!isPlaying) return;
+    if (orbWidget) {
+      if (orbStateText) orbStateText.textContent = 'PAUSING CORE...';
+    }
+    fadeAudio(0, 350, () => {
+      audio.pause();
+      isPlaying = false;
+      updateUI(false);
+    });
+  }
+
+  function togglePlayback() {
+    // 1. Instant tactile shockwave & spring animation
+    triggerWidgetClickFx();
+
+    // 2. Quantum flash & core acceleration
+    if (typeof window.__triggerOrbQuantumFlash === 'function') {
+      window.__triggerOrbQuantumFlash();
+    }
+
+    // 3. Toggle audio state
+    if (isPlaying) {
+      pausePlayback();
+    } else {
+      startPlayback();
+    }
+  }
+
+  if (orbWidget) {
+    orbWidget.addEventListener('click', togglePlayback);
+    orbWidget.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePlayback();
       }
+    });
+  }
 
-      function pausePlayback() {
-        fadeAudio(0, 600, () => {
-          audio.pause();
-          isPlaying = false;
-          updateUI(false);
-        });
+  if (toastPlayBtn) {
+    toastPlayBtn.addEventListener('click', () => {
+      triggerWidgetClickFx();
+      if (typeof window.__triggerOrbQuantumFlash === 'function') {
+        window.__triggerOrbQuantumFlash();
       }
+      startPlayback();
+    });
+  }
 
-      function togglePlayback() {
-        if (typeof window.__triggerOrbQuantumFlash === 'function') {
-          window.__triggerOrbQuantumFlash();
-        }
-        if (isPlaying) {
-          pausePlayback();
-        } else {
-          startPlayback();
-        }
-      }
+  if (toastDismissBtn) {
+    toastDismissBtn.addEventListener('click', () => {
+      if (toast) toast.classList.add('hidden');
+    });
+  }
 
-      if (orbWidget) {
-        orbWidget.addEventListener('click', togglePlayback);
-        orbWidget.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            togglePlayback();
-          }
-        });
-      }
-
-      if (toastPlayBtn) {
-        toastPlayBtn.addEventListener('click', () => {
-          if (typeof window.__triggerOrbQuantumFlash === 'function') {
-            window.__triggerOrbQuantumFlash();
-          }
-          startPlayback();
-        });
-      }
-
-      if (toastDismissBtn) {
-        toastDismissBtn.addEventListener('click', () => {
-          if (toast) toast.classList.add('hidden');
-        });
-      }
-
-      // Gracefully hide toast after 14 seconds if untouched
-      setTimeout(() => {
-        if (!isPlaying && toast) {
-          toast.classList.add('hidden');
-        }
-      }, 14000);
-    })();
+  // Gracefully hide toast after 14 seconds if untouched
+  setTimeout(() => {
+    if (!isPlaying && toast) {
+      toast.classList.add('hidden');
+    }
+  }, 14000);
+})();
 
 /* ==================== nav.js ==================== */
 /* 1. INTERACTIVE ONE-CLICK EMAIL COPY & CONTACT FORM */
