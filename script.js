@@ -1864,10 +1864,10 @@
     if (!document.getElementById('brandIntroOverlay')) {
       window.__start3DScenes();
     } else {
-      // Defensive safety fallback after 3.5s
+      // Defensive safety fallback after 4.5s
       setTimeout(() => {
         window.__start3DScenes();
-      }, 3500);
+      }, 4500);
     }
 
 /* ==================== audio.js ==================== */
@@ -2127,83 +2127,84 @@
 
 /* ==================== intro.js ==================== */
 /* ================================================================
-       7. CINEMATIC BRAND INTRO MOTION CONTROLLER & SMOOTH TRANSITION
-       ================================================================ */
-    (() => {
-      const overlay = document.getElementById('brandIntroOverlay');
-      const glow = document.getElementById('introGlow');
-      const emblem = document.getElementById('introEmblem');
-      const hudRing = document.getElementById('introHudRing');
-      const shockwave = document.getElementById('introShockwave');
-      const sheen = document.getElementById('introSheenBeam');
-      const wordmark = document.getElementById('introWordmark');
-      const laser = document.getElementById('introLaser');
-      const bootLine = document.getElementById('introBootLine');
+   7. CINEMATIC BRAND INTRO MOTION CONTROLLER & SMOOTH TRANSITION
+   ================================================================ */
+(() => {
+  const overlay = document.getElementById('brandIntroOverlay');
+  const glow = document.getElementById('introGlow');
+  const emblem = document.getElementById('introEmblem');
+  const hudRing = document.getElementById('introHudRing');
+  const shockwave = document.getElementById('introShockwave');
+  const sheen = document.getElementById('introSheenBeam');
+  const wordmark = document.getElementById('introWordmark');
+  const laser = document.getElementById('introLaser');
+  const bootLine = document.getElementById('introBootLine');
 
-      if (!overlay) return;
+  if (!overlay) return;
 
-      document.body.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
 
-      let isCompleted = false;
-      function triggerZoomThroughTransition() {
-        if (isCompleted) return;
-        isCompleted = true;
+  let isCompleted = false;
+  function triggerZoomThroughTransition() {
+    if (isCompleted) return;
+    isCompleted = true;
 
-        // Trigger Smooth Forward Push Transition (Pure GPU 60fps)
-        overlay.classList.add('is-zoom-through');
-        document.body.style.overflow = '';
-        setTimeout(() => {
-          overlay.remove();
-          // Seamlessly boot and fade in 3D scenes immediately upon dismissal
-          if (typeof window.__start3DScenes === 'function') {
-            window.__start3DScenes();
-          }
-        }, 460);
+    // Silky smooth GPU depth dissolve into hero workstation
+    overlay.classList.add('is-zoom-through');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      overlay.remove();
+      // Seamlessly start 3D scenes
+      if (typeof window.__start3DScenes === 'function') {
+        window.__start3DScenes();
       }
+    }, 650);
+  }
 
-      // Smooth click/tap anywhere on intro overlay to bypass immediately
-      overlay.addEventListener('click', triggerZoomThroughTransition);
+  // Smooth click/tap anywhere on intro overlay to bypass immediately
+  overlay.addEventListener('click', triggerZoomThroughTransition);
 
-      // --- STEP 1: ORBITAL RING & GLOW EMISSION (T+60ms) ---
-      setTimeout(() => {
-        if (hudRing) hudRing.classList.add('is-active');
-        if (glow) glow.classList.add('is-active');
-      }, 60);
+  // --- STAGE 1: CALM ATMOSPHERIC GLOW & GYRO RING (T+100ms) ---
+  setTimeout(() => {
+    if (hudRing) hudRing.classList.add('is-active');
+    if (glow) glow.classList.add('is-active');
+  }, 100);
 
-      // --- STEP 2: 3D DUAL-WING TRAJECTORY ASSEMBLY (T+180ms) ---
-      setTimeout(() => {
-        if (emblem) emblem.classList.add('is-assembled');
-      }, 180);
+  // --- STAGE 2: TITANIUM DUAL-WING AERODYNAMIC ASSEMBLY (T+450ms) ---
+  setTimeout(() => {
+    if (emblem) emblem.classList.add('is-assembled');
+  }, 450);
 
-      // --- STEP 3: ELECTROMAGNETIC IMPACT SHOCKWAVE (T+480ms) ---
-      setTimeout(() => {
-        if (shockwave) shockwave.classList.add('is-pulsed');
-      }, 480);
+  // --- STAGE 3: ELECTROMAGNETIC SEAM LOCK & SOFT PULSE (T+1150ms) ---
+  setTimeout(() => {
+    if (shockwave) shockwave.classList.add('is-pulsed');
+  }, 1150);
 
-      // --- STEP 4: SPECULAR METALLIC SHEEN SWEEP (T+680ms) ---
-      setTimeout(() => {
-        if (sheen) {
-          sheen.classList.add('intro-sheen-active');
-          setTimeout(() => { sheen.style.display = 'none'; }, 850);
-        }
-      }, 680);
+  // --- STAGE 4: SPECULAR TITANIUM SHEEN GLEAM (T+1450ms) ---
+  setTimeout(() => {
+    if (sheen) {
+      sheen.classList.add('intro-sheen-active');
+      setTimeout(() => { sheen.style.display = 'none'; }, 1100);
+    }
+  }, 1450);
 
-      // --- STEP 5: "ANMOL" LUXURY WORDMARK INGRESS (T+880ms) ---
-      // (Terminal boot line automatically fades in via CSS transition-delay at T+1180ms)
-      setTimeout(() => {
-        if (wordmark) wordmark.classList.add('is-revealed');
-      }, 880);
+  // --- STAGE 5: ELEGANT "ANMOL" WORDMARK REVEAL (T+1750ms) ---
+  setTimeout(() => {
+    if (wordmark) wordmark.classList.add('is-revealed');
+  }, 1750);
 
-      // --- STEP 6: SPECULAR LASER SWEEP (T+1350ms) ---
-      setTimeout(() => {
-        if (laser) {
-          laser.classList.add('is-active');
-          setTimeout(() => { laser.style.display = 'none'; }, 800);
-        }
-      }, 1350);
+  // --- STAGE 6: SUBTLE LIGHT SWEEP, STATUS LINE & ZERO-G BREATHER (T+2200ms) ---
+  setTimeout(() => {
+    if (laser) {
+      laser.classList.add('is-active');
+      setTimeout(() => { laser.style.display = 'none'; }, 1000);
+    }
+    if (bootLine) bootLine.classList.add('is-visible');
+    if (emblem) emblem.classList.add('is-floating');
+  }, 2200);
 
-      // --- STEP 7: SILKY ZERO-JANK ZOOM-THROUGH PUSH (T+1900ms) ---
-      setTimeout(() => {
-        triggerZoomThroughTransition();
-      }, 1900);
-    })();
+  // --- STAGE 7: CALM APPRECIATION HOLD -> SILKY DISSOLVE TO HERO WORKSTATION (T+3350ms) ---
+  setTimeout(() => {
+    triggerZoomThroughTransition();
+  }, 3350);
+})();
