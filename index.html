@@ -157,10 +157,10 @@
   <div class="ambient-glow glow-emerald"></div>
   <div class="vignette-overlay"></div>
 
-  <!-- Hidden Background Ambient Audio (Deferred network load on user interaction) -->
-  <audio id="ambientAudio" loop preload="none">
-    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
+  <!-- Hidden Background Ambient Audio (Preloaded for instant zero-lag response) -->
+  <audio id="ambientAudio" loop preload="auto">
     <source src="ambient.mp3" type="audio/mpeg">
+    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
     <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
   </audio>
 
@@ -285,6 +285,7 @@
       <div class="hero-content">
         <!-- Cyber Acoustic Quantum Core (Audio Controller & Reactor) -->
         <div class="shiny-orb-widget" id="quantumOrbWidget" role="button" aria-label="Toggle ambient soundtrack" tabindex="0" title="Click to play ambient soundtrack">
+          <div class="orb-widget-ripple" id="orbWidgetRipple"></div>
           <div class="orb-canvas-frame" id="orbCanvasFrame">
             <div class="orb-soundwave-ring ring-1"></div>
             <div class="orb-soundwave-ring ring-2"></div>
