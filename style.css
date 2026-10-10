@@ -1817,7 +1817,7 @@
       width: 100vw;
       height: 100vh;
       background: #06080c;
-      background-image: radial-gradient(circle at 50% 50%, #101622 0%, #0a0d14 45%, #05070a 75%, #020305 100%);
+      background-image: radial-gradient(circle at 50% 50%, #0d121c 0%, #080b11 45%, #040609 75%, #020305 100%);
       z-index: 99999;
       display: flex;
       flex-direction: column;
@@ -1825,22 +1825,22 @@
       justify-content: center;
       user-select: none;
       perspective: 1200px;
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
-                  visibility 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), 
+                  visibility 0.65s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: opacity;
     }
 
-    /* Silky 60-120fps GPU Push-Through Dismissal (Zero Hitch) */
+    /* Silky 60-120fps GPU Depth Dissolve (Executive Cinema Feel) */
     .brand-intro-overlay.is-zoom-through {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
     .brand-intro-overlay.is-zoom-through .brand-intro-stage {
-      transform: scale(1.35) translateZ(0);
+      transform: scale(1.06) translateZ(0);
       opacity: 0;
-      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                  opacity 0.38s ease;
+      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.55s ease;
     }
 
     /* High-Tech Telemetry HUD Badges */
@@ -1969,22 +1969,22 @@
     .intro-wing-left {
       transform-origin: 30px 220px;
       opacity: 0;
-      transform: translate3d(-105px, 65px, -80px) rotateY(-25deg) rotateZ(-15deg);
-      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      transform: translate3d(-90px, 45px, -60px) rotateY(-20deg) rotateZ(-12deg);
+      transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
       will-change: transform, opacity;
     }
     .intro-wing-right {
       transform-origin: 220px 220px;
       opacity: 0;
-      transform: translate3d(105px, 65px, -80px) rotateY(25deg) rotateZ(15deg);
-      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      transform: translate3d(90px, 45px, -60px) rotateY(20deg) rotateZ(12deg);
+      transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
       will-change: transform, opacity;
     }
     .intro-core-arrow {
       transform-origin: 125px 145px;
       opacity: 0;
-      transform: translate3d(0, 50px, 40px) scale(0.3);
-      transition: transform 0.8s cubic-bezier(0.34, 1.4, 0.64, 1) 0.08s, opacity 0.4s ease 0.08s;
+      transform: translate3d(0, 35px, 30px) scale(0.6);
+      transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, opacity 0.55s ease 0.1s;
       will-change: transform, opacity;
     }
 
@@ -1995,14 +1995,23 @@
       transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
     }
 
+    /* Subtle zero-g floating breath on emblem once assembled */
+    .brand-intro-emblem.is-floating {
+      animation: introEmblemBreathe 4.5s ease-in-out infinite alternate;
+    }
+    @keyframes introEmblemBreathe {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-7px) scale(1.008); }
+    }
+
     /* Electric Neon Seam Glows - 100% Vector GPU Acceleration (Zero SVG filter blur overhead) */
     .intro-seam-glow,
     .intro-seam-core {
       opacity: 0;
-      transition: opacity 0.45s ease;
+      transition: opacity 0.55s ease;
     }
     .is-assembled .intro-seam-glow {
-      opacity: 0.45;
+      opacity: 0.5;
     }
     .is-assembled .intro-seam-core {
       opacity: 1;
@@ -2012,26 +2021,26 @@
       position: absolute;
       inset: -60px;
       pointer-events: none;
-      background: linear-gradient(135deg, transparent 36%, rgba(255, 255, 255, 0.65) 48%, rgba(56, 189, 248, 0.85) 52%, transparent 64%);
+      background: linear-gradient(135deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(56, 189, 248, 0.65) 52%, transparent 62%);
       opacity: 0;
       transform: translateX(-160%);
       z-index: 20;
     }
     .intro-sheen-active.intro-sheen-beam {
-      animation: introSheenSweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: introSheenSweep 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     @keyframes introSheenSweep {
       0% {
         transform: translateX(-160%);
         opacity: 0;
       }
-      18% {
+      20% {
         opacity: 0.95;
       }
       50% {
-        opacity: 0.90;
+        opacity: 0.85;
       }
-      63% {
+      70% {
         opacity: 0;
       }
       100% {
@@ -2045,66 +2054,66 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 0.85rem;
-      padding: 0.2rem 1rem;
+      margin-top: 1.45rem;
+      padding: 0.2rem 1.2rem;
     }
     .intro-letter {
       font-family: var(--font-display);
       display: inline-block;
-      font-size: clamp(3.6rem, 5.2vw, 4.8rem);
+      font-size: clamp(3.2rem, 4.8vw, 4.4rem);
       font-weight: 700;
       color: #ffffff;
-      margin: 0 0.16em;
+      margin: 0 0.18em;
       line-height: 1;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       opacity: 0;
-      transform: translateY(20px) scale(0.92);
-      transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-                  opacity 0.5s ease;
+      transform: translateY(18px);
+      transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.65s ease;
       will-change: transform, opacity;
-      text-shadow: 0 0 35px rgba(56, 189, 248, 0.4);
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
     }
     .brand-intro-wordmark.is-revealed .intro-letter {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
-    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(2) { transition-delay: 0.06s; }
-    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(3) { transition-delay: 0.14s; }
-    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(4) { transition-delay: 0.22s; }
-    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(5) { transition-delay: 0.30s; }
-    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(6) { transition-delay: 0.38s; }
+    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(2) { transition-delay: 0.08s; }
+    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(3) { transition-delay: 0.16s; }
+    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(4) { transition-delay: 0.24s; }
+    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(5) { transition-delay: 0.32s; }
+    .brand-intro-wordmark.is-revealed .intro-letter:nth-child(6) { transition-delay: 0.40s; }
 
     .intro-wordmark-laser {
       position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
-      width: 120px;
-      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.45), rgba(255, 255, 255, 0.9), transparent);
+      width: 140px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.35), rgba(255, 255, 255, 0.85), transparent);
       pointer-events: none;
       opacity: 0;
       transform: translateX(-140px) skewX(-20deg);
       z-index: 10;
     }
     .intro-wordmark-laser.is-active {
-      animation: introLaserSweep 0.80s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: introLaserSweep 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     @keyframes introLaserSweep {
       0% {
         transform: translateX(-140px) skewX(-20deg);
         opacity: 0;
       }
-      20% {
+      25% {
         opacity: 0.95;
       }
-      52% {
-        opacity: 0.90;
+      60% {
+        opacity: 0.85;
       }
-      65% {
+      75% {
         opacity: 0;
       }
       100% {
-        transform: translateX(520px) skewX(-20deg);
+        transform: translateX(540px) skewX(-20deg);
         opacity: 0;
       }
     }
@@ -2112,22 +2121,23 @@
     /* Zero-reflow Terminal Boot Line with Strict Containment */
     .intro-boot-line {
       font-family: var(--font-mono);
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      margin-top: 1.1rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      margin-top: 1.15rem;
       height: 1.5rem;
       line-height: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
-      contain: layout style paint;
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.32s;
+      transform: translateY(10px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
       pointer-events: none;
     }
-    .intro-boot-line.is-visible,
-    .is-revealed ~ .intro-boot-line {
-      opacity: 1;
+    .intro-boot-line.is-visible {
+      opacity: 0.85;
+      transform: translateY(0);
     }
     .intro-boot-line .cursor-blink {
       display: inline-block;
