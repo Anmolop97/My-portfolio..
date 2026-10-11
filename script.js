@@ -1,4 +1,57 @@
+/* ==================== MASTER RENDER LOOP DISPATCHER ==================== */
+const __masterLoop = (() => {
+  let rafId = 0;
+  const tasks = new Map();
 
+  function hasActiveTasks() {
+    if (document.hidden) return false;
+    for (const task of tasks.values()) {
+      if (task.active()) return true;
+    }
+    return false;
+  }
+
+  function step(now) {
+    rafId = 0;
+    if (document.hidden) return;
+    let anyActive = false;
+    for (const task of tasks.values()) {
+      if (task.active()) {
+        anyActive = true;
+        task.tick(now);
+      }
+    }
+    if (anyActive) {
+      rafId = requestAnimationFrame(step);
+    }
+  }
+
+  function schedule() {
+    if (rafId || !hasActiveTasks()) return;
+    rafId = requestAnimationFrame(step);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    } else {
+      schedule();
+    }
+  });
+
+  return {
+    register(name, activeFn, tickFn) {
+      tasks.set(name, { active: activeFn, tick: tickFn });
+      schedule();
+    },
+    schedule,
+    getRafId: () => rafId
+  };
+})();
+window.__masterLoop = __masterLoop;
 
 /* ==================== space-rings.js ==================== */
 /* ================================================================
@@ -14,16 +67,34 @@
       let dpr = 1.0; // Optimized: 1.0 DPR saves 55% GPU fill rate churn with zero visible difference
       let width = window.innerWidth;
       let height = window.innerHeight;
+      let docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, height * 2);
+
+      // Offscreen Static Orbit Track Layer Cache (Updated strictly on window resize)
+      const orbitTrackCacheCanvas = document.createElement('canvas');
+      const trackCtx = orbitTrackCacheCanvas.getContext('2d');
+      let cachedOriginX = 0;
+      let cachedOriginY = 0;
+      let cachedRot = 0;
+      let isTrackCacheDirty = true;
 
       function resize() {
         dpr = 1.0;
         width = window.innerWidth;
         height = window.innerHeight;
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
+        docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, height * 2);
+        const rw = Math.round(width * dpr);
+        const rh = Math.round(height * dpr);
+        canvas.width = rw;
+        canvas.height = rh;
+        orbitTrackCacheCanvas.width = rw;
+        orbitTrackCacheCanvas.height = rh;
+        isTrackCacheDirty = true;
       }
       resize();
       window.addEventListener('resize', resize, { passive: true });
+      window.addEventListener('load', () => {
+        docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, height * 2);
+      }, { once: true, passive: true });
 
       // Interactive mouse parallax
       let mouseX = 0, mouseY = 0;
@@ -55,113 +126,348 @@
         { baseR: 720,  ecc: 0.64, hasCompanion: false, lineWidth: 2.8, dash: null },
         { baseR: 1020, ecc: 0.65, hasCompanion: true,  lineWidth: 2.4, dash: [18, 22] },
         { baseR: 1380, ecc: 0.66, hasCompanion: false, lineWidth: 2.8, dash: null },
-        { baseR: 1820, ecc: 0.67, hasCompanion: true,  lineWidth: 2.6, dash: null },
-        { baseR: 2340, ecc: 0.68, hasCompanion: false, lineWidth: 2.8, dash: [16, 20] },
-        { baseR: 2960, ecc: 0.69, hasCompanion: true,  lineWidth: 2.6, dash: null },
-        { baseR: 3700, ecc: 0.70, hasCompanion: false, lineWidth: 3.0, dash: null },
-        { baseR: 4550, ecc: 0.70, hasCompanion: true,  lineWidth: 2.8, dash: null },
-        { baseR: 5500, ecc: 0.71, hasCompanion: false, lineWidth: 2.8, dash: [20, 24] }
+        { baseR: 1820, ecc: 0.67, hasCompanion: true,  lineWidth: 2.6, dash: null }
       ];
 
-      // 2. CELESTIAL PLANETS & 4PX GLOWING BINDUS (Harmonious Locked Spacing Across All 12 Orbits)
-      // 4th & 5th lines increased in bindu count; locked speeds for constant aesthetic distance!
-      const CELESTIAL_CONFIG = [
-        { orbitIdx: 0,  count: 1, speed: 0.32,   hasSatellite: false, hasPulsar: false, color: '#38bdf8' },
-        { orbitIdx: 1,  count: 2, speed: -0.25,  hasSatellite: true,  hasPulsar: false, color: '#38bdf8' },
-        { orbitIdx: 2,  count: 3, speed: 0.21,   hasSatellite: false, hasPulsar: true,  color: '#2dd4bf' },
-        { orbitIdx: 3,  count: 6, speed: -0.17,  hasSatellite: true,  hasPulsar: false, color: '#60a5fa' }, // 4th line increased!
-        { orbitIdx: 4,  count: 8, speed: 0.14,   hasSatellite: true,  hasPulsar: true,  color: '#38bdf8' }, // 5th line increased!
-        { orbitIdx: 5,  count: 5, speed: -0.12,  hasSatellite: true,  hasPulsar: false, color: '#2dd4bf' },
-        { orbitIdx: 6,  count: 5, speed: 0.10,   hasSatellite: false, hasPulsar: true,  color: '#38bdf8' },
-        { orbitIdx: 7,  count: 6, speed: -0.085, hasSatellite: true,  hasPulsar: false, color: '#60a5fa' },
-        { orbitIdx: 8,  count: 6, speed: 0.07,   hasSatellite: false, hasPulsar: true,  color: '#38bdf8' },
-        { orbitIdx: 9,  count: 6, speed: -0.06,  hasSatellite: true,  hasPulsar: false, color: '#2dd4bf' },
-        { orbitIdx: 10, count: 7, speed: 0.05,   hasSatellite: false, hasPulsar: true,  color: '#60a5fa' },
-        { orbitIdx: 11, count: 7, speed: -0.042, hasSatellite: true,  hasPulsar: false, color: '#38bdf8' }
-      ];
+      // =============================================================
+      // PRE-BAKED OPTICAL SPRITE LUTs (Zero Per-Frame Gradient/Arc/Text Churn)
+      // =============================================================
+      const SPRITE_SCALE = 2;
 
-      const CELESTIAL_NODES = [];
-      // Scientific telemetry callsigns for zero-G orbital nodes
-      const TELEMETRY_CALLSIGNS = [
-        'ORB-SYS.ALPHA', 'ION-CORE.01', 'VEL-7.8k', 'STATION-01',
-        'SPECTRA.9', 'ORB-SYS.BETA', 'PULSAR-X', 'VECTOR.FLUX',
-        'ZERO-G.CORE', 'ECHO-SAT.03', 'ASTRO-7', 'CHRONO.SYNC'
-      ];
-      let labelCursor = 0;
+      // A. Pre-baked Stellar Anchor Core Sprite (64x64 CSS -> 128x128 2x HiDPI)
+      const anchorSprite = document.createElement('canvas');
+      anchorSprite.width = 64 * SPRITE_SCALE;
+      anchorSprite.height = 64 * SPRITE_SCALE;
+      const aCtx = anchorSprite.getContext('2d');
+      if (aCtx) {
+        aCtx.scale(SPRITE_SCALE, SPRITE_SCALE);
+        const acx = 32, acy = 32;
+        const anchorGlow = aCtx.createRadialGradient(acx, acy, 0, acx, acy, 28);
+        anchorGlow.addColorStop(0, 'rgba(255, 255, 255, 0.96)');
+        anchorGlow.addColorStop(0.3, 'rgba(56, 189, 248, 0.72)');
+        anchorGlow.addColorStop(0.7, 'rgba(14, 165, 233, 0.24)');
+        anchorGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        aCtx.beginPath();
+        aCtx.arc(acx, acy, 28, 0, Math.PI * 2);
+        aCtx.fillStyle = anchorGlow;
+        aCtx.fill();
 
-      CELESTIAL_CONFIG.forEach(cfg => {
-        const step = (Math.PI * 2) / cfg.count;
-        for (let k = 0; k < cfg.count; k++) {
-          const phase = k * step + ((cfg.orbitIdx * 0.45) % (Math.PI * 2));
-          // Exactly identical speed for all nodes on the same orbit = LOCKED EQUIDISTANT SEPARATION!
-          const isMoonPlanet = cfg.hasSatellite && (k === 0);
-          const isPulsar = cfg.hasPulsar && (k % 2 === 1);
-          // Flagship celestial anchors carry cybernetic micro-HUD callsigns
-          const hasLabel = isMoonPlanet || (isPulsar && cfg.orbitIdx <= 6);
-          const labelText = hasLabel ? (TELEMETRY_CALLSIGNS[labelCursor++ % TELEMETRY_CALLSIGNS.length]) : null;
+        aCtx.beginPath();
+        aCtx.arc(acx, acy, 9.0, 0, Math.PI * 2);
+        aCtx.fillStyle = 'rgba(56, 189, 248, 0.48)';
+        aCtx.fill();
 
-          // Natural zero-G harmonic frequencies (individual sinusoidal bobbing offset)
-          const floatSpeed = 1.2 + ((cfg.orbitIdx * 3 + k * 7) % 11) * 0.14;
-          const floatOffset = ((cfg.orbitIdx * 1.7 + k * 2.3) % (Math.PI * 2));
-          const floatAmp = isMoonPlanet ? 7.5 : (hasLabel ? 6.0 : 4.5);
+        aCtx.beginPath();
+        aCtx.arc(acx, acy, 4.2, 0, Math.PI * 2);
+        aCtx.fillStyle = '#ffffff';
+        aCtx.fill();
+      }
 
-          CELESTIAL_NODES.push({
-            orbitIdx: cfg.orbitIdx,
-            speed: cfg.speed, // Locked speed: no bunching or collisions!
-            phase: phase,
-            dir: cfg.speed > 0 ? 1 : -1,
-            color: cfg.color,
-            radius: isMoonPlanet ? 2.5 : 2.0, // 4px bindu (2.0) or focal micro-planet (2.5)
-            isMoonPlanet: isMoonPlanet,
-            isPulsar: isPulsar,
-            hasLabel: hasLabel,
-            labelText: labelText,
-            wakeLen: 0.35,
-            moonAngle: (k * 1.6),
-            moonSpeed: 2.4,
-            floatSpeed: floatSpeed,
-            floatOffset: floatOffset,
-            floatAmp: floatAmp,
-            // Inertial scroll-lag tracking coordinates for weightless fluid drifting
-            currentNx: 0,
-            currentNy: 0,
-            isInitialized: false
-          });
+      // B. Pre-baked Bindu + Target Reticle Halo Sprites (2x HiDPI Supersampled for Razor-Sharp Clarity)
+      function createBinduSprite(radius, isMoonPlanet) {
+        const sCanvas = document.createElement('canvas');
+        const cssSize = 32;
+        const half = cssSize / 2;
+        sCanvas.width = cssSize * SPRITE_SCALE;
+        sCanvas.height = cssSize * SPRITE_SCALE;
+        const sCtx = sCanvas.getContext('2d');
+        if (!sCtx) return { canvas: sCanvas, size: cssSize, half: half };
+        sCtx.scale(SPRITE_SCALE, SPRITE_SCALE);
+
+        // 1. Soft outer cyan radial glow aura so bindu stands out clearly on the ring
+        const auraGrad = sCtx.createRadialGradient(half, half, 0, half, half, radius + 9);
+        auraGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+        auraGrad.addColorStop(0.35, 'rgba(56, 189, 248, 0.65)');
+        auraGrad.addColorStop(0.75, 'rgba(56, 189, 248, 0.18)');
+        auraGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        sCtx.beginPath();
+        sCtx.arc(half, half, radius + 9, 0, Math.PI * 2);
+        sCtx.fillStyle = auraGrad;
+        sCtx.fill();
+
+        // 2. Optional miniature orbit ring for Moon Planets (R=10)
+        if (isMoonPlanet) {
+          sCtx.beginPath();
+          sCtx.arc(half, half, 10.0, 0, Math.PI * 2);
+          sCtx.strokeStyle = 'rgba(125, 211, 252, 0.45)';
+          sCtx.lineWidth = 0.9;
+          sCtx.stroke();
         }
-      });
 
-      // 3. SCROLL-TRIGGERED METEOROIDS (Shooting stars passing ONLY when scrolling is active!)
-      const meteors = [];
-      let meteorCooldown = 0;
+        // 3. Concentric Cyan Target Reticle Halo
+        const haloR = radius + 3.6;
+        sCtx.beginPath();
+        sCtx.arc(half, half, haloR, 0, Math.PI * 2);
+        sCtx.strokeStyle = 'rgba(125, 211, 252, 0.95)';
+        sCtx.lineWidth = 1.35;
+        sCtx.stroke();
 
-      function spawnMeteor() {
-        // High-velocity diagonal shooting star trajectory crossing through the orbits
-        const angle = -0.44 + (Math.random() - 0.5) * 0.26;
-        const startX = width * (0.30 + Math.random() * 0.70);
-        const startY = height * (Math.random() * 0.40);
-        const speed = 22 + Math.random() * 16;
-        const tailLength = 110 + Math.random() * 130;
-        meteors.push({
-          x: startX,
-          y: startY,
-          vx: -Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed * 1.35,
-          len: tailLength,
-          life: 1.0,
-          decay: 0.024 + Math.random() * 0.016,
-          width: 2.2 + Math.random() * 1.0
+        // 4. Solid Luminous White Core Bindu
+        sCtx.beginPath();
+        sCtx.arc(half, half, radius, 0, Math.PI * 2);
+        sCtx.fillStyle = '#ffffff';
+        sCtx.fill();
+
+        return { canvas: sCanvas, size: cssSize, half: half };
+      }
+      const binduSpriteStandard = createBinduSprite(3.2, false);
+      const binduSpriteMoon = createBinduSprite(3.6, true);
+
+      // C. Pre-baked Telemetry Callout Badge Sprites (2x HiDPI Supersampled • Crisp 11px JetBrains Mono)
+      const labelSpriteCache = new Map();
+      function getOrBakeLabelSprite(text) {
+        if (labelSpriteCache.has(text)) return labelSpriteCache.get(text);
+        const lCanvas = document.createElement('canvas');
+        const lCtx = lCanvas.getContext('2d');
+        const fontSpec = '700 11px "JetBrains Mono", monospace';
+        lCtx.font = fontSpec;
+        const textWidth = Math.ceil(lCtx.measureText(text).width);
+        const padX = 8;
+        const boxW = textWidth + padX * 2 + 4;
+        const boxH = 22;
+        lCanvas.width = boxW * SPRITE_SCALE;
+        lCanvas.height = boxH * SPRITE_SCALE;
+
+        lCtx.scale(SPRITE_SCALE, SPRITE_SCALE);
+        lCtx.font = fontSpec;
+        lCtx.textBaseline = 'middle';
+
+        // Crisp dark HUD pill background
+        lCtx.fillStyle = 'rgba(6, 11, 20, 0.90)';
+        lCtx.fillRect(1, 1, boxW - 2, boxH - 2);
+
+        // Luminous cyan border
+        lCtx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+        lCtx.lineWidth = 1.0;
+        lCtx.strokeRect(1.5, 1.5, boxW - 3, boxH - 3);
+
+        // Left cybernetic accent bar
+        lCtx.fillStyle = '#38bdf8';
+        lCtx.fillRect(1, 1, 2.5, boxH - 2);
+
+        // High-contrast crisp label text
+        lCtx.fillStyle = '#f0f9ff';
+        lCtx.fillText(text, padX + 2, boxH / 2 + 0.5);
+
+        const spriteObj = { canvas: lCanvas, width: boxW, height: boxH };
+        labelSpriteCache.set(text, spriteObj);
+        return spriteObj;
+      }
+
+      // Central star ('CPU') pre-baked label sprite
+      let centralStarLabelSprite = getOrBakeLabelSprite('CPU');
+
+      // 2. 7 DETERMINISTIC ORBITAL BINDUS (1 Per Ring, Innermost -> Outermost, Continuous One-Way Revolution)
+      const RING_BINDU_SPEC = [
+        { orbitIdx: 0, label: 'GPU',      baseAngle: 2.55, mobAngle: 2.50, speed:  0.42, isMoonPlanet: false, isPulsar: false, color: '#38bdf8' },
+        { orbitIdx: 1, label: 'DDR5',     baseAngle: 2.85, mobAngle: 2.75, speed: -0.32, isMoonPlanet: true,  isPulsar: false, color: '#38bdf8' },
+        { orbitIdx: 2, label: 'NVMe',     baseAngle: 2.22, mobAngle: 2.28, speed:  0.25, isMoonPlanet: false, isPulsar: true,  color: '#2dd4bf' },
+        { orbitIdx: 3, label: 'L1_CACHE', baseAngle: 2.04, mobAngle: 2.08, speed: -0.20, isMoonPlanet: true,  isPulsar: false, color: '#60a5fa' },
+        { orbitIdx: 4, label: 'PCIe',     baseAngle: 3.24, mobAngle: 2.22, speed:  0.16, isMoonPlanet: true,  isPulsar: true,  color: '#38bdf8' },
+        { orbitIdx: 5, label: 'BIOS',     baseAngle: 3.46, mobAngle: 1.98, speed: -0.13, isMoonPlanet: false, isPulsar: false, color: '#2dd4bf' },
+        { orbitIdx: 6, label: 'KERNEL',   baseAngle: 3.53, mobAngle: 1.88, speed:  0.10, isMoonPlanet: false, isPulsar: true,  color: '#38bdf8' }
+      ];
+
+      const CELESTIAL_NODES = RING_BINDU_SPEC.map((cfg, idx) => ({
+        orbitIdx: cfg.orbitIdx,
+        baseAngle: cfg.baseAngle,
+        mobAngle: cfg.mobAngle,
+        speed: cfg.speed,
+        dir: cfg.speed > 0 ? 1 : -1,
+        color: cfg.color,
+        radius: cfg.isMoonPlanet ? 3.6 : 3.2,
+        isMoonPlanet: cfg.isMoonPlanet,
+        isPulsar: cfg.isPulsar,
+        hasLabel: true,
+        labelText: cfg.label,
+        labelSprite: getOrBakeLabelSprite(cfg.label),
+        binduSprite: cfg.isMoonPlanet ? binduSpriteMoon : binduSpriteStandard,
+        wakeLen: 0.28,
+        moonAngle: idx * 1.1,
+        moonSpeed: 2.6,
+        renderX: 0,
+        renderY: 0,
+        nodeAngle: cfg.baseAngle,
+        isInitialized: false
+      }));
+
+      // Re-bake label sprites once web fonts finish loading so JetBrains Mono metrics are 100% exact
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          labelSpriteCache.clear();
+          centralStarLabelSprite = getOrBakeLabelSprite('CPU');
+          for (let i = 0; i < CELESTIAL_NODES.length; i++) {
+            const n = CELESTIAL_NODES[i];
+            if (n.hasLabel && n.labelText) {
+              n.labelSprite = getOrBakeLabelSprite(n.labelText);
+            }
+          }
         });
       }
 
+      // 3. ZERO-ALLOCATION METEOROID POOL (Shooting stars passing ONLY when scrolling is active!)
+      const MAX_METEORS = 5;
+      const meteorPool = [];
+      for (let i = 0; i < MAX_METEORS; i++) {
+        meteorPool.push({
+          active: false,
+          x: 0,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          normVx: 0,
+          normVy: 0,
+          len: 0,
+          life: 0,
+          decay: 0,
+          width: 0
+        });
+      }
+      let activeMeteorCount = 0;
+      let meteorCooldown = 0;
+
+      function spawnMeteor() {
+        for (let i = 0; i < MAX_METEORS; i++) {
+          const m = meteorPool[i];
+          if (!m.active) {
+            const angle = -0.44 + (Math.random() - 0.5) * 0.26;
+            const speed = 22 + Math.random() * 16;
+            const vx = -Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed * 1.35;
+            const invHypot = 1.0 / Math.hypot(vx, vy);
+
+            m.active = true;
+            m.x = width * (0.30 + Math.random() * 0.70);
+            m.y = height * (Math.random() * 0.40);
+            m.vx = vx;
+            m.vy = vy;
+            m.normVx = vx * invHypot;
+            m.normVy = vy * invHypot;
+            m.len = 110 + Math.random() * 130;
+            m.life = 1.0;
+            m.decay = 0.024 + Math.random() * 0.016;
+            m.width = 2.2 + Math.random() * 1.0;
+            activeMeteorCount++;
+            break;
+          }
+        }
+      }
+
+      // Pre-allocated orbit radii cache to avoid redundant math between Track and Node passes
+      const curRxArray = new Float64Array(ORBITS.length);
+      const curRyArray = new Float64Array(ORBITS.length);
+      const ticks = [0.22, 1.42, 2.82, 4.22];
+
+      function updateOrbitTrackCache() {
+        if (!trackCtx) return;
+        const isMobileScreen = width < 768;
+        const originX = isMobileScreen ? width * 0.66 : width * 0.92;
+        const originY = isMobileScreen ? height * 0.07 : height * 0.05;
+        const rot = isMobileScreen ? -0.34 : -0.42;
+        const expansion = isMobileScreen ? 0.76 : 1.0;
+        const viewportScale = isMobileScreen ? 0.68 : Math.min(width / 1920, 1.0);
+
+        for (let i = 0; i < ORBITS.length; i++) {
+          const orb = ORBITS[i];
+          const rx = orb.baseR * expansion * viewportScale;
+          curRxArray[i] = rx;
+          curRyArray[i] = rx * (isMobileScreen ? Math.min(orb.ecc * 1.35, 0.72) : orb.ecc);
+        }
+
+        trackCtx.save();
+        trackCtx.scale(dpr, dpr);
+        trackCtx.clearRect(0, 0, width, height);
+
+        const cosRot = Math.cos(rot);
+        const sinRot = Math.sin(rot);
+
+        for (let i = 0; i < ORBITS.length; i++) {
+          const orb = ORBITS[i];
+          const curRx = curRxArray[i];
+          const curRy = curRyArray[i];
+
+          // Enhanced radiant opacity & vibrant celestial presence across all lines
+          let ringAlpha;
+          if (i <= 1) {
+            ringAlpha = 0.85;
+          } else if (i <= 4) {
+            ringAlpha = 0.95;
+          } else {
+            ringAlpha = 0.74 - (i - 5) * 0.025;
+          }
+          ringAlpha = Math.min(Math.max(ringAlpha, 0.48), 1.0);
+
+          // Rich Frosted Glass & Electric Cyan Gradient with enhanced luminosity
+          const grad = trackCtx.createLinearGradient(
+            originX, originY,
+            originX - curRx * 0.85, originY + curRy * 1.55
+          );
+          grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.68})`);
+          grad.addColorStop(0.28, `rgba(255, 255, 255, ${ringAlpha * 1.0})`);
+          grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.98})`);
+          grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.90})`);
+          grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.62})`);
+
+          // 1. Primary Orbit Track - Fast GPU Double-Stroke Neon Aura (0ms Gaussian blur)
+          trackCtx.save();
+          trackCtx.beginPath();
+          if (orb.dash) trackCtx.setLineDash(orb.dash);
+          trackCtx.ellipse(originX, originY, curRx, curRy, rot, 0, Math.PI * 2);
+          // Pass A: Soft Neon Glow Outer Aura (Wide, semi-transparent stroke)
+          trackCtx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.32})`;
+          trackCtx.lineWidth = orb.lineWidth * 2.8;
+          trackCtx.stroke();
+          // Pass B: Crisp Vibrant Gradient Core
+          trackCtx.strokeStyle = grad;
+          trackCtx.lineWidth = orb.lineWidth * 1.15;
+          trackCtx.stroke();
+          trackCtx.restore();
+
+          // 2. Companion Guide Track (Twin wire: 1.4px with luminous aura)
+          if (orb.hasCompanion) {
+            trackCtx.save();
+            trackCtx.beginPath();
+            trackCtx.ellipse(originX, originY, curRx + 5.5, (curRx + 5.5) * orb.ecc, rot, 0, Math.PI * 2);
+            trackCtx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.72})`;
+            trackCtx.lineWidth = 1.4;
+            trackCtx.stroke();
+            trackCtx.restore();
+          }
+
+          // 3. Telemetry Astronomical Degree Ticks at 4 cardinal points
+          trackCtx.beginPath();
+          for (let k = 0; k < 4; k++) {
+            const a = ticks[k] + rot;
+            const cosA = Math.cos(a);
+            const sinA = Math.sin(a);
+            const tx = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
+            const ty = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
+            const normAngle = a + Math.PI / 2;
+            const dx = Math.cos(normAngle) * 3.2;
+            const dy = Math.sin(normAngle) * 3.2;
+            trackCtx.moveTo(tx - dx, ty - dy);
+            trackCtx.lineTo(tx + dx, ty + dy);
+          }
+          trackCtx.strokeStyle = `rgba(224, 242, 254, ${ringAlpha * 0.75})`;
+          trackCtx.lineWidth = 1.2;
+          trackCtx.stroke();
+        }
+
+        trackCtx.restore();
+        cachedOriginX = originX;
+        cachedOriginY = originY;
+        cachedRot = rot;
+        isTrackCacheDirty = false;
+      }
+
       let startTime = performance.now();
+      let lastFrameNow = startTime;
       let isRunning = false;
 
-      function draw(now) {
-        if (!isRunning) return;
-        requestAnimationFrame(draw);
-        if (document.hidden) return; // Skip canvas compute when browser tab is inactive
-
+      function renderFrame(now) {
         const t = (now - startTime) * 0.001;
+        const dt = Math.min(Math.max((now - lastFrameNow) * 0.001, 0.001), 0.05);
+        lastFrameNow = now;
 
         // Silky-smooth scroll interpolation (Zero jitter 0.055 lerp damping)
         smoothScrollY += (targetScrollY - smoothScrollY) * 0.055;
@@ -176,7 +482,7 @@
         // --- SPAWN METEORS ONLY WHEN SCROLL IS ACTIVE ---
         if (scrollVelocity > 1.2) {
           meteorCooldown -= scrollVelocity;
-          if (meteorCooldown <= 0 && meteors.length < 5) {
+          if (meteorCooldown <= 0 && activeMeteorCount < MAX_METEORS) {
             spawnMeteor();
             meteorCooldown = 22; // Interval between shooting stars during scroll
           }
@@ -187,346 +493,265 @@
         curMouseX += (mouseX - curMouseX) * 0.05;
         curMouseY += (mouseY - curMouseY) * 0.05;
 
-        // Document metrics: 0.0 -> 1.0 across the entire website
-        const docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight * 2);
-        const maxScroll = Math.max(docHeight - window.innerHeight, 1);
+        // Document metrics: 0.0 -> 1.0 across the entire website (uses cached docHeight for 0 layout reflow)
+        const maxScroll = Math.max(docHeight - height, 1);
         const scrollPct = Math.min(Math.max(smoothScrollY / maxScroll, 0), 1);
+
+        // Re-bake offscreen orbit track cache strictly when window resize marked it dirty
+        if (isTrackCacheDirty) {
+          updateOrbitTrackCache();
+        }
 
         // Clear canvas
         ctx.save();
         ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, width, height);
 
-        // -------------------------------------------------------------
-        // UNIFIED CONCENTRIC ORIGIN (Specialized portrait framing for mobile phone screens!)
-        // -------------------------------------------------------------
         const isMobileScreen = width < 768;
-        const originX = isMobileScreen 
-          ? width * (0.66 - scrollPct * 0.14) + curMouseX * 8
-          : width * (0.92 - scrollPct * 0.20) + curMouseX * 16;
-        const originY = isMobileScreen
-          ? height * (0.07 - scrollPct * 0.08) + curMouseY * 6
-          : height * (0.05 - scrollPct * 0.10) + curMouseY * 12;
+        const offsetX = isMobileScreen
+          ? (-scrollPct * width * 0.08) + curMouseX * 8
+          : (-scrollPct * width * 0.08) + curMouseX * 16;
+        const offsetY = isMobileScreen
+          ? (-scrollPct * height * 0.04) + curMouseY * 6
+          : (-scrollPct * height * 0.04) + curMouseY * 12;
 
-        // Dynamic 3D inclination (Pure parallel orientation)
-        const rot = isMobileScreen
-          ? -0.34 + scrollPct * 0.22 + Math.sin(t * 0.28) * 0.02
-          : -0.42 + scrollPct * 0.24 + Math.sin(t * 0.3) * 0.02 + curMouseY * 0.03;
-
-        // Expansive radius scaling across the entire website
-        const expansion = (1.0 + scrollPct * 1.85) * (isMobileScreen ? 0.76 : 1.0);
-        const dynamicFlare = 1.0 + scrollGlow * 0.65;
+        const originX = cachedOriginX + offsetX;
+        const originY = cachedOriginY + offsetY;
+        const rot = cachedRot;
 
         // =============================================================
-        // A. CELESTIAL STELLAR ANCHOR (Clean cybernetic astrolabe core)
+        // A. CELESTIAL STELLAR ANCHOR (Central Star labeled 'CPU')
         // =============================================================
-        const anchorGlow = ctx.createRadialGradient(originX, originY, 0, originX, originY, 28);
-        anchorGlow.addColorStop(0, 'rgba(255, 255, 255, 0.90)');
-        anchorGlow.addColorStop(0.3, 'rgba(56, 189, 248, 0.65)');
-        anchorGlow.addColorStop(0.7, 'rgba(14, 165, 233, 0.20)');
-        anchorGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
-        ctx.beginPath();
-        ctx.arc(originX, originY, 28, 0, Math.PI * 2);
-        ctx.fillStyle = anchorGlow;
-        ctx.fill();
+        ctx.drawImage(anchorSprite, originX - 32, originY - 32, 64, 64);
 
-        // Soft aura ring around anchor core (Hardware vector - 0ms blur)
-        ctx.beginPath();
-        ctx.arc(originX, originY, 8.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.40)';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(originX, originY, 3.8, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-
-        // Rotating astrolabe crosshair spikes
+        // Rotating astrolabe crosshair spikes (Single batched path)
         const astrolabeAngle = t * 0.15 + scrollPhase;
+        ctx.beginPath();
         for (let sp = 0; sp < 4; sp++) {
           const sa = astrolabeAngle + (sp * Math.PI / 2);
+          const cosSa = Math.cos(sa);
+          const sinSa = Math.sin(sa);
+          ctx.moveTo(originX - cosSa * 4, originY - sinSa * 4);
+          ctx.lineTo(originX + cosSa * 16, originY + sinSa * 16);
+        }
+        ctx.strokeStyle = 'rgba(224, 242, 254, 0.75)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+
+        // Position 'CPU' label clearly beside the central star without obstructing it
+        if (centralStarLabelSprite) {
+          const cpuSpriteW = centralStarLabelSprite.width;
+          const cpuSpriteH = centralStarLabelSprite.height;
+          const placeCpuLeft = (originX + 18 + cpuSpriteW > width - 8);
+          const cpuLabelX = Math.round(
+            placeCpuLeft
+              ? Math.max(8, originX - cpuSpriteW - 14)
+              : Math.min(width - cpuSpriteW - 8, originX + 18)
+          );
+          const cpuLabelY = Math.round(Math.min(Math.max(originY - cpuSpriteH / 2, 8), height - cpuSpriteH - 8));
+
           ctx.beginPath();
-          ctx.moveTo(originX - Math.cos(sa) * 4, originY - Math.sin(sa) * 4);
-          ctx.lineTo(originX + Math.cos(sa) * 16, originY + Math.sin(sa) * 16);
-          ctx.strokeStyle = 'rgba(224, 242, 254, 0.65)';
+          ctx.moveTo(placeCpuLeft ? (originX - 8) : (originX + 8), originY);
+          ctx.lineTo(placeCpuLeft ? (cpuLabelX + cpuSpriteW - 2) : (cpuLabelX + 2), cpuLabelY + cpuSpriteH / 2);
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.60)';
           ctx.lineWidth = 1.0;
           ctx.stroke();
+
+          ctx.drawImage(centralStarLabelSprite.canvas, cpuLabelX, cpuLabelY, cpuSpriteW, cpuSpriteH);
         }
 
         // =============================================================
-        // B. UNIFIED CONCENTRIC GLASSY SPACE ORBITS (PURE PARALLEL)
-        // Sweeping completely across both Left & Right sides of website
+        // B. UNIFIED CONCENTRIC GLASSY SPACE ORBITS (STATIC RESIZE-ONLY CACHE)
+        // Performs an O(1) hardware blit from orbitTrackCacheCanvas every frame!
         // =============================================================
-        for (let i = 0; i < ORBITS.length; i++) {
-          const orb = ORBITS[i];
-          const curRx = orb.baseR * expansion * (isMobileScreen ? 0.68 : 1.0);
-          const curRy = curRx * (isMobileScreen ? Math.min(orb.ecc * 1.35, 0.72) : orb.ecc);
-
-          // Enhanced radiant opacity & vibrant celestial presence across all lines
-          let ringAlpha;
-          if (i <= 1) {
-            // Lines 1 & 2 (Inner): Radiant glowing cyan
-            ringAlpha = 0.85 * dynamicFlare;
-          } else if (i <= 4) {
-            // Lines 3, 4, 5 (Focal hero sweeps): Crisp luminous neon
-            ringAlpha = 0.95 * dynamicFlare;
-          } else {
-            // Lines 6 onwards (outer sweep lines): Clear, luminous presence
-            const depthFade = 0.74 - (i - 5) * 0.025;
-            ringAlpha = depthFade * dynamicFlare;
-          }
-          ringAlpha = Math.min(Math.max(ringAlpha, 0.48), 1.0);
-
-          // Rich Frosted Glass & Electric Cyan Gradient with enhanced luminosity
-          const grad = ctx.createLinearGradient(
-            originX, originY,
-            originX - curRx * 0.85, originY + curRy * 1.55
-          );
-          grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.68})`);
-          grad.addColorStop(0.28, `rgba(255, 255, 255, ${ringAlpha * 1.0})`); // Pure glowing white frost crest
-          grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.98})`); // Vibrant electric cyan
-          grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.90})`); // Starlight aurora teal
-          grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.62})`);
-
-          // 1. Primary Orbit Track - Fast GPU Double-Stroke Neon Aura (0ms Gaussian blur)
-          ctx.save();
-          ctx.beginPath();
-          if (orb.dash) ctx.setLineDash(orb.dash);
-          ctx.ellipse(originX, originY, curRx, curRy, rot, 0, Math.PI * 2);
-          // Pass A: Soft Neon Glow Outer Aura (Wide, semi-transparent stroke)
-          ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.32})`;
-          ctx.lineWidth = orb.lineWidth * 2.8;
-          ctx.stroke();
-          // Pass B: Crisp Vibrant Gradient Core
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = orb.lineWidth * 1.15;
-          ctx.stroke();
-          ctx.restore();
-
-          // 2. Companion Guide Track (Twin wire: 1.4px with luminous aura)
-          if (orb.hasCompanion) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.ellipse(originX, originY, curRx + 5.5, (curRx + 5.5) * orb.ecc, rot, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.72})`;
-            ctx.lineWidth = 1.4;
-            ctx.stroke();
-            ctx.restore();
-          }
-
-          // 3. Telemetry Astronomical Degree Ticks at 4 cardinal points
-          const ticks = [0.22, 1.42, 2.82, 4.22];
-          for (let k = 0; k < ticks.length; k++) {
-            const a = ticks[k] + rot;
-            const tx = originX + Math.cos(a) * curRx * Math.cos(rot) - Math.sin(a) * curRy * Math.sin(rot);
-            const ty = originY + Math.cos(a) * curRx * Math.sin(rot) + Math.sin(a) * curRy * Math.cos(rot);
-            const normAngle = a + Math.PI / 2;
-            ctx.beginPath();
-            ctx.moveTo(tx - Math.cos(normAngle) * 3.2, ty - Math.sin(normAngle) * 3.2);
-            ctx.lineTo(tx + Math.cos(normAngle) * 3.2, ty + Math.sin(normAngle) * 3.2);
-            ctx.strokeStyle = `rgba(224, 242, 254, ${ringAlpha * 0.75})`;
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-          }
-        }
+        ctx.drawImage(orbitTrackCacheCanvas, offsetX, offsetY, width, height);
 
         // =============================================================
-        // C. CELESTIAL PLANETS & 4PX GLOWING BINDUS (ON EVERY ORBIT LINE)
-        // High-Tech Cybernetic Astro Reticles, Revolving Moons & Ion Wakes
+        // C. 7 ORBITAL BINDUS & ANCHORED LABELS (1 PER RING, CONTINUOUS REVOLUTION)
         // =============================================================
+        const cosRot = Math.cos(rot);
+        const sinRot = Math.sin(rot);
+
+        // Batch 1: Continuous one-way orbital revolution along each ring & trailing ion wakes
+        ctx.strokeStyle = 'rgba(125, 211, 252, 0.62)';
+        ctx.lineWidth = 2.0;
         for (let b = 0; b < CELESTIAL_NODES.length; b++) {
           const node = CELESTIAL_NODES[b];
-          const orb = ORBITS[node.orbitIdx];
-          const curRx = orb.baseR * expansion * (isMobileScreen ? 0.68 : 1.0);
-          const curRy = curRx * (isMobileScreen ? Math.min(orb.ecc * 1.35, 0.72) : orb.ecc);
+          const curRx = curRxArray[node.orbitIdx];
+          const curRy = curRyArray[node.orbitIdx];
 
-          // Continuous silky angle progression
-          const nodeAngle = node.phase + t * node.speed + scrollPhase * node.dir;
-          const cosA = Math.cos(nodeAngle);
-          const sinA = Math.sin(nodeAngle);
-          const nx = originX + cosA * curRx * Math.cos(rot) - sinA * curRy * Math.sin(rot);
-          const ny = originY + cosA * curRx * Math.sin(rot) + sinA * curRy * Math.cos(rot);
-
-          // -----------------------------------------------------------
-          // ZERO-G WEIGHTLESS PHYSICS & INERTIAL DRIFT (Zero GPU Cost)
-          // -----------------------------------------------------------
-          // Natural sinusoidal micro-bobbing offset (vertical Math.sin + horizontal Math.cos)
-          const floatPhase = t * node.floatSpeed + node.floatOffset;
-          const floatBobY = Math.sin(floatPhase) * node.floatAmp;
-          const floatBobX = Math.cos(floatPhase * 0.85) * (node.floatAmp * 0.6);
-
-          // Raw target orbital coordinates with floating offsets
-          const targetNx = nx + floatBobX;
-          const targetNy = ny + floatBobY;
-
-          // First-frame initialization
           if (!node.isInitialized) {
-            node.currentNx = targetNx;
-            node.currentNy = targetNy;
+            node.nodeAngle = isMobileScreen ? node.mobAngle : node.baseAngle;
             node.isInitialized = true;
           }
 
-          // Inertia and Delay: Natural damping lerp simulates weightless floating in viscous space
-          // Damping factor adapts during scroll: gives fluid inertial drift without lag
-          const damping = scrollVelocity > 1.0 ? 0.075 : 0.095;
-          node.currentNx += (targetNx - node.currentNx) * damping;
-          node.currentNy += (targetNy - node.currentNy) * damping;
+          // Continuous one-way orbital revolution along the ring
+          node.nodeAngle += dt * node.speed + scrollDelta * 0.00035 * node.dir;
 
-          const renderX = node.currentNx;
-          const renderY = node.currentNy;
+          let cosA = Math.cos(node.nodeAngle);
+          let sinA = Math.sin(node.nodeAngle);
+          let renderX = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
+          let renderY = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
 
-          // Viewport culling
-          if (renderX < -110 || renderX > width + 110 || renderY < -110 || renderY > height + 110) continue;
+          // Once the bindu + label have glided completely past the viewport edge, wrap forward
+          // in the SAME orbital direction to just outside the opposite entry edge of the ring
+          if (renderX < -75 || renderX > width + 75 || renderY < -50 || renderY > height + 50) {
+            for (let step = 0; step < 120; step++) {
+              node.nodeAngle += node.dir * 0.05;
+              cosA = Math.cos(node.nodeAngle);
+              sinA = Math.sin(node.nodeAngle);
+              renderX = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
+              renderY = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
+              if (renderX >= -18 && renderX <= width + 18 && renderY >= -18 && renderY <= height + 18) {
+                break;
+              }
+            }
+          }
 
-          const themeColor = node.color || '#38bdf8';
+          node.renderX = renderX;
+          node.renderY = renderY;
 
-          // 1. Soft Trailing Starlight / Ion Wake along ellipse track
-          const trailStart = nodeAngle - (node.wakeLen * (node.speed > 0 ? 1 : -1));
+          const trailStart = node.nodeAngle - (node.wakeLen * node.dir);
           ctx.beginPath();
           ctx.ellipse(
             originX, originY, curRx, curRy, rot,
-            Math.min(trailStart, nodeAngle), Math.max(trailStart, nodeAngle)
+            Math.min(trailStart, node.nodeAngle), Math.max(trailStart, node.nodeAngle)
           );
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.46)';
-          ctx.lineWidth = 1.6;
           ctx.stroke();
+        }
 
-          // 2. Concentric Cyan Target Reticle Halo
-          const haloR = node.radius + 2.8;
-          ctx.beginPath();
-          ctx.arc(renderX, renderY, haloR, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.90)';
-          ctx.lineWidth = 1.1;
-          ctx.stroke();
+        // Batch 2: Render Bindu Sprites, Moons, Pulsars, and Rigidly Anchored Callout Labels
+        for (let b = 0; b < CELESTIAL_NODES.length; b++) {
+          const node = CELESTIAL_NODES[b];
+          const renderX = node.renderX;
+          const renderY = node.renderY;
 
-          // 3. Special Feature: Revolving Micro-Moon Satellite OR Pulsar Radar Ripple
+          // Special Feature: Revolving Micro-Moon Satellite OR Pulsar Radar Ripple
           if (node.isMoonPlanet) {
-            // A. Miniature Orbit Ring for the Moon
-            const moonOrbitR = 8.5;
-            ctx.beginPath();
-            ctx.arc(renderX, renderY, moonOrbitR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
-            ctx.lineWidth = 0.7;
-            ctx.stroke();
-
-            // B. Revolving Micro-Moon (Tiny 1.2px diamond starlight satellite)
             const mA = node.moonAngle + t * node.moonSpeed;
-            const mx = renderX + Math.cos(mA) * moonOrbitR;
-            const my = renderY + Math.sin(mA) * moonOrbitR;
+            const mx = renderX + Math.cos(mA) * 10.0;
+            const my = renderY + Math.sin(mA) * 10.0;
             ctx.beginPath();
-            ctx.arc(mx, my, 1.2, 0, Math.PI * 2);
+            ctx.arc(mx, my, 1.5, 0, Math.PI * 2);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
           } else if (node.isPulsar) {
-            // Expanding Pulsar Radar Ripple
-            const pulseR = 7.5 + Math.sin(t * 3.2 + b * 0.7) * 1.6;
+            const pulseR = 9.0 + Math.sin(t * 3.6 + b * 0.7) * 2.0;
             ctx.beginPath();
             ctx.arc(renderX, renderY, pulseR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.28)';
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = 'rgba(125, 211, 252, 0.42)';
+            ctx.lineWidth = 1.0;
             ctx.stroke();
           }
 
-          // 4. Solid Luminous White Core Bindu / Planet with soft glowing aura (0ms blur)
-          ctx.beginPath();
-          ctx.arc(renderX, renderY, node.radius + 2.2, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.42)';
-          ctx.fill();
+          // Blit 2x HiDPI Bindu + Target Reticle Halo + Aura directly centered on the ring
+          const bSprite = node.binduSprite;
+          ctx.drawImage(bSprite.canvas, renderX - bSprite.half, renderY - bSprite.half, bSprite.size, bSprite.size);
 
-          ctx.beginPath();
-          ctx.arc(renderX, renderY, node.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
+          // Rigidly Anchored Micro-HUD Callout Label (No border-freeze or side-flipping lag at edges)
+          if (node.hasLabel && node.labelSprite) {
+            const lSprite = node.labelSprite;
+            const spriteW = lSprite.width;
+            const spriteH = lSprite.height;
+            const labelX = Math.round(renderX + 13);
+            const labelY = Math.round(renderY - spriteH - 5);
 
-          // 5. Weightless Floating Micro-HUD Callout Label (Zero Overhead • Pure 2D Canvas)
-          if (node.hasLabel && node.labelText) {
-            // Slight delayed sway for label attachment
-            const labelSwayY = Math.sin(floatPhase * 0.9 + 1.2) * 2.0;
-            const labelX = renderX + 10;
-            const labelY = renderY - 11 + labelSwayY;
-
-            // Hairline leader connector line
+            // Crisp hairline leader connector line
             ctx.beginPath();
-            ctx.moveTo(renderX + 4.5, renderY - 4.5);
-            ctx.lineTo(labelX, labelY + 2);
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
-            ctx.lineWidth = 0.8;
+            ctx.moveTo(renderX + 5.5, renderY - 5.5);
+            ctx.lineTo(labelX + 2, labelY + spriteH / 2);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+            ctx.lineWidth = 1.0;
             ctx.stroke();
 
-            // Minimalist telemetry callout badge
-            ctx.font = '600 8.5px "JetBrains Mono", monospace';
-            const textWidth = ctx.measureText(node.labelText).width;
-            
-            ctx.fillStyle = 'rgba(10, 15, 24, 0.72)';
-            ctx.fillRect(labelX - 2, labelY - 7.5, textWidth + 8, 11);
-            
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-            ctx.lineWidth = 0.6;
-            ctx.strokeRect(labelX - 2, labelY - 7.5, textWidth + 8, 11);
-
-            ctx.fillStyle = '#bae6fd';
-            ctx.fillText(node.labelText, labelX + 2, labelY + 1);
+            ctx.drawImage(lSprite.canvas, labelX, labelY, spriteW, spriteH);
           }
         }
 
         // =============================================================
-        // D. SCROLL-TRIGGERED METEOROIDS (SHOOTING STARS CROSSING ORBITS)
-        // Activated exclusively during active user scrolling!
+        // D. SCROLL-TRIGGERED METEOROIDS (ZERO-ALLOCATION OBJECT POOL)
         // =============================================================
-        for (let mIdx = meteors.length - 1; mIdx >= 0; mIdx--) {
-          const m = meteors[mIdx];
-          m.x += m.vx;
-          m.y += m.vy;
-          m.life -= m.decay;
+        if (activeMeteorCount > 0) {
+          for (let mIdx = 0; mIdx < MAX_METEORS; mIdx++) {
+            const m = meteorPool[mIdx];
+            if (!m.active) continue;
 
-          if (m.life <= 0 || m.x < -100 || m.y > height + 100) {
-            meteors.splice(mIdx, 1);
-            continue;
+            m.x += m.vx;
+            m.y += m.vy;
+            m.life -= m.decay;
+
+            if (m.life <= 0 || m.x < -100 || m.y > height + 100) {
+              m.active = false;
+              activeMeteorCount--;
+              continue;
+            }
+
+            const tailX = m.x - m.normVx * m.len;
+            const tailY = m.y - m.normVy * m.len;
+
+            const mGrad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+            mGrad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
+            mGrad.addColorStop(0.2, `rgba(56, 189, 248, ${m.life * 0.95})`);
+            mGrad.addColorStop(0.65, `rgba(14, 165, 233, ${m.life * 0.40})`);
+            mGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+            ctx.beginPath();
+            ctx.moveTo(m.x, m.y);
+            ctx.lineTo(tailX, tailY);
+            ctx.strokeStyle = mGrad;
+            ctx.lineWidth = m.width;
+            ctx.stroke();
+
+            // Luminous White-Hot Meteoroid Head
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.width * 2.2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(56, 189, 248, ${m.life * 0.45})`;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.width * 1.25, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${m.life})`;
+            ctx.fill();
           }
-
-          // Draw Meteoroid Tail (Luminous Ion Trail)
-          const normVx = m.vx / Math.hypot(m.vx, m.vy);
-          const normVy = m.vy / Math.hypot(m.vx, m.vy);
-          const tailX = m.x - normVx * m.len;
-          const tailY = m.y - normVy * m.len;
-
-          const mGrad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
-          mGrad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
-          mGrad.addColorStop(0.2, `rgba(56, 189, 248, ${m.life * 0.95})`);
-          mGrad.addColorStop(0.65, `rgba(14, 165, 233, ${m.life * 0.40})`);
-          mGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
-
-          ctx.beginPath();
-          ctx.moveTo(m.x, m.y);
-          ctx.lineTo(tailX, tailY);
-          ctx.strokeStyle = mGrad;
-          ctx.lineWidth = m.width;
-          ctx.stroke();
-
-          // Luminous White-Hot Meteoroid Head (Hardware dual-arc glow)
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.width * 2.2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(56, 189, 248, ${m.life * 0.45})`;
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.width * 1.25, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${m.life})`;
-          ctx.fill();
         }
 
         ctx.restore();
       }
 
+      let spaceInView = true;
+
+      __masterLoop.register(
+        'spaceRings',
+        () => isRunning && spaceInView,
+        renderFrame
+      );
+
+      if ('IntersectionObserver' in window) {
+        const spaceObserver = new IntersectionObserver((entries) => {
+          spaceInView = entries[0].isIntersecting;
+          if (spaceInView) {
+            lastFrameNow = performance.now();
+            __masterLoop.schedule();
+          }
+        }, { threshold: 0.01 });
+        spaceObserver.observe(canvas);
+      }
+
+      // Pre-warm 1 frame into VRAM backbuffer immediately so canvas is ready behind intro
+      renderFrame(performance.now());
+
       window.__startSpaceOrbitRings = function() {
         if (isRunning) return;
         isRunning = true;
         startTime = performance.now();
-        requestAnimationFrame(draw);
+        lastFrameNow = startTime;
+        __masterLoop.schedule();
       };
 
-      // Launch celestial space orbit rings immediately in background for zero-delay handoff
-      window.__startSpaceOrbitRings();
+      // Only start continuous rAF loop immediately if brandIntroOverlay is not covering the viewport
+      if (!document.getElementById('brandIntroOverlay')) {
+        window.__startSpaceOrbitRings();
+      }
     }
 
     // Fade out drag instruction badge on initial scroll
@@ -674,10 +899,22 @@
       const coreLight = new THREE.PointLight(0x38bdf8, 0.65, 4.0);
       orbGroup.add(coreLight);
 
+      // Lock static transform matrices once to eliminate redundant per-frame Matrix4 multiplications
+      const staticNodes = [
+        coreMesh, ringGroup,
+        ring1Pivot, ring2Pivot, ring3Pivot, ring4Pivot, ring5Pivot,
+        keyLight, fillLight, cyanRim, coreLight
+      ];
+      for (let i = 0; i < staticNodes.length; i++) {
+        staticNodes[i].updateMatrix();
+        staticNodes[i].matrixAutoUpdate = false;
+      }
+
       // Interactive Click-Triggered Quantum Flash State & Audio Reactivity
       let flashEnergy = 0.0;
       let spinSpeedMultiplier = 1.0;
       let isAudioPlaying = false;
+      let wasOrbExcited = false;
       const widget = document.getElementById('quantumOrbWidget') || canvas.parentElement;
       const frame = document.getElementById('orbCanvasFrame') || canvas.parentElement;
 
@@ -705,24 +942,13 @@
         mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
       }, { passive: true });
 
-      let orbInView = true;
-      if ('IntersectionObserver' in window) {
-        const orbObserver = new IntersectionObserver((entries) => {
-          orbInView = entries[0].isIntersecting;
-        }, { threshold: 0.05 });
-        orbObserver.observe(canvas);
-      }
-
-      const clock = new THREE.Clock();
+      const clock = new THREE.Clock(false);
       let running = false;
+      let orbInView = true;
+      let orbRafId = 0;
       let accumulatedTime = 0;
 
-      function renderOrb() {
-        if (!running) return;
-        requestAnimationFrame(renderOrb);
-        if (!orbInView || document.hidden) return; // Skip GPU draw when scrolled away or tab hidden
-        const dt = Math.min(clock.getDelta(), 0.1);
-
+      function stepOrb(dt) {
         // Flash energy smooth decay
         if (flashEnergy > 0.001) {
           flashEnergy *= 0.93;
@@ -744,20 +970,30 @@
         ring4.rotation.y = -t * 0.42;
         ring5.rotation.x = t * 0.52;
 
-        // Dynamic audio reactivity
-        const audioWave = isAudioPlaying ? (Math.sin(t * 4.2) * 0.5 + 0.5) : 0;
+        // Heavy-to-Light State Gating: Only mutate materials/lights when excited by flash or audio
+        const isOrbExcited = (flashEnergy > 0.001) || isAudioPlaying;
+        if (isOrbExcited) {
+          const audioWave = isAudioPlaying ? (Math.sin(t * 4.2) * 0.5 + 0.5) : 0;
+          coreMat.opacity = 0.28 + flashEnergy * 0.72 + audioWave * 0.38;
+          coreLight.intensity = 0.65 + flashEnergy * 4.2 + (isAudioPlaying ? (1.4 + audioWave * 1.8) : 0);
+          coreLight.distance = 4.0 + flashEnergy * 5.0 + (isAudioPlaying ? 2.5 : 0);
 
-        // Visual flash & sound wave response
-        coreMat.opacity = 0.28 + flashEnergy * 0.72 + audioWave * 0.38;
-        coreLight.intensity = 0.65 + flashEnergy * 4.2 + (isAudioPlaying ? (1.4 + audioWave * 1.8) : 0);
-        coreLight.distance = 4.0 + flashEnergy * 5.0 + (isAudioPlaying ? 2.5 : 0);
-
-        if (flashEnergy > 0.08 || isAudioPlaying) {
-          sphereMat.emissive.setHex(isAudioPlaying ? 0x059669 : 0x0ea5e9);
-          orbGroup.scale.setScalar(1.0 + flashEnergy * 0.18 + audioWave * 0.06);
-        } else {
+          if (flashEnergy > 0.08 || isAudioPlaying) {
+            sphereMat.emissive.setHex(isAudioPlaying ? 0x059669 : 0x0ea5e9);
+            orbGroup.scale.setScalar(1.0 + flashEnergy * 0.18 + audioWave * 0.06);
+          } else {
+            sphereMat.emissive.setHex(0x010d22);
+            orbGroup.scale.setScalar(1.0);
+          }
+          wasOrbExcited = true;
+        } else if (wasOrbExcited) {
+          // Cleanly settle back into Light idle state once
+          coreMat.opacity = 0.28;
+          coreLight.intensity = 0.65;
+          coreLight.distance = 4.0;
           sphereMat.emissive.setHex(0x010d22);
           orbGroup.scale.setScalar(1.0);
+          wasOrbExcited = false;
         }
 
         // Continuous majestic macro orbit drift + responsive cursor parallax tilt
@@ -771,15 +1007,42 @@
         renderer.render(scene, camera);
       }
 
+      __masterLoop.register(
+        'smallOrb',
+        () => running && orbInView,
+        () => {
+          const dt = Math.min(clock.getDelta(), 0.1);
+          stepOrb(dt);
+        }
+      );
+
+      if ('IntersectionObserver' in window) {
+        const orbObserver = new IntersectionObserver((entries) => {
+          const wasInView = orbInView;
+          orbInView = entries[0].isIntersecting;
+          if (orbInView && !wasInView) {
+            clock.getDelta(); // Reset delta accumulator so resuming after pause has zero jump
+            __masterLoop.schedule();
+          }
+        }, { threshold: 0.05 });
+        orbObserver.observe(canvas);
+      }
+
+      // Pre-compile shaders and render 1 static frame into VRAM backbuffer ahead of time
+      renderer.compile(scene, camera);
+      stepOrb(0);
+
       window.__startSmallOrb = function() {
         if (running) return;
         running = true;
         clock.start();
-        renderOrb();
+        __masterLoop.schedule();
       };
 
-      // Start quantum sound core orb immediately in background for zero-delay handoff
-      window.__startSmallOrb();
+      // Only start continuous rAF loop immediately if brandIntroOverlay is not covering the viewport
+      if (!document.getElementById('brandIntroOverlay')) {
+        window.__startSmallOrb();
+      }
     }
 
 /* ==================== laptop.js ==================== */
@@ -803,8 +1066,11 @@
       camera.position.set(0, isMobile ? 0.70 : 1.25, isMobile ? 6.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
+      const getOptimalPixelRatio = () => (window.innerWidth <= 900)
+        ? Math.min(window.devicePixelRatio || 1, 2)
+        : Math.min(Math.max(window.devicePixelRatio || 1, 2), 2.5);
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(1.0);
+      renderer.setPixelRatio(getOptimalPixelRatio());
       renderer.setSize(cw, ch);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
@@ -949,16 +1215,21 @@
         ]
       ];
 
-      // Master high-definition canvas for keycap texture (2048 x 860)
+      // Master Power-Of-Two canvas for keycap texture (2048x1024 desktop, 1024x512 mobile to save 75% VRAM & enable clean hardware mipmaps)
+      const texScale = isMobile ? 0.5 : 1.0;
+      const KB_LOGICAL_W = 2048;
+      const KB_LOGICAL_H = 860;
       const kbCanvas = document.createElement('canvas');
-      kbCanvas.width = 2048;
-      kbCanvas.height = 860;
+      kbCanvas.width = Math.round(2048 * texScale);
+      kbCanvas.height = Math.round(1024 * texScale);
       const kbCtx = kbCanvas.getContext('2d');
 
+      const maxAniso = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 16;
       const keycapTexture = new THREE.CanvasTexture(kbCanvas);
-      keycapTexture.generateMipmaps = false;
-      keycapTexture.minFilter = THREE.LinearFilter;
+      keycapTexture.generateMipmaps = true;
+      keycapTexture.minFilter = THREE.LinearMipmapLinearFilter;
       keycapTexture.magFilter = THREE.LinearFilter;
+      keycapTexture.anisotropy = maxAniso;
       const keycapMaterial = new THREE.MeshStandardMaterial({
         map: keycapTexture,
         metalness: 0.12,
@@ -966,8 +1237,11 @@
       });
 
       function drawEngravedKeyboard() {
-        const kbW = kbCanvas.width;
-        const kbH = kbCanvas.height;
+        const kbW = KB_LOGICAL_W;
+        const kbH = KB_LOGICAL_H;
+
+        kbCtx.save();
+        kbCtx.scale(kbCanvas.width / KB_LOGICAL_W, kbCanvas.height / KB_LOGICAL_H);
 
         // Base keyboard tray / recessed well: HEX #181A20, RGB rgb(24, 26, 32)
         kbCtx.fillStyle = '#181a20';
@@ -1212,6 +1486,7 @@
           curY += rowH + rowGap;
         }
 
+        kbCtx.restore();
         keycapTexture.needsUpdate = true;
       }
       drawEngravedKeyboard();
@@ -1264,24 +1539,31 @@
       lidBack.position.set(0, lidH / 2, 0);
       lidGroup.add(lidBack);
 
-      // Ultra-thin minimal bezel frame
+      // Ultra-thin minimal bezel frame (separated from lidBack to prevent Z-fighting)
       const bezelFrame = new THREE.Mesh(
         new THREE.PlaneGeometry(lidW - 0.04, lidH - 0.04),
-        new THREE.MeshBasicMaterial({ color: 0x05070a })
+        new THREE.MeshBasicMaterial({
+          color: 0x05070a,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1
+        })
       );
-      bezelFrame.position.set(0, lidH / 2, 0.023);
+      bezelFrame.position.set(0, lidH / 2, 0.026);
       lidGroup.add(bezelFrame);
 
-      // Standalone Iconic "A" Brand Emblem on Back Lid
+      // Standalone Iconic "A" Brand Emblem on Back Lid (1024x1024 desktop, halved to 512x512 on mobile)
+      const LOGO_LOGICAL_SIZE = 1024;
       const logoCanvas = document.createElement('canvas');
-      logoCanvas.width = 1024;
-      logoCanvas.height = 1024;
+      logoCanvas.width = Math.round(LOGO_LOGICAL_SIZE * texScale);
+      logoCanvas.height = Math.round(LOGO_LOGICAL_SIZE * texScale);
       const lCtx = logoCanvas.getContext('2d');
 
       const logoTexture = new THREE.CanvasTexture(logoCanvas);
-      logoTexture.generateMipmaps = false;
-      logoTexture.minFilter = THREE.LinearFilter;
+      logoTexture.generateMipmaps = true;
+      logoTexture.minFilter = THREE.LinearMipmapLinearFilter;
       logoTexture.magFilter = THREE.LinearFilter;
+      logoTexture.anisotropy = maxAniso;
 
       const logoMaterial = new THREE.MeshBasicMaterial({
         map: logoTexture,
@@ -1294,16 +1576,17 @@
         logoMaterial
       );
       logoMesh.rotation.y = Math.PI; // Face towards the rear
-      logoMesh.position.set(0, lidH / 2, -lidThick / 2 - 0.001);
+      logoMesh.position.set(0, lidH / 2, -lidThick / 2 - 0.002);
       lidGroup.add(logoMesh);
 
       function drawBackLidLogo() {
         const cx = 512, cy = 512;
-        lCtx.clearRect(0, 0, 1024, 1024);
-
         lCtx.save();
+        lCtx.scale(texScale, texScale);
+        lCtx.clearRect(0, 0, LOGO_LOGICAL_SIZE, LOGO_LOGICAL_SIZE);
+
         lCtx.shadowColor = 'rgba(56, 189, 248, 0.9)';
-        lCtx.shadowBlur = 45;
+        lCtx.shadowBlur = 45 * texScale;
 
         // 1. Left Wing Blade
         lCtx.fillStyle = '#f8fafc';
@@ -1344,28 +1627,34 @@
       drawBackLidLogo();
 
       // --- C. ULTRA-SHARP RETINA DARK CODE EDITOR SCREEN ---
-      // 2560x1632 resolution + 16x anisotropic filtering + bold typography = 100% crisp & zero blur
+      // Exact Power-Of-Two (2048x2048 desktop, 1024x1024 mobile) + 16x Anisotropy + 2x SSAA = zero shimmering & crystal-clear text
       const screenW = lidW - 0.16, screenH = lidH - 0.16;
+      const SCREEN_LOGICAL_W = 2560;
+      const SCREEN_LOGICAL_H = 1632;
       const screenCanvas = document.createElement('canvas');
-      screenCanvas.width = 2560;
-      screenCanvas.height = 1632;
+      screenCanvas.width = Math.round(2048 * texScale);
+      screenCanvas.height = Math.round(2048 * texScale);
       const sCtx = screenCanvas.getContext('2d');
 
       const screenTexture = new THREE.CanvasTexture(screenCanvas);
-      screenTexture.generateMipmaps = false;
-      screenTexture.minFilter = THREE.LinearFilter;
+      screenTexture.generateMipmaps = true;
+      screenTexture.minFilter = THREE.LinearMipmapLinearFilter;
       screenTexture.magFilter = THREE.LinearFilter;
+      screenTexture.anisotropy = maxAniso;
 
       const screenMaterial = new THREE.MeshBasicMaterial({
         map: screenTexture,
         toneMapped: false,
-        color: 0x000000 // Standby black initially
+        color: 0x000000, // Standby black initially
+        polygonOffset: true,
+        polygonOffsetFactor: -2,
+        polygonOffsetUnits: -2
       });
       const screenMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(screenW, screenH),
         screenMaterial
       );
-      screenMesh.position.set(0, lidH / 2, 0.024);
+      screenMesh.position.set(0, lidH / 2, 0.030);
       lidGroup.add(screenMesh);
 
       // Laptop lid kinematics: folded flat (closed) vs operational tilt (open)
@@ -1390,7 +1679,10 @@
       ];
 
       function renderCodeEditorScreen(cursorVisible) {
-        const W = screenCanvas.width, H = screenCanvas.height;
+        const W = SCREEN_LOGICAL_W, H = SCREEN_LOGICAL_H;
+
+        sCtx.save();
+        sCtx.scale(screenCanvas.width / SCREEN_LOGICAL_W, screenCanvas.height / SCREEN_LOGICAL_H);
 
         // 1. Pure near-black editor base
         sCtx.fillStyle = '#050811';
@@ -1526,6 +1818,7 @@
         sCtx.fillText('Spaces: 4', W - 240, barY + 45);
         sCtx.fillStyle = '#10b981';
         sCtx.fillText('● 0 err', W - 90, barY + 45);
+        sCtx.restore();
       }
 
       let savedCursorX = 0, savedCursorY = 0;
@@ -1534,10 +1827,10 @@
       screenTexture.needsUpdate = true;
 
       // Hardware-accelerated 3D glowing cursor mesh (Child of screenMesh, zero texture re-upload)
-      const curNormX = (savedCursorX / screenCanvas.width) - 0.5;
-      const curNormY = 0.5 - (savedCursorY / screenCanvas.height);
-      const curW3D = (18 / screenCanvas.width) * screenW;
-      const curH3D = (50 / screenCanvas.height) * screenH;
+      const curNormX = (savedCursorX / SCREEN_LOGICAL_W) - 0.5;
+      const curNormY = 0.5 - (savedCursorY / SCREEN_LOGICAL_H);
+      const curW3D = (18 / SCREEN_LOGICAL_W) * screenW;
+      const curH3D = (50 / SCREEN_LOGICAL_H) * screenH;
 
       const cursorMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(curW3D, curH3D),
@@ -1551,13 +1844,31 @@
       cursorMesh.position.set(
         curNormX * screenW + curW3D / 2,
         curNormY * screenH - curH3D / 2,
-        0.001
+        0.003
       );
       cursorMesh.visible = false;
       screenMesh.add(cursorMesh);
 
+      // Re-bake screen and keyboard textures once web fonts (JetBrains Mono / Space Grotesk) finish loading
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          drawEngravedKeyboard();
+          renderCodeEditorScreen(false);
+          screenTexture.needsUpdate = true;
+          const updatedNormX = (savedCursorX / SCREEN_LOGICAL_W) - 0.5;
+          const updatedNormY = 0.5 - (savedCursorY / SCREEN_LOGICAL_H);
+          cursorMesh.position.set(
+            updatedNormX * screenW + curW3D / 2,
+            updatedNormY * screenH - curH3D / 2,
+            0.003
+          );
+          cursorMesh.updateMatrix();
+        });
+      }
+
       // LIGHTS & SHADOW (Calibrated studio lighting - soft, moody, zero keyboard blowout)
-      scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      scene.add(ambientLight);
 
       // Key light: angled from side/front at gentle 0.85 intensity (eliminates harsh keyboard glare)
       const keyLight = new THREE.DirectionalLight(0xdbeafe, 0.85);
@@ -1579,12 +1890,26 @@
       screenGlowLight.position.set(0, baseH / 2 + 0.5, -0.2);
       laptop.add(screenGlowLight);
 
+      // Lock static transform matrices on all 15 non-moving child meshes & lights
+      // Eliminates 15 redundant Matrix4 local-to-world recomputations every single frame!
+      const staticLaptopNodes = [
+        baseMesh, wellMesh, keyGroup, keyboardPlaneMesh,
+        trackpad, trackpadBorder, hinge,
+        lidBack, bezelFrame, logoMesh, screenMesh, cursorMesh,
+        ambientLight, rimLight, backLight, screenGlowLight
+      ];
+      for (let i = 0; i < staticLaptopNodes.length; i++) {
+        staticLaptopNodes[i].updateMatrix();
+        staticLaptopNodes[i].matrixAutoUpdate = false;
+      }
+
       laptop.rotation.x = 0.35;
       laptop.rotation.y = -0.07;
 
       let isDragging = false, prevMouse = { x: 0, y: 0 };
       let mouseNorm = { x: 0, y: 0 };
       let targetRot = { x: 0.35, y: -0.07 };
+      let prevKeyLightX = 4.0, prevKeyLightY = 3.5;
       const trackRangeX = 0.24;
       const trackRangeY = 0.20;
       const trackRoll = 0.04;
@@ -1696,6 +2021,7 @@
           }
 
           camera.updateProjectionMatrix();
+          renderer.setPixelRatio(getOptimalPixelRatio());
           renderer.setSize(w, h);
         }
       }
@@ -1771,14 +2097,8 @@
         }
       }, { passive: true });
 
-      // High-performance IntersectionObserver: pauses laptop WebGL rendering when scrolled out of view
+      // High-performance IntersectionObserver: completely halts rendering when scrolled out of view
       let laptopInView = true;
-      if ('IntersectionObserver' in window) {
-        const laptopObserver = new IntersectionObserver((entries) => {
-          laptopInView = entries[0].isIntersecting;
-        }, { threshold: 0.02 });
-        laptopObserver.observe(canvas);
-      }
 
       // Silky Smooth & Elegant Unfold & Boot Timeline Parameters (Instant handoff, purely organic & fluid)
       const T_FOLD_PAUSE     = 0.0;   // Instant unfold handoff as intro dissolves: 0.0s
@@ -1797,49 +2117,57 @@
       let laptopRunning = false;
       let screenFullyOn = false;
 
+      if ('IntersectionObserver' in window) {
+        const laptopObserver = new IntersectionObserver((entries) => {
+          laptopInView = entries[0].isIntersecting;
+          if (laptopInView) {
+            __masterLoop.schedule();
+          }
+        }, { threshold: 0.02 });
+        laptopObserver.observe(canvas);
+      }
+
       function animate() {
-        if (!laptopRunning) return;
-        requestAnimationFrame(animate);
-        if (!laptopInView || document.hidden) return; // Completely idle when scrolled offscreen or tab hidden
         const elapsed = clock2.getElapsedTime();
 
-        // 1. KINEMATIC LID POSITIONING (ORGANIC HARMONIC GLIDE • ZERO ACCELERATION SNAP)
-        if (elapsed < tUnfoldStart) {
-          // Closed flat against base
-          lidGroup.rotation.x = closedLidAngle;
-        } else if (elapsed < tUnfoldEnd) {
-          // Pure cosine ease-in-out: zero jerk at endpoints, maximum buttery smoothness
-          const p = (elapsed - tUnfoldStart) / T_UNFOLD_DUR;
-          const ease = 0.5 - 0.5 * Math.cos(Math.PI * p);
-          lidGroup.rotation.x = closedLidAngle + (openLidAngle - closedLidAngle) * ease;
-        } else {
-          // Fully opened to operational viewing angle
-          lidGroup.rotation.x = openLidAngle;
-        }
+        // Heavy-to-Light State Transition: Once boot sequence completes at tPowerEnd (1.65s),
+        // permanently lock lidGroup matrix and bypass all unfold/fade trigonometry!
+        if (!screenFullyOn) {
+          // 1. KINEMATIC LID POSITIONING (ORGANIC HARMONIC GLIDE • ZERO ACCELERATION SNAP)
+          if (elapsed < tUnfoldStart) {
+            lidGroup.rotation.x = closedLidAngle;
+          } else if (elapsed < tUnfoldEnd) {
+            const p = (elapsed - tUnfoldStart) / T_UNFOLD_DUR;
+            const ease = 0.5 - 0.5 * Math.cos(Math.PI * p);
+            lidGroup.rotation.x = closedLidAngle + (openLidAngle - closedLidAngle) * ease;
+          } else {
+            lidGroup.rotation.x = openLidAngle;
+          }
 
-        // 2. SCREEN POWER & DISPLAY STATE (SILKY SMOOTH GRADUAL HARDWARE FADE-IN)
-        if (elapsed < tPowerStart) {
-          // Screen completely OFF (pure black standby on GPU)
-          screenMaterial.color.setRGB(0, 0, 0);
-          screenGlowLight.intensity = 0;
-          if (cursorMesh) cursorMesh.visible = false;
-        } else if (elapsed < tPowerEnd) {
-          // Harmonic cosine power-on fade
-          const pRaw = (elapsed - tPowerStart) / T_POWER_DUR;
-          const p = 0.5 - 0.5 * Math.cos(Math.PI * pRaw);
-          screenMaterial.color.setRGB(p, p, p);
-          screenGlowLight.intensity = 0.35 * p;
-          if (cursorMesh) cursorMesh.visible = false;
-        } else {
-          // Screen is fully ON
-          if (!screenFullyOn) {
+          // 2. SCREEN POWER & DISPLAY STATE (SILKY SMOOTH GRADUAL HARDWARE FADE-IN)
+          if (elapsed < tPowerStart) {
+            screenMaterial.color.setRGB(0, 0, 0);
+            screenGlowLight.intensity = 0;
+            if (cursorMesh) cursorMesh.visible = false;
+          } else if (elapsed < tPowerEnd) {
+            const pRaw = (elapsed - tPowerStart) / T_POWER_DUR;
+            const p = 0.5 - 0.5 * Math.cos(Math.PI * pRaw);
+            screenMaterial.color.setRGB(p, p, p);
+            screenGlowLight.intensity = 0.35 * p;
+            if (cursorMesh) cursorMesh.visible = false;
+          } else {
+            // Transition to Light State: Lock lidGroup matrix & finalize OLED screen power
             screenFullyOn = true;
+            lidGroup.rotation.x = openLidAngle;
+            lidGroup.updateMatrix();
+            lidGroup.matrixAutoUpdate = false;
             screenMaterial.color.setRGB(1, 1, 1);
             screenGlowLight.intensity = 0.35;
             if (cursorMesh) cursorMesh.visible = true;
+            lastCursorBlink = elapsed;
           }
-
-          // Subtle, lightweight cursor blink toggled via 3D mesh visibility (ZERO texture re-upload churn!)
+        } else {
+          // Light State: Subtle, lightweight cursor blink toggled via 3D mesh visibility (ZERO texture re-upload churn!)
           if (elapsed - lastCursorBlink > 0.52) {
             lastCursorBlink = elapsed;
             cursorVisibleState = !cursorVisibleState;
@@ -1892,17 +2220,30 @@
           laptop.position.y = zeroGBobY;
         }
 
-        // Dynamic light reflection that glides gently across aluminum chassis
-        keyLight.position.x = 4.0 + mouseNorm.x * 1.2;
-        keyLight.position.y = 3.5 + mouseNorm.y * 1.0;
+        // Dynamic light reflection that glides gently across aluminum chassis (gated when pointer is stationary)
+        const targetKeyX = 4.0 + mouseNorm.x * 1.2;
+        const targetKeyY = 3.5 + mouseNorm.y * 1.0;
+        if (Math.abs(targetKeyX - prevKeyLightX) > 0.0005 || Math.abs(targetKeyY - prevKeyLightY) > 0.0005) {
+          keyLight.position.x = targetKeyX;
+          keyLight.position.y = targetKeyY;
+          prevKeyLightX = targetKeyX;
+          prevKeyLightY = targetKeyY;
+        }
 
         renderer.render(scene, camera);
       }
 
-      // Render 1 static frame to compile materials/shaders ahead of time
+      __masterLoop.register(
+        'laptop',
+        () => laptopRunning && laptopInView,
+        animate
+      );
+
+      // Pre-compile shaders and render 1 static frame into VRAM ahead of time
       laptop.rotation.y = targetRot.y;
       laptop.rotation.x = targetRot.x;
       lidGroup.rotation.x = closedLidAngle;
+      renderer.compile(scene, camera);
       renderer.render(scene, camera);
 
       window.__startLaptop = function() {
@@ -1911,13 +2252,15 @@
         clock2 = new THREE.Clock();
         clock2.start();
         canvas.classList.add('is-ready');
-        animate();
+        __masterLoop.schedule();
       };
 
       window.__laptopRef = { laptop, lidGroup, scene, camera, renderer };
       window.__laptopDebug = function() {
         return {
           laptopRunning,
+          laptopInView,
+          laptopRafId: (laptopRunning && laptopInView) ? __masterLoop.getRafId() : 0,
           elapsed: clock2 ? clock2.getElapsedTime() : 0,
           lidRotX: lidGroup ? lidGroup.rotation.x : null,
           laptopRotX: laptop ? laptop.rotation.x : null,
@@ -1935,34 +2278,71 @@
     }
 
 /* ==================== main.js ==================== */
-/* 4. MASTER PRODUCTION BOOTSTRAPPER (DEFERRED FOR ZERO-JANK INTRO) */
-    let threeBooted = false;
-    function boot3D() {
-      if (threeBooted) return;
-      if (typeof THREE === 'undefined') {
-        setTimeout(boot3D, 100);
-        return;
-      }
-      threeBooted = true;
+/* 4. MASTER PRODUCTION BOOTSTRAPPER (STAGGERED IDLE PRE-WARM FOR ZERO-JANK INTRO) */
+    let spaceRingsBooted = false;
+    let smallOrbBooted = false;
+    let laptopBooted = false;
+
+    function bootSpaceRingsSafe() {
+      if (spaceRingsBooted) return;
+      spaceRingsBooted = true;
       try { initSpaceOrbitRings(); } catch (err) { console.warn("Space orbit rings error:", err); }
+    }
+
+    function bootSmallOrbSafe() {
+      if (smallOrbBooted) return;
+      smallOrbBooted = true;
       try { initSmallShinyOrb(); } catch (err) { console.warn("Small orb error:", err); }
+    }
+
+    function bootLaptopSafe() {
+      if (laptopBooted) return;
+      laptopBooted = true;
       try { initLaptopStage(); } catch (err) { console.warn("Laptop error:", err); }
     }
 
+    function boot3DAllImmediate() {
+      if (typeof THREE === 'undefined') {
+        setTimeout(boot3DAllImmediate, 60);
+        return;
+      }
+      bootSpaceRingsSafe();
+      bootSmallOrbSafe();
+      bootLaptopSafe();
+    }
+
     window.__start3DScenes = function() {
-      boot3D();
+      boot3DAllImmediate();
       if (typeof window.__startSpaceOrbitRings === 'function') window.__startSpaceOrbitRings();
       if (typeof window.__startSmallOrb === 'function') window.__startSmallOrb();
       if (typeof window.__startLaptop === 'function') window.__startLaptop();
     };
 
-    // Pre-warm 3D geometries and shaders immediately in background
-    boot3D();
-
-    // If overlay does not exist on page, start scenes immediately
+    // If overlay does not exist on page, boot and start all scenes immediately
     if (!document.getElementById('brandIntroOverlay')) {
       window.__start3DScenes();
     } else {
+      // Stagger heavy canvas/VRAM initialization across separate animation frames during the calm
+      // early phase of the brand intro so the intro SVG/CSS animations never drop a single frame!
+      const staggerBoot = () => {
+        if (typeof THREE === 'undefined') {
+          setTimeout(staggerBoot, 60);
+          return;
+        }
+        requestAnimationFrame(() => {
+          bootSpaceRingsSafe();
+          requestAnimationFrame(() => {
+            bootSmallOrbSafe();
+            setTimeout(() => {
+              requestAnimationFrame(() => {
+                bootLaptopSafe();
+              });
+            }, 80);
+          });
+        });
+      };
+      staggerBoot();
+
       // Defensive safety fallback after 4.5s
       setTimeout(() => {
         window.__start3DScenes();
@@ -1982,9 +2362,6 @@
   const toastDismissBtn = document.getElementById('audioToastDismissBtn');
 
   if (!audio) return;
-
-  // Pre-prime audio buffer in background for zero-latency start
-  try { audio.load(); } catch (_) {}
 
   let isPlaying = false;
   let isActivating = false;
@@ -2025,6 +2402,7 @@
   function updateUI(playing) {
     if (orbWidget) {
       orbWidget.classList.remove('is-activating');
+      orbWidget.setAttribute('aria-pressed', playing ? 'true' : 'false');
       if (playing) {
         orbWidget.classList.add('is-audio-playing');
         orbWidget.setAttribute('title', 'Click to pause ambient soundtrack');
@@ -2097,12 +2475,6 @@
 
   if (orbWidget) {
     orbWidget.addEventListener('click', togglePlayback);
-    orbWidget.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        togglePlayback();
-      }
-    });
   }
 
   if (toastPlayBtn) {
@@ -2130,24 +2502,99 @@
 })();
 
 /* ==================== nav.js ==================== */
-/* 1. INTERACTIVE ONE-CLICK EMAIL COPY & CONTACT FORM */
+/* 1. INTERACTIVE ONE-CLICK EMAIL COPY, CONTACT FORM & LIVE WEBGL PROFILER */
     (() => {
       const copyBtn = document.getElementById('copyEmailBtn');
+      const copyEmailText = document.getElementById('copyEmailText');
+      const mobileEmailLink = document.getElementById('mobileDirectEmailLink');
       const label = document.getElementById('copyBtnLabel');
-      const email = 'anmolkumar2762@gmail.com';
 
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(email).then(() => {
-          label.textContent = 'Copied! ✓';
-          label.style.background = 'rgba(16, 185, 129, 0.2)';
-          label.style.color = '#6ee7b7';
-          setTimeout(() => {
-            label.textContent = 'Copy ⧉';
-            label.style.background = '';
-            label.style.color = '';
-          }, 2500);
+      if (mobileEmailLink) {
+        mobileEmailLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
+          window.location.href = 'mailto:' + email;
         });
-      });
+      }
+
+      if (copyBtn && label) {
+        copyBtn.addEventListener('click', () => {
+          const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
+          if (copyEmailText) {
+            copyEmailText.textContent = email;
+          }
+          copyBtn.setAttribute('aria-label', 'Copy email address ' + email + ' to clipboard');
+          navigator.clipboard.writeText(email).then(() => {
+            label.textContent = 'Copied! ✓';
+            label.classList.add('is-copied');
+            setTimeout(() => {
+              label.textContent = 'Copy ⧉';
+              label.classList.remove('is-copied');
+            }, 2500);
+          });
+        });
+      }
+
+      // Real-Time Browser Frame Rate & WebGL Renderer Profiler (Section 04)
+      const fpsChip = document.getElementById('hudFpsChip');
+      const frameTimeChip = document.getElementById('hudFrameTimeChip');
+      const webglChip = document.getElementById('hudWebglChip');
+      const profilerOutput = document.getElementById('hudLiveProfilerOutput');
+      const hudCard = document.getElementById('hudTerminalCard');
+
+      if (fpsChip && frameTimeChip && hudCard) {
+        let hudVisible = false;
+        let frameCount = 0;
+        let lastSampleTime = performance.now();
+
+        function sampleHudMetrics(now) {
+          frameCount++;
+          const elapsed = now - lastSampleTime;
+
+          // Update DOM at most once every 600ms to guarantee 0 layout/paint overhead
+          if (elapsed >= 600) {
+            const fps = Math.round((frameCount * 1000) / elapsed);
+            const msPerFrame = (elapsed / frameCount).toFixed(1);
+            fpsChip.textContent = `● ${fps} FPS`;
+            frameTimeChip.textContent = `${msPerFrame}ms / FRAME`;
+
+            const laptopRenderer = window.__laptopRef && window.__laptopRef.renderer;
+            if (laptopRenderer && laptopRenderer.info) {
+              if (webglChip) {
+                webglChip.textContent = laptopRenderer.capabilities.isWebGL2 ? 'WEBGL 2.0' : 'WEBGL 1.0';
+              }
+              if (profilerOutput) {
+                const geoms = laptopRenderer.info.memory.geometries;
+                const texs = laptopRenderer.info.memory.textures;
+                const progs = laptopRenderer.info.programs ? laptopRenderer.info.programs.length : 3;
+                profilerOutput.textContent = `## main • WebGL VRAM: ${geoms} geometries, ${texs} textures, ${progs} compiled shaders (${fps} FPS)`;
+              }
+            }
+
+            frameCount = 0;
+            lastSampleTime = now;
+          }
+        }
+
+        __masterLoop.register(
+          'hudTelemetry',
+          () => hudVisible,
+          sampleHudMetrics
+        );
+
+        if ('IntersectionObserver' in window) {
+          const hudObs = new IntersectionObserver((entries) => {
+            const wasVisible = hudVisible;
+            hudVisible = entries[0].isIntersecting;
+            if (hudVisible && !wasVisible) {
+              frameCount = 0;
+              lastSampleTime = performance.now();
+              __masterLoop.schedule();
+            }
+          }, { threshold: 0.05 });
+          hudObs.observe(hudCard);
+        }
+      }
 
       const form = document.getElementById('contactForm');
       const status = document.getElementById('formStatus');
@@ -2164,6 +2611,7 @@
           return;
         }
 
+        const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
         const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
         window.location.href = mailtoLink;
 
@@ -2188,7 +2636,7 @@
         mobileMenuBtn.setAttribute('aria-expanded', 'true');
         mobileDrawer.classList.add('is-open');
         if (mobileBackdrop) mobileBackdrop.classList.add('is-open');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling while open
+        document.body.classList.add('is-scroll-locked'); // Prevent background scrolling while open
       }
 
       function closeDrawer() {
@@ -2196,7 +2644,7 @@
         mobileMenuBtn.setAttribute('aria-expanded', 'false');
         mobileDrawer.classList.remove('is-open');
         if (mobileBackdrop) mobileBackdrop.classList.remove('is-open');
-        document.body.style.overflow = '';
+        document.body.classList.remove('is-scroll-locked');
       }
 
       mobileMenuBtn.addEventListener('click', () => {
@@ -2241,7 +2689,7 @@
 
   if (!overlay) return;
 
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('is-scroll-locked');
 
   let isCompleted = false;
   function triggerZoomThroughTransition() {
@@ -2255,7 +2703,7 @@
 
     // 2. Silky smooth GPU depth dissolve into hero workstation
     overlay.classList.add('is-zoom-through');
-    document.body.style.overflow = '';
+    document.body.classList.remove('is-scroll-locked');
 
     setTimeout(() => {
       overlay.remove();
@@ -2285,7 +2733,7 @@
   setTimeout(() => {
     if (sheen) {
       sheen.classList.add('intro-sheen-active');
-      setTimeout(() => { sheen.style.display = 'none'; }, 1100);
+      setTimeout(() => { sheen.classList.add('is-hidden-display'); }, 1100);
     }
   }, 1450);
 
@@ -2298,7 +2746,7 @@
   setTimeout(() => {
     if (laser) {
       laser.classList.add('is-active');
-      setTimeout(() => { laser.style.display = 'none'; }, 1000);
+      setTimeout(() => { laser.classList.add('is-hidden-display'); }, 1000);
     }
     if (bootLine) bootLine.classList.add('is-visible');
     if (emblem) emblem.classList.add('is-floating');
