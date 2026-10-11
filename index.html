@@ -327,11 +327,37 @@
         </div>
       </div>
 
-      <!-- Live Realistic 3D Laptop Stage -->
-      <div class="laptop-stage">
-        <canvas id="laptop-canvas"></canvas>
-        <div class="drag-instruction">
-          <span>👆 Drag in 360° • Scroll down freely</span>
+      <!-- Live Realistic 3D Laptop Stage & Mobile Fullscreen Viewer -->
+      <div class="laptop-stage-wrapper">
+        <div class="laptop-stage" id="laptopStage">
+          <canvas id="laptop-canvas"></canvas>
+          <div class="drag-instruction">
+            <span>👆 Drag in 360° • Scroll down freely</span>
+          </div>
+
+          <!-- Dedicated Fullscreen Modal Chrome (Active only when .is-fullscreen-modal on mobile) -->
+          <div class="laptop-modal-ui" id="laptopModalUi" aria-hidden="true">
+            <div class="laptop-modal-header">
+              <div class="laptop-modal-title-group">
+                <span class="laptop-modal-badge">3D HARDWARE</span>
+                <span class="laptop-modal-title">ANMOL OS // WORKSTATION</span>
+              </div>
+              <button id="closeLaptopModalBtn" class="laptop-modal-close-btn" aria-label="Close 3D viewer">✕ Close</button>
+            </div>
+            <div class="laptop-modal-footer">
+              <div class="laptop-modal-hint">👆 Touch & drag to rotate 360° • Pinch to zoom</div>
+              <button id="resetLaptopModalBtn" class="laptop-modal-reset-btn">↺ Reset View</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile-Only Inspect Button -->
+        <div class="mobile-laptop-actions">
+          <button id="openMobileLaptopModalBtn" class="mobile-laptop-modal-btn" aria-label="Inspect 3D Laptop in Fullscreen">
+            <span class="btn-icon">⚡</span>
+            <span>Inspect 3D Laptop Fullscreen</span>
+            <span class="btn-expand-icon">⤢</span>
+          </button>
         </div>
       </div>
     </section>
