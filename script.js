@@ -198,16 +198,23 @@
         ctx.clearRect(0, 0, width, height);
 
         // -------------------------------------------------------------
-        // UNIFIED CONCENTRIC ORIGIN (No secondary center, No spirals/criss-cross!)
+        // UNIFIED CONCENTRIC ORIGIN (Specialized portrait framing for mobile phone screens!)
         // -------------------------------------------------------------
-        const originX = width * (0.92 - scrollPct * 0.20) + curMouseX * 16;
-        const originY = height * (0.05 - scrollPct * 0.10) + curMouseY * 12;
+        const isMobileScreen = width < 768;
+        const originX = isMobileScreen 
+          ? width * (0.66 - scrollPct * 0.14) + curMouseX * 8
+          : width * (0.92 - scrollPct * 0.20) + curMouseX * 16;
+        const originY = isMobileScreen
+          ? height * (0.07 - scrollPct * 0.08) + curMouseY * 6
+          : height * (0.05 - scrollPct * 0.10) + curMouseY * 12;
 
         // Dynamic 3D inclination (Pure parallel orientation)
-        const rot = -0.42 + scrollPct * 0.24 + Math.sin(t * 0.3) * 0.02 + curMouseY * 0.03;
+        const rot = isMobileScreen
+          ? -0.34 + scrollPct * 0.22 + Math.sin(t * 0.28) * 0.02
+          : -0.42 + scrollPct * 0.24 + Math.sin(t * 0.3) * 0.02 + curMouseY * 0.03;
 
         // Expansive radius scaling across the entire website
-        const expansion = 1.0 + scrollPct * 1.85;
+        const expansion = (1.0 + scrollPct * 1.85) * (isMobileScreen ? 0.76 : 1.0);
         const dynamicFlare = 1.0 + scrollGlow * 0.65;
 
         // =============================================================
@@ -252,8 +259,8 @@
         // =============================================================
         for (let i = 0; i < ORBITS.length; i++) {
           const orb = ORBITS[i];
-          const curRx = orb.baseR * expansion;
-          const curRy = curRx * orb.ecc;
+          const curRx = orb.baseR * expansion * (isMobileScreen ? 0.68 : 1.0);
+          const curRy = curRx * (isMobileScreen ? Math.min(orb.ecc * 1.35, 0.72) : orb.ecc);
 
           // Enhanced radiant opacity & vibrant celestial presence across all lines
           let ringAlpha;
@@ -330,8 +337,8 @@
         for (let b = 0; b < CELESTIAL_NODES.length; b++) {
           const node = CELESTIAL_NODES[b];
           const orb = ORBITS[node.orbitIdx];
-          const curRx = orb.baseR * expansion;
-          const curRy = curRx * orb.ecc;
+          const curRx = orb.baseR * expansion * (isMobileScreen ? 0.68 : 1.0);
+          const curRy = curRx * (isMobileScreen ? Math.min(orb.ecc * 1.35, 0.72) : orb.ecc);
 
           // Continuous silky angle progression
           const nodeAngle = node.phase + t * node.speed + scrollPhase * node.dir;
@@ -790,10 +797,10 @@
 
       const scene = new THREE.Scene();
       
-      const isMobile = window.innerWidth <= 860;
-      const initScale = isMobile ? 0.58 : 0.78;
+      const isMobile = window.innerWidth <= 900;
+      const initScale = isMobile ? 0.88 : 0.78;
       const camera = new THREE.PerspectiveCamera(isMobile ? 38 : 40, cw / ch, 0.1, 100);
-      camera.position.set(0, isMobile ? 1.0 : 1.25, isMobile ? 7.2 : 6.4);
+      camera.position.set(0, isMobile ? 0.95 : 1.25, isMobile ? 5.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
@@ -1606,19 +1613,25 @@
           const dy = e.clientY - prevMouse.y;
 
           if (isTouch) {
-            // Determine whether user wants to scroll page or rotate 3D laptop
-            const totalDx = Math.abs(e.clientX - touchStart.x);
-            const totalDy = Math.abs(e.clientY - touchStart.y);
+            if (isModalOpen) {
+              // Full 360° touch rotation in dedicated fullscreen 3D viewer
+              targetRot.y += dx * 0.009;
+              targetRot.x += dy * 0.009;
+            } else {
+              // Normal in-page touch: Allow vertical page scrolling to take priority
+              const totalDx = Math.abs(e.clientX - touchStart.x);
+              const totalDy = Math.abs(e.clientY - touchStart.y);
 
-            // If gesture is mainly vertical, release 3D drag so page scrolls smoothly!
-            if (!touchLock3D && totalDy > totalDx && totalDy > 7) {
-              isDragging = false;
-              return;
+              // If gesture is mainly vertical, release 3D drag so page scrolls smoothly!
+              if (!touchLock3D && totalDy > totalDx && totalDy > 7) {
+                isDragging = false;
+                return;
+              }
+              if (totalDx > 9) {
+                touchLock3D = true; // Lock into horizontal 3D rotation
+              }
+              targetRot.y += dx * 0.009;
             }
-            if (totalDx > 9) {
-              touchLock3D = true; // Lock into horizontal 3D rotation
-            }
-            targetRot.y += dx * 0.009;
           } else {
             targetRot.y += dx * 0.008;
             targetRot.x += dy * 0.008;
@@ -1647,23 +1660,99 @@
 
       function handleResize() {
         if (!container || !camera || !renderer) return;
-        const w = container.clientWidth;
-        const h = container.clientHeight;
+        const isFullscreen = container.classList.contains('is-fullscreen-modal');
+        const w = isFullscreen ? window.innerWidth : container.clientWidth;
+        const h = isFullscreen ? window.innerHeight : container.clientHeight;
         if (w > 50 && h > 50) {
           camera.aspect = w / h;
-          const isMobile = window.innerWidth <= 860;
-          const scale = isMobile ? 0.58 : 0.79;
+          const isMobile = window.innerWidth <= 900;
+          const scale = isFullscreen ? 0.90 : (isMobile ? 0.88 : 0.78);
           laptop.scale.set(scale, scale, scale);
-          if (isMobile) {
-            camera.position.set(0, 1.0, 7.2);
+          if (isFullscreen) {
+            camera.position.set(0, 1.20, 5.0);
+          } else if (isMobile) {
+            camera.position.set(0, 0.95, 5.2);
           } else {
-            camera.position.set(0, 1.3, 6.4);
+            camera.position.set(0, 1.25, 6.4);
           }
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
         }
       }
       window.addEventListener('resize', handleResize, { passive: true });
+
+      // ===============================================================
+      // MOBILE FULLSCREEN 3D LAPTOP VIEWER MODAL CONTROLLER
+      // ===============================================================
+      const openModalBtn = document.getElementById('openMobileLaptopModalBtn');
+      const closeModalBtn = document.getElementById('closeLaptopModalBtn');
+      const resetModalBtn = document.getElementById('resetLaptopModalBtn');
+      let isModalOpen = false;
+
+      function openLaptopModal() {
+        if (!container) return;
+        isModalOpen = true;
+        container.classList.add('is-fullscreen-modal');
+        document.body.classList.add('modal-scroll-lock');
+        handleResize();
+      }
+
+      function closeLaptopModal() {
+        if (!container) return;
+        isModalOpen = false;
+        container.classList.remove('is-fullscreen-modal');
+        document.body.classList.remove('modal-scroll-lock');
+        handleResize();
+      }
+
+      function resetLaptopModalView() {
+        targetRot.y = 0.38;
+        targetRot.x = 0.12;
+        laptop.rotation.y = 0.38;
+        laptop.rotation.x = 0.12;
+        laptop.rotation.z = 0;
+        laptop.position.set(0, 0, 0);
+        if (camera) {
+          camera.position.set(0, 1.20, 5.0);
+          camera.updateProjectionMatrix();
+        }
+      }
+
+      if (openModalBtn) {
+        openModalBtn.addEventListener('click', openLaptopModal);
+      }
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeLaptopModal);
+      }
+      if (resetModalBtn) {
+        resetModalBtn.addEventListener('click', resetLaptopModalView);
+      }
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isModalOpen) closeLaptopModal();
+      });
+
+      // Pinch to zoom in fullscreen modal
+      let pinchStartDist = 0;
+      let initialCameraZ = 4.2;
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches.length === 2 && isModalOpen) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          pinchStartDist = Math.hypot(dx, dy);
+          initialCameraZ = camera.position.z;
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches.length === 2 && isModalOpen && pinchStartDist > 0) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.hypot(dx, dy);
+          const ratio = pinchStartDist / dist;
+          camera.position.z = Math.max(2.5, Math.min(7.5, initialCameraZ * ratio));
+        }
+      }, { passive: true });
 
       // High-performance IntersectionObserver: pauses laptop WebGL rendering when scrolled out of view
       let laptopInView = true;
@@ -1754,7 +1843,13 @@
         // Inertial scroll tilt lag (gently pushes back as if drifting in atmospheric friction)
         const scrollInertiaPitch = -Math.max(-0.25, Math.min(0.25, laptopScrollVelocity * 0.007));
 
-        if (!isDragging) {
+        if (isModalOpen) {
+          laptop.rotation.y += (targetRot.y - laptop.rotation.y) * 0.12;
+          laptop.rotation.x += (targetRot.x - laptop.rotation.x) * 0.12;
+          laptop.rotation.z += (0 - laptop.rotation.z) * 0.10;
+          laptop.position.x += (0 - laptop.position.x) * 0.10;
+          laptop.position.y += (0 - laptop.position.y) * 0.10;
+        } else if (!isDragging) {
           const destRotY = targetRot.y + mouseNorm.x * trackRangeX + zeroGDriftTilt;
           const destRotX = targetRot.x - mouseNorm.y * trackRangeY + scrollInertiaPitch;
           const destRotZ = mouseNorm.x * trackRoll;
