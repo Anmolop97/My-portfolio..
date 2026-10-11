@@ -1,50 +1,3 @@
-/* ==================== ADAPTIVE HARDWARE & LOW-POWER ENGINE ==================== */
-/* Dynamically balances visual fidelity and locked 60 FPS performance across all devices */
-const PerfTier = (() => {
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 860);
-  const cores = navigator.hardwareConcurrency || 4;
-  const memory = navigator.deviceMemory || 4;
-  const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  let isLowGPU = false;
-  try {
-    const testCanvas = document.createElement('canvas');
-    const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
-    if (gl) {
-      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-      if (debugInfo) {
-        const rendererStr = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).toLowerCase();
-        if (/intel.*(hd|uhd)\s*(graphics)?\s*(3000|4000|500|600|605|610|615|620)/i.test(rendererStr) ||
-            /mali-(400|450|t|g31|g51|g52)/i.test(rendererStr) ||
-            /adreno\s*(3|4|505|506|508|509|610|612|616)/i.test(rendererStr) ||
-            /powervr/i.test(rendererStr) ||
-            /software|llvmpipe|swiftshader/i.test(rendererStr)) {
-          isLowGPU = true;
-        }
-      }
-    }
-  } catch (_) {}
-
-  const isLowEnd = isMobile || isLowGPU || cores <= 4 || memory <= 4 || isReducedMotion;
-
-  if (typeof document !== 'undefined' && document.documentElement) {
-    if (isLowEnd) document.documentElement.classList.add('low-power-device');
-    if (isMobile) document.documentElement.classList.add('is-mobile-device');
-  }
-
-  return {
-    isMobile,
-    isLowEnd,
-    isReducedMotion,
-    // DPR: 1.0 on low-end/mobile saves over 55% GPU fill rate churn; capped to 1.25 on high-end
-    dpr: isLowEnd ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.25),
-    antialias: !isLowEnd,
-    enableShadowBlur: !isLowEnd,
-    maxOrbits: isLowEnd ? (isMobile ? 7 : 9) : 12,
-    maxMeteors: isLowEnd ? 1 : 4
-  };
-})();
-
 
 
 /* ==================== space-rings.js ==================== */
@@ -58,46 +11,27 @@ const PerfTier = (() => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      let dpr = PerfTier.dpr;
+      let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       let width = window.innerWidth;
       let height = window.innerHeight;
 
       function resize() {
-        const newW = window.innerWidth;
-        const newH = window.innerHeight;
-        // Ignore mobile browser URL bar toggles to avoid unnecessary canvas buffer allocations
-        if (Math.abs(newW - width) < 8 && Math.abs(newH - height) < 80) return;
-        dpr = PerfTier.dpr;
-        width = newW;
-        height = newH;
+        dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        width = window.innerWidth;
+        height = window.innerHeight;
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
       }
       resize();
       window.addEventListener('resize', resize, { passive: true });
 
-      // Interactive mouse parallax (desktop only)
+      // Interactive mouse parallax
       let mouseX = 0, mouseY = 0;
       let curMouseX = 0, curMouseY = 0;
-      if (!PerfTier.isMobile) {
-        window.addEventListener('mousemove', (e) => {
-          mouseX = (e.clientX / width - 0.5) * 2;
-          mouseY = (e.clientY / height - 0.5) * 2;
-        }, { passive: true });
-      }
-
-      // Fast GPU shadow helper: completely bypasses expensive 2D Gaussian blurs on low-end/mobile
-      function setGlow(color, blur) {
-        if (PerfTier.enableShadowBlur) {
-          ctx.shadowColor = color;
-          ctx.shadowBlur = Math.min(blur, 6);
-        }
-      }
-      function clearGlow() {
-        if (PerfTier.enableShadowBlur && ctx.shadowBlur !== 0) {
-          ctx.shadowBlur = 0;
-        }
-      }
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / width - 0.5) * 2;
+        mouseY = (e.clientY / height - 0.5) * 2;
+      }, { passive: true });
 
       // Silky-smooth kinetic scroll damping (Zero jitter, luxury 0.055 lerp)
       let currentScrollY = window.scrollY || 0;
@@ -222,17 +156,10 @@ const PerfTier = (() => {
       let startTime = performance.now();
       let isRunning = false;
 
-      let lastOrbitFrame = 0;
       function draw(now) {
         if (!isRunning) return;
         requestAnimationFrame(draw);
         if (document.hidden) return; // Skip canvas compute when browser tab is inactive
-
-        // Battery and GPU saver: when scrolled far below hero, throttle background orbits to 30 FPS on low-end
-        if (PerfTier.isLowEnd && smoothScrollY > 1200) {
-          if (now - lastOrbitFrame < 32) return;
-        }
-        lastOrbitFrame = now;
 
         const t = (now - startTime) * 0.001;
 
@@ -249,9 +176,9 @@ const PerfTier = (() => {
         // --- SPAWN METEORS ONLY WHEN SCROLL IS ACTIVE ---
         if (scrollVelocity > 1.2) {
           meteorCooldown -= scrollVelocity;
-          if (meteorCooldown <= 0 && meteors.length < PerfTier.maxMeteors) {
+          if (meteorCooldown <= 0 && meteors.length < 5) {
             spawnMeteor();
-            meteorCooldown = PerfTier.isLowEnd ? 42 : 22; // Interval between shooting stars during scroll
+            meteorCooldown = 22; // Interval between shooting stars during scroll
           }
         } else {
           meteorCooldown = 0;
@@ -299,9 +226,10 @@ const PerfTier = (() => {
         ctx.beginPath();
         ctx.arc(originX, originY, 3.8, 0, Math.PI * 2);
         ctx.fillStyle = '#ffffff';
-        setGlow('#38bdf8', 6);
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 12;
         ctx.fill();
-        clearGlow();
+        ctx.shadowBlur = 0;
 
         // Rotating astrolabe crosshair spikes
         const astrolabeAngle = t * 0.15 + scrollPhase;
@@ -319,8 +247,7 @@ const PerfTier = (() => {
         // B. UNIFIED CONCENTRIC GLASSY SPACE ORBITS (PURE PARALLEL)
         // Sweeping completely across both Left & Right sides of website
         // =============================================================
-        const totalOrbitsToDraw = PerfTier.maxOrbits;
-        for (let i = 0; i < totalOrbitsToDraw; i++) {
+        for (let i = 0; i < ORBITS.length; i++) {
           const orb = ORBITS[i];
           const curRx = orb.baseR * expansion;
           const curRy = curRx * orb.ecc;
@@ -358,9 +285,9 @@ const PerfTier = (() => {
           ctx.ellipse(originX, originY, curRx, curRy, rot, 0, Math.PI * 2);
           ctx.strokeStyle = grad;
           ctx.lineWidth = orb.lineWidth * 1.15;
-          setGlow('rgba(56, 189, 248, 0.85)', i <= 4 ? 6 : 3);
+          ctx.shadowColor = 'rgba(56, 189, 248, 0.85)'; // Neon cyan glow on all orbits
+          ctx.shadowBlur = i <= 4 ? 16 : 10;
           ctx.stroke();
-          clearGlow();
           ctx.restore();
 
           // 2. Companion Guide Track (Twin wire: 1.4px with luminous aura)
@@ -370,9 +297,9 @@ const PerfTier = (() => {
             ctx.ellipse(originX, originY, curRx + 5.5, (curRx + 5.5) * orb.ecc, rot, 0, Math.PI * 2);
             ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.72})`;
             ctx.lineWidth = 1.4;
-            setGlow('rgba(56, 189, 248, 0.65)', 4);
+            ctx.shadowColor = 'rgba(56, 189, 248, 0.65)';
+            ctx.shadowBlur = 8;
             ctx.stroke();
-            clearGlow();
             ctx.restore();
           }
 
@@ -398,7 +325,6 @@ const PerfTier = (() => {
         // =============================================================
         for (let b = 0; b < CELESTIAL_NODES.length; b++) {
           const node = CELESTIAL_NODES[b];
-          if (node.orbitIdx >= totalOrbitsToDraw) continue;
           const orb = ORBITS[node.orbitIdx];
           const curRx = orb.baseR * expansion;
           const curRy = curRx * orb.ecc;
@@ -460,9 +386,10 @@ const PerfTier = (() => {
           ctx.arc(renderX, renderY, haloR, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.90)';
           ctx.lineWidth = 1.1;
-          setGlow(themeColor, 4);
+          ctx.shadowColor = themeColor;
+          ctx.shadowBlur = 8;
           ctx.stroke();
-          clearGlow();
+          ctx.shadowBlur = 0;
 
           // 3. Special Feature: Revolving Micro-Moon Satellite OR Pulsar Radar Ripple
           if (node.isMoonPlanet) {
@@ -481,9 +408,10 @@ const PerfTier = (() => {
             ctx.beginPath();
             ctx.arc(mx, my, 1.2, 0, Math.PI * 2);
             ctx.fillStyle = '#ffffff';
-            setGlow(themeColor, 3);
+            ctx.shadowColor = themeColor;
+            ctx.shadowBlur = 6;
             ctx.fill();
-            clearGlow();
+            ctx.shadowBlur = 0;
           } else if (node.isPulsar) {
             // Expanding Pulsar Radar Ripple
             const pulseR = 7.5 + Math.sin(t * 3.2 + b * 0.7) * 1.6;
@@ -498,9 +426,10 @@ const PerfTier = (() => {
           ctx.beginPath();
           ctx.arc(renderX, renderY, node.radius, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
-          setGlow(themeColor, 5);
+          ctx.shadowColor = themeColor;
+          ctx.shadowBlur = 12;
           ctx.fill();
-          clearGlow();
+          ctx.shadowBlur = 0;
 
           // 5. Weightless Floating Micro-HUD Callout Label (Zero Overhead • Pure 2D Canvas)
           if (node.hasLabel && node.labelText) {
@@ -565,17 +494,19 @@ const PerfTier = (() => {
           ctx.lineTo(tailX, tailY);
           ctx.strokeStyle = mGrad;
           ctx.lineWidth = m.width;
-          setGlow('#38bdf8', 5);
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 10;
           ctx.stroke();
-          clearGlow();
+          ctx.shadowBlur = 0;
 
           // Luminous White-Hot Meteoroid Head
           ctx.beginPath();
           ctx.arc(m.x, m.y, m.width * 1.25, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255, 255, 255, ${m.life})`;
-          setGlow('#38bdf8', 6);
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 14;
           ctx.fill();
-          clearGlow();
+          ctx.shadowBlur = 0;
         }
 
         ctx.restore();
@@ -612,13 +543,8 @@ const PerfTier = (() => {
       const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
       camera.position.set(0, 0, 3.6);
 
-      const renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: PerfTier.antialias,
-        powerPreference: 'low-power'
-      });
-      renderer.setPixelRatio(PerfTier.dpr);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.setSize(size, size);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.35;
@@ -626,14 +552,18 @@ const PerfTier = (() => {
       const orbGroup = new THREE.Group();
       scene.add(orbGroup);
 
-      // 1. Small Ultra-Shiny Glossy Obsidian Sphere (Optimized for 60 FPS across all hardware)
-      const sphereSegs = PerfTier.isLowEnd ? 20 : 32;
-      const sphereGeom = new THREE.SphereGeometry(0.50, sphereSegs, sphereSegs);
-      const sphereMat = new THREE.MeshStandardMaterial({
+      // 1. Small Ultra-Shiny Glossy Obsidian Sphere (Optimized 36x36 for 84px widget)
+      const sphereGeom = new THREE.SphereGeometry(0.50, 36, 36);
+      const sphereMat = new THREE.MeshPhysicalMaterial({
         color: 0x051329,         // Deep space obsidian with navy tint
         emissive: 0x010d22,      // Subtle quantum core bleed
-        metalness: 0.96,         // Liquid mirror reflectance
-        roughness: 0.08          // Ultra-smooth mirror polish for dazzling shine
+        metalness: 0.94,         // Liquid mirror reflectance
+        roughness: 0.04,         // Ultra-smooth mirror polish for dazzling shine
+        clearcoat: 1.0,          // Diamond/automotive clearcoat
+        clearcoatRoughness: 0.03,
+        reflectivity: 1.0,
+        transmission: 0.18,
+        ior: 1.55
       });
       const sphereMesh = new THREE.Mesh(sphereGeom, sphereMat);
       orbGroup.add(sphereMesh);
@@ -656,8 +586,7 @@ const PerfTier = (() => {
       // Ring 1: Primary Equatorial Stabilizer (Cyan #38bdf8, R=0.84)
       const ring1Pivot = new THREE.Group();
       ringGroup.add(ring1Pivot);
-      const torusRadial = 6, torusTubular = PerfTier.isLowEnd ? 24 : 48;
-      const ring1Geom = new THREE.TorusGeometry(0.84, 0.011, torusRadial, torusTubular);
+      const ring1Geom = new THREE.TorusGeometry(0.84, 0.011, 8, 48);
       const ring1Mat = new THREE.MeshStandardMaterial({
         color: 0x38bdf8,
         metalness: 0.95,
@@ -672,7 +601,7 @@ const PerfTier = (() => {
       const ring2Pivot = new THREE.Group();
       ring2Pivot.rotation.set(Math.PI / 2, 0, 0);
       ringGroup.add(ring2Pivot);
-      const ring2Geom = new THREE.TorusGeometry(0.72, 0.010, torusRadial, torusTubular);
+      const ring2Geom = new THREE.TorusGeometry(0.72, 0.010, 8, 48);
       const ring2Mat = new THREE.MeshStandardMaterial({
         color: 0x10b981,
         metalness: 0.90,
@@ -687,7 +616,7 @@ const PerfTier = (() => {
       const ring3Pivot = new THREE.Group();
       ring3Pivot.rotation.set(Math.PI / 4, 0, Math.PI / 4);
       ringGroup.add(ring3Pivot);
-      const ring3Geom = new THREE.TorusGeometry(0.63, 0.009, torusRadial, torusTubular);
+      const ring3Geom = new THREE.TorusGeometry(0.63, 0.009, 8, 48);
       const ring3Mat = new THREE.MeshStandardMaterial({
         color: 0x06b6d4,
         metalness: 0.92,
@@ -702,7 +631,7 @@ const PerfTier = (() => {
       const ring4Pivot = new THREE.Group();
       ring4Pivot.rotation.set(-Math.PI / 4, 0, -Math.PI / 4);
       ringGroup.add(ring4Pivot);
-      const ring4Geom = new THREE.TorusGeometry(0.55, 0.008, torusRadial, PerfTier.isLowEnd ? 20 : 40);
+      const ring4Geom = new THREE.TorusGeometry(0.55, 0.008, 8, 40);
       const ring4Mat = new THREE.MeshStandardMaterial({
         color: 0x60a5fa,
         metalness: 0.90,
@@ -717,7 +646,7 @@ const PerfTier = (() => {
       const ring5Pivot = new THREE.Group();
       ring5Pivot.rotation.set(Math.PI / 3, Math.PI / 6, 0);
       ringGroup.add(ring5Pivot);
-      const ring5Geom = new THREE.TorusGeometry(0.50, 0.007, torusRadial, PerfTier.isLowEnd ? 20 : 40);
+      const ring5Geom = new THREE.TorusGeometry(0.50, 0.007, 8, 40);
       const ring5Mat = new THREE.MeshStandardMaterial({
         color: 0x34d399,
         metalness: 0.92,
@@ -770,12 +699,10 @@ const PerfTier = (() => {
       };
 
       let mouseX = 0, mouseY = 0;
-      if (!PerfTier.isMobile) {
-        window.addEventListener('mousemove', (e) => {
-          mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-          mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        }, { passive: true });
-      }
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      }, { passive: true });
 
       let orbInView = true;
       if ('IntersectionObserver' in window) {
@@ -863,24 +790,20 @@ const PerfTier = (() => {
       if (!canvas) return;
       const container = canvas.parentElement;
 
-      const isMobile = PerfTier.isMobile;
-      let cw = (container && container.clientWidth > 50) ? container.clientWidth : (isMobile ? 360 : 720);
-      let ch = (container && container.clientHeight > 50) ? container.clientHeight : (isMobile ? 380 : 780);
+      // Defensive sizing fallback for network load and mobile screens
+      let cw = (container && container.clientWidth > 50) ? container.clientWidth : 720;
+      let ch = (container && container.clientHeight > 50) ? container.clientHeight : 780;
 
       const scene = new THREE.Scene();
       
+      const isMobile = window.innerWidth <= 860;
       const initScale = isMobile ? 0.58 : 0.78;
       const camera = new THREE.PerspectiveCamera(isMobile ? 38 : 40, cw / ch, 0.1, 100);
       camera.position.set(0, isMobile ? 1.0 : 1.25, isMobile ? 7.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
-      const renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: PerfTier.antialias,
-        powerPreference: PerfTier.isLowEnd ? 'low-power' : 'default'
-      });
-      renderer.setPixelRatio(PerfTier.dpr);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.setSize(cw, ch);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
@@ -1632,25 +1555,23 @@ const PerfTier = (() => {
       cursorMesh.visible = false;
       screenMesh.add(cursorMesh);
 
-      // LIGHTS & SHADOW (Calibrated studio lighting - adaptive multi-pass on high-end, streamlined on low-end)
-      scene.add(new THREE.AmbientLight(0xffffff, PerfTier.isLowEnd ? 0.85 : 0.65));
+      // LIGHTS & SHADOW (Calibrated studio lighting - soft, moody, zero keyboard blowout)
+      scene.add(new THREE.AmbientLight(0xffffff, 0.65));
 
-      // Key light: angled from side/front at gentle 0.85 intensity
+      // Key light: angled from side/front at gentle 0.85 intensity (eliminates harsh keyboard glare)
       const keyLight = new THREE.DirectionalLight(0xdbeafe, 0.85);
       keyLight.position.set(4, 3.5, 4.5);
       scene.add(keyLight);
 
-      if (!PerfTier.isLowEnd) {
-        // Soft rim light
-        const rimLight = new THREE.DirectionalLight(0x06b6d4, 1.2);
-        rimLight.position.set(-4, 3, -3);
-        scene.add(rimLight);
+      // Soft rim light
+      const rimLight = new THREE.DirectionalLight(0x06b6d4, 1.2);
+      rimLight.position.set(-4, 3, -3);
+      scene.add(rimLight);
 
-        // Soft rear fill light so the back lid and A logo are visible when rotated
-        const backLight = new THREE.DirectionalLight(0x94a3b8, 1.0);
-        backLight.position.set(0, 3.5, -6);
-        scene.add(backLight);
-      }
+      // Soft rear fill light so the back lid and A logo are visible when rotated
+      const backLight = new THREE.DirectionalLight(0x94a3b8, 1.0);
+      backLight.position.set(0, 3.5, -6);
+      scene.add(backLight);
 
       // Subtle, realistic screen glow radiance (initially 0 while screen is powered off)
       const screenGlowLight = new THREE.PointLight(0x2dd4bf, 0, 3.2);
@@ -1776,18 +1697,10 @@ const PerfTier = (() => {
       let laptopRunning = false;
       let screenFullyOn = false;
 
-      let lastLaptopFrame = 0;
       function animate() {
         if (!laptopRunning) return;
         requestAnimationFrame(animate);
         if (!laptopInView || document.hidden) return; // Completely idle when scrolled offscreen or tab hidden
-
-        const now = performance.now();
-        // Dynamic power saving: when sitting completely idle after unfold, throttle to 30 FPS on low-end
-        if (PerfTier.isLowEnd && screenFullyOn && !isDragging && Math.abs(laptopScrollVelocity) < 0.05 && mouseNorm.x === 0 && mouseNorm.y === 0) {
-          if (now - lastLaptopFrame < 32) return;
-        }
-        lastLaptopFrame = now;
         const elapsed = clock2.getElapsedTime();
 
         // 1. KINEMATIC LID POSITIONING (ORGANIC HARMONIC GLIDE • ZERO ACCELERATION SNAP)
