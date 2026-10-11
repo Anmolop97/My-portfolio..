@@ -72,24 +72,24 @@
     .ambient-glow {
       position: fixed;
       border-radius: 50%;
+      filter: blur(180px);
       pointer-events: none;
       z-index: 2;
-      opacity: 0.85;
-      will-change: transform;
+      opacity: 0.18;
     }
     .glow-cyan {
       width: 750px;
       height: 750px;
       top: -150px;
       right: 5%;
-      background: radial-gradient(circle, rgba(2, 132, 199, 0.18) 0%, rgba(2, 132, 199, 0.06) 40%, transparent 70%);
+      background: #0284c7;
     }
     .glow-emerald {
       width: 600px;
       height: 600px;
       bottom: -100px;
       left: -10%;
-      background: radial-gradient(circle, rgba(5, 150, 105, 0.16) 0%, rgba(5, 150, 105, 0.05) 40%, transparent 70%);
+      background: #059669;
     }
 
     .vignette-overlay {
@@ -2170,59 +2170,4 @@
       color: #fff;
       background: rgba(56, 189, 248, 0.15);
       border-color: rgba(56, 189, 248, 0.3);
-    }
-
-    /* ================================================================
-       LOW-POWER & LOW-END HARDWARE ENGINE OPTIMIZATIONS
-       (LOCKED 60 FPS ON BUDGET LAPTOPS & MOBILE PHONES)
-       ================================================================ */
-    .low-power-device .ambient-glow {
-      display: none !important;
-    }
-
-    /* Smooth touch scrolling and touch-action on mobile */
-    .laptop-stage,
-    #laptop-canvas {
-      touch-action: pan-y pinch-zoom;
-    }
-
-    /* Mobile & touch performance: reduce heavy backdrop blur to prevent GPU fill-rate stalls */
-    @media (max-width: 860px), (pointer: coarse) {
-      .navbar, 
-      header nav, 
-      .shiny-orb-widget, 
-      .step-card, 
-      .stack-cat-card, 
-      .diag-terminal, 
-      .telemetry-terminal-wrap, 
-      .contact-card,
-      .featured-hero-card {
-        backdrop-filter: blur(6px) !important;
-        -webkit-backdrop-filter: blur(6px) !important;
-      }
-    }
-
-    /* Low-end device mode: replace expensive backdrop-filter with clean solid obsidian glass */
-    .low-power-device .navbar,
-    .low-power-device header nav,
-    .low-power-device .shiny-orb-widget,
-    .low-power-device .step-card,
-    .low-power-device .stack-cat-card,
-    .low-power-device .diag-terminal,
-    .low-power-device .telemetry-terminal-wrap,
-    .low-power-device .contact-card,
-    .low-power-device .featured-hero-card {
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      background: rgba(10, 14, 22, 0.94) !important;
-    }
-
-    /* Accessibility & Battery Saver: Respect Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
     }
