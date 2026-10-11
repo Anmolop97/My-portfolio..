@@ -71,25 +71,24 @@
 
     .ambient-glow {
       position: fixed;
-      border-radius: 50%;
-      filter: blur(180px);
       pointer-events: none;
       z-index: 2;
       opacity: 0.18;
+      border-radius: 50%;
     }
     .glow-cyan {
       width: 750px;
       height: 750px;
       top: -150px;
       right: 5%;
-      background: #0284c7;
+      background: radial-gradient(circle, #0284c7 0%, rgba(2, 132, 199, 0.45) 40%, transparent 70%);
     }
     .glow-emerald {
       width: 600px;
       height: 600px;
       bottom: -100px;
       left: -10%;
-      background: #059669;
+      background: radial-gradient(circle, #059669 0%, rgba(5, 150, 105, 0.45) 40%, transparent 70%);
     }
 
     .vignette-overlay {
@@ -207,12 +206,6 @@
       width: 1px;
       height: 16px;
       background: rgba(255, 255, 255, 0.08);
-      flex-shrink: 0;
-    }
-    .brand-divider {
-      width: 1px;
-      height: 14px;
-      background: rgba(255, 255, 255, 0.12);
       flex-shrink: 0;
     }
 
