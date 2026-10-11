@@ -798,9 +798,9 @@
       const scene = new THREE.Scene();
       
       const isMobile = window.innerWidth <= 900;
-      const initScale = isMobile ? 0.88 : 0.78;
+      const initScale = isMobile ? 0.62 : 0.78;
       const camera = new THREE.PerspectiveCamera(isMobile ? 38 : 40, cw / ch, 0.1, 100);
-      camera.position.set(0, isMobile ? 0.95 : 1.25, isMobile ? 5.2 : 6.4);
+      camera.position.set(0, isMobile ? 0.70 : 1.25, isMobile ? 6.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
@@ -1664,17 +1664,37 @@
         const w = isFullscreen ? window.innerWidth : container.clientWidth;
         const h = isFullscreen ? window.innerHeight : container.clientHeight;
         if (w > 50 && h > 50) {
-          camera.aspect = w / h;
+          const aspect = w / h;
+          camera.aspect = aspect;
           const isMobile = window.innerWidth <= 900;
-          const scale = isFullscreen ? 0.90 : (isMobile ? 0.88 : 0.78);
-          laptop.scale.set(scale, scale, scale);
+          const vfovRad = (camera.fov * Math.PI) / 180;
+
           if (isFullscreen) {
-            camera.position.set(0, 1.20, 5.0);
+            // FULLSCREEN 3D VIEWER: Dynamic responsive framing for ANY phone screen size
+            // Scale model and position camera so the entire laptop (screen + keyboard deck)
+            // fits with 18% clean margins on all 4 sides and NEVER touches or exceeds boundaries!
+            const scale = 0.54;
+            laptop.scale.set(scale, scale, scale);
+            const laptopW = 3.2 * scale;
+            const targetVisibleW = laptopW / 0.74;
+            const fitZ = targetVisibleW / (2 * Math.tan(vfovRad / 2) * Math.min(aspect, 1.0));
+            const camZ = Math.max(5.8, Math.min(9.2, fitZ));
+            camera.position.set(0, 0.42, camZ);
           } else if (isMobile) {
-            camera.position.set(0, 0.95, 5.2);
+            // IN-PAGE MOBILE VIEW: Fit comfortably within .laptop-stage without clipping boundaries
+            const scale = 0.62;
+            laptop.scale.set(scale, scale, scale);
+            const laptopW = 3.2 * scale;
+            const targetVisibleW = laptopW / 0.74;
+            const fitZ = targetVisibleW / (2 * Math.tan(vfovRad / 2) * Math.min(aspect, 1.1));
+            const camZ = Math.max(5.8, Math.min(8.5, fitZ));
+            camera.position.set(0, 0.70, camZ);
           } else {
+            // DESKTOP WIDESCREEN: Original pristine desktop framing
+            laptop.scale.set(0.78, 0.78, 0.78);
             camera.position.set(0, 1.25, 6.4);
           }
+
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
         }
@@ -1712,10 +1732,7 @@
         laptop.rotation.x = 0.12;
         laptop.rotation.z = 0;
         laptop.position.set(0, 0, 0);
-        if (camera) {
-          camera.position.set(0, 1.20, 5.0);
-          camera.updateProjectionMatrix();
-        }
+        handleResize();
       }
 
       if (openModalBtn) {
