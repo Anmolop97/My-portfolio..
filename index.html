@@ -22,30 +22,21 @@
   <!-- Typography & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- Master Stylesheet -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Three.js (Hardware-accelerated 3D Engine with CDN fallbacks) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script>
-    if (typeof THREE === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>');
-    }
-  </script>
-  <script>
-    if (typeof THREE === 'undefined') {
-      document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
-    }
-  </script>
+  <!-- Three.js (Hardware-accelerated 3D Engine) & Master Script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
 
   <!-- ===== CINEMATIC BRAND INTRO PRELOADER OVERLAY ===== -->
   <div id="brandIntroOverlay" class="brand-intro-overlay" role="dialog" aria-label="Brand Introduction">
     <!-- Font pre-warm element to eliminate runtime font decode hitches -->
-    <span style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;font-family:var(--font-mono);" aria-hidden="true">&gt; sys.boot</span>
+    <span class="font-prewarm-hidden" aria-hidden="true">&gt; sys.boot</span>
     <div class="brand-intro-glow" id="introGlow"></div>
 
     <div class="brand-intro-stage" id="introStage">
@@ -148,8 +139,8 @@
 
       <!-- Developer Terminal Boot Line (Zero Reflow) -->
       <div class="intro-boot-line" id="introBootLine">
-        <span style="color:#38bdf8; font-weight:600;">&gt;&nbsp;</span>
-        <span style="color:#cbd5e1; font-weight:500;">sys.boot(&quot;anmol-os&quot;)</span>
+        <span class="intro-boot-prompt">&gt;&nbsp;</span>
+        <span class="intro-boot-cmd">sys.boot(&quot;anmol-os&quot;)</span>
         <span class="cursor-blink"></span>
       </div>
     </div>
@@ -162,11 +153,9 @@
   <div class="ambient-glow glow-emerald"></div>
   <div class="vignette-overlay"></div>
 
-  <!-- Hidden Background Ambient Audio (Preloaded for instant zero-lag response) -->
-  <audio id="ambientAudio" loop preload="auto">
+  <!-- Hidden Background Ambient Audio (Lazy-loaded on user interaction) -->
+  <audio id="ambientAudio" loop preload="none">
     <source src="ambient.mp3" type="audio/mpeg">
-    <source src="assets/audio/ambient.mp3" type="audio/mpeg">
-    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Ambient Audio Experience Toast Prompt -->
@@ -278,7 +267,7 @@
     </ul>
 
     <div class="mobile-drawer-footer">
-      <a href="mailto:anmol.builds@gmail.com" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem 1rem;">
+      <a href="#contact" id="mobileDirectEmailLink" class="btn btn-primary btn-block-padded">
         Send Direct Email ↗
       </a>
     </div>
@@ -289,14 +278,14 @@
     <section class="hero" id="hero">
       <div class="hero-content">
         <!-- Cyber Acoustic Quantum Core (Audio Controller & Reactor) -->
-        <div class="shiny-orb-widget" id="quantumOrbWidget" role="button" aria-label="Toggle ambient soundtrack" tabindex="0" title="Click to play ambient soundtrack">
-          <div class="orb-widget-ripple" id="orbWidgetRipple"></div>
-          <div class="orb-canvas-frame" id="orbCanvasFrame">
-            <div class="orb-soundwave-ring ring-1"></div>
-            <div class="orb-soundwave-ring ring-2"></div>
+        <button type="button" class="shiny-orb-widget" id="quantumOrbWidget" aria-label="Toggle ambient soundtrack" aria-pressed="false" title="Click to play ambient soundtrack">
+          <span class="orb-widget-ripple" id="orbWidgetRipple"></span>
+          <span class="orb-canvas-frame" id="orbCanvasFrame">
+            <span class="orb-soundwave-ring ring-1"></span>
+            <span class="orb-soundwave-ring ring-2"></span>
             <canvas id="hero-orb-canvas" width="84" height="84"></canvas>
-          </div>
-          <div class="orb-audio-tag">
+          </span>
+          <span class="orb-audio-tag">
             <span class="orb-audio-icon">🎧</span>
             <span class="orb-audio-state" id="orbAudioStateText">SOUND CORE // TAP TO PLAY</span>
             <span class="orb-audio-bars" id="orbAudioBars">
@@ -304,8 +293,8 @@
               <span class="bar bar-2"></span>
               <span class="bar bar-3"></span>
             </span>
-          </div>
-        </div>
+          </span>
+        </button>
 
         <h1 class="hero-title">
           Turning curiosity & code <br>
@@ -375,7 +364,7 @@
         <div>
           <div class="project-badge-row">
             <span class="pill-active">● LIVE PLATFORM</span>
-            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);">v1.0 Launched</span>
+            <span class="version-meta-tag">v1.0 Launched</span>
           </div>
 
           <h3 class="featured-title">DevFix — Interactive Error Solver</h3>
@@ -394,7 +383,7 @@
           </div>
 
           <div>
-            <a href="https://thehellspires.vercel.app/" target="_blank" class="btn btn-primary">
+            <a href="https://thehellspires.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
               Launch Live App ↗
             </a>
           </div>
@@ -402,10 +391,10 @@
 
         <div class="demo-terminal">
           <div class="term-bar">
-            <span class="term-dot" style="background: #ef4444;"></span>
-            <span class="term-dot" style="background: #f59e0b;"></span>
-            <span class="term-dot" style="background: #10b981;"></span>
-            <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.4rem;">devfix_trace.log</span>
+            <span class="term-dot dot-red"></span>
+            <span class="term-dot dot-amber"></span>
+            <span class="term-dot dot-emerald"></span>
+            <span class="term-log-filename">devfix_trace.log</span>
           </div>
           <div class="term-body">
             <div class="term-err">&gt; Segmentation fault (core dumped)</div>
@@ -419,7 +408,7 @@
     <!-- 3. CURRENTLY UNDER CONSTRUCTION (SECTION 03) -->
     <section class="section" id="construction">
       <div class="section-badge">
-        <span class="section-badge-dot" style="background: var(--cyan); box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+        <span class="section-badge-dot dot-cyan"></span>
         <span class="section-badge-num">03</span>
         <span>Engineering Roadmap</span>
       </div>
@@ -474,10 +463,10 @@
         <!-- Step 6 -->
         <div class="step-card next-step">
           <div class="step-header">
-            <span class="step-title" style="color: var(--cyan);"><span class="step-num">06.</span> What's Next?</span>
+            <span class="step-title step-title-cyan"><span class="step-num">06.</span> What's Next?</span>
             <span class="step-badge badge-queue">QUEUED</span>
           </div>
-          <p class="step-desc" style="font-family: var(--font-mono); color: #94a3b8;">
+          <p class="step-desc step-desc-mono">
             &gt; awaiting_next_engineering_breakthrough<span class="terminal-cursor"></span>
           </p>
         </div>
@@ -487,69 +476,69 @@
     <!-- 4. DEVELOPER TELEMETRY & WORKBENCH (SECTION 04) -->
     <section class="section" id="telemetry">
       <div class="section-badge">
-        <span class="section-badge-dot" style="background: var(--cyan); box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);"></span>
+        <span class="section-badge-dot dot-cyan"></span>
         <span class="section-badge-num">04</span>
-        <span>Developer Telemetry</span>
+        <span>Environment & Architecture</span>
       </div>
       <h2 class="section-title">Systems Workbench & Tech Stack</h2>
       <p class="telemetry-subtitle">
-        A real-time overview of my environment, engineering principles, and current capabilities. 
+        An overview of my development environment, core CS focus areas, and live browser rendering profiler. 
         Zero templates, zero black boxes — built with curiosity from first principles.
       </p>
 
-      <!-- Centered Live HUD Terminal -->
+      <!-- Centered Live HUD Terminal (Authentic Environment Config + Real Browser WebGL Profiler) -->
       <div class="telemetry-terminal-wrap">
-        <div class="hud-terminal">
+        <div class="hud-terminal" id="hudTerminalCard">
           <div class="hud-header">
             <div class="hud-dots">
-              <span class="hud-dot" style="background: #ef4444;"></span>
-              <span class="hud-dot" style="background: #f59e0b;"></span>
-              <span class="hud-dot" style="background: #10b981;"></span>
+              <span class="hud-dot dot-red"></span>
+              <span class="hud-dot dot-amber"></span>
+              <span class="hud-dot dot-emerald"></span>
             </div>
-            <span class="hud-title">developer_telemetry.sh — zsh (x86_64)</span>
+            <span class="hud-title">~/.config/anmol/env.conf — zsh</span>
             <div class="hud-status-chips">
-              <span class="hud-chip green">● LIVE METRICS</span>
-              <span class="hud-chip cyan">RAM 128MB</span>
-              <span class="hud-chip">LATENCY 0.8ms</span>
+              <span class="hud-chip green" id="hudFpsChip" title="Real-time measured requestAnimationFrame rate">● 60 FPS</span>
+              <span class="hud-chip cyan" id="hudFrameTimeChip" title="Real-time measured frame delta">16.6ms / FRAME</span>
+              <span class="hud-chip" id="hudWebglChip">WEBGL 2.0</span>
             </div>
           </div>
           <div class="hud-body">
             <div class="hud-row">
-              <span class="hud-key">operator</span>
+              <span class="hud-key">developer</span>
               <span class="hud-val">Anmol Kumar</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">education</span>
-              <span class="hud-val">First-Year CSE @ Core Systems</span>
+              <span class="hud-key">academic_track</span>
+              <span class="hud-val">B.Tech CSE (First-Year)</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">kernel_env</span>
-              <span class="hud-val">Linux 6.8 (Arch/Ubuntu) & macOS</span>
+              <span class="hud-key">host_os</span>
+              <span class="hud-val">Linux (Ubuntu / Arch WSL2) &amp; Windows</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">primary_editor</span>
-              <span class="hud-val">Neovim / VS Code (Obsidian Theme)</span>
+              <span class="hud-key">editor_workflow</span>
+              <span class="hud-val">Neovim &amp; VS Code • GCC / Clang / GDB</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">code_health</span>
-              <span class="hud-val">99.4% • Resolving pointer edge-cases</span>
+              <span class="hud-key">current_focus</span>
+              <span class="hud-val">Pointers, Manual Memory &amp; Data Structures in C</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">coffee_level</span>
-              <span class="hud-val">Strategic • Fueling late-night builds</span>
+              <span class="hud-key">graphics_pipeline</span>
+              <span class="hud-val">Three.js r128 • Offscreen Canvas LUTs • Static Matrix Locking</span>
             </div>
             <div class="hud-row">
-              <span class="hud-key">git_strategy</span>
-              <span class="hud-val">commit -m 'fixed memory leak for good'</span>
+              <span class="hud-key">shipped_builds</span>
+              <span class="hud-val">DevFix (v1.0 Live) • Portfolio 3D Engine</span>
             </div>
-            <div class="hud-row" style="border: none;">
-              <span class="hud-key">core_mission</span>
-              <span class="hud-val" style="color: #6ee7b7;">Build software that is actually useful</span>
+            <div class="hud-row hud-row-borderless">
+              <span class="hud-key">engineering_goal</span>
+              <span class="hud-val hud-val-emerald">Understand how software actually works under the hood</span>
             </div>
           </div>
           <div class="hud-footer-cmd">
-            <div class="hud-prompt">anmol@dev-core:~$ ./verify_arena.sh --verbose</div>
-            <div class="hud-output">[ok] All memory boundaries safe. 0 memory leaks detected. System online.</div>
+            <div class="hud-prompt">anmol@workstation:~/anmol-portfolio$ git status -sb &amp;&amp; node --check script.js</div>
+            <div class="hud-output" id="hudLiveProfilerOutput">## main...origin/main • Syntax OK • Live WebGL Renderer: Active</div>
           </div>
         </div>
       </div>
@@ -665,23 +654,23 @@
       <div class="telemetry-metrics-bar">
         <div class="metric-tile">
           <span class="metric-tile-label">01 // RENDERING</span>
-          <span class="metric-tile-val">60-120 FPS</span>
-          <span class="metric-tile-sub">Sub-millisecond WebGL frame budget</span>
+          <span class="metric-tile-val" id="metricTileFpsVal">60-120 FPS</span>
+          <span class="metric-tile-sub">Offscreen orbit caching &amp; static WebGL matrices</span>
         </div>
         <div class="metric-tile">
-          <span class="metric-tile-label">02 // MEMORY</span>
-          <span class="metric-tile-val">Zero Leaks</span>
-          <span class="metric-tile-sub">Direct GPU texture reuse & static buffers</span>
+          <span class="metric-tile-label">02 // ARCHITECTURE</span>
+          <span class="metric-tile-val">Zero Deps UI</span>
+          <span class="metric-tile-sub">Vanilla ES6+, semantic DOM &amp; direct GPU canvas</span>
         </div>
         <div class="metric-tile">
-          <span class="metric-tile-label">03 // STACK</span>
+          <span class="metric-tile-label">03 // CORE FOCUS</span>
           <span class="metric-tile-val">C + Linux</span>
-          <span class="metric-tile-sub">POSIX primitives & manual heap management</span>
+          <span class="metric-tile-sub">Pointers, memory layouts &amp; shell workflows</span>
         </div>
         <div class="metric-tile">
-          <span class="metric-tile-label">04 // FOUNDATION</span>
+          <span class="metric-tile-label">04 // APPROACH</span>
           <span class="metric-tile-val">1st Principles</span>
-          <span class="metric-tile-sub">Built with curiosity from bare metal up</span>
+          <span class="metric-tile-sub">Learning by building and debugging real tools</span>
         </div>
       </div>
     </section>
@@ -689,7 +678,7 @@
     <!-- 5. BESPOKE CONTACT SECTION (SECTION 05) -->
     <section class="section" id="contact">
       <div class="section-badge">
-        <span class="section-badge-dot" style="background: #a78bfa; box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);"></span>
+        <span class="section-badge-dot dot-violet"></span>
         <span class="section-badge-num">05</span>
         <span>Get in Touch</span>
       </div>
@@ -705,18 +694,18 @@
           </div>
 
           <div>
-            <p style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase;">Direct Email</p>
-            <div class="copy-email-box" id="copyEmailBtn" title="Click to copy email">
-              <span class="copy-email-text">anmolkumar2762@gmail.com</span>
+            <p class="contact-sub-label">Direct Email</p>
+            <button type="button" class="copy-email-box" id="copyEmailBtn" aria-label="Copy direct email address to clipboard" title="Click to copy email">
+              <span class="copy-email-text" id="copyEmailText">Protected Email (Click to Copy)</span>
               <span class="copy-action-btn" id="copyBtnLabel">Copy ⧉</span>
-            </div>
+            </button>
           </div>
 
           <div>
-            <p style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); margin-bottom: 0.6rem; text-transform: uppercase;">Profiles & Networks</p>
+            <p class="contact-sub-label">Profiles & Networks</p>
             <div class="social-direct-grid">
               <a href="https://github.com/Anmolop97" target="_blank" rel="noopener noreferrer" class="social-btn">
-                <svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.7-1.3-1.7-1.3-1-.7.1-.7.1-.7 1.1.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
                 GitHub
               </a>
 
@@ -731,21 +720,21 @@
         <form class="clean-form" id="contactForm">
           <div class="form-group">
             <label for="name">Your Name</label>
-            <input type="text" id="name" class="form-input" placeholder="What should I call you?" required>
+            <input type="text" id="name" class="form-input" placeholder="What should I call you?" maxlength="100" required>
           </div>
 
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" class="form-input" placeholder="you@domain.com" required>
+            <input type="email" id="email" class="form-input" placeholder="you@domain.com" maxlength="150" required>
           </div>
 
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea id="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." required></textarea>
+            <textarea id="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." maxlength="1500" required></textarea>
           </div>
 
           <div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            <button type="submit" class="btn btn-primary btn-block-center">
               Send Message →
             </button>
             <div class="form-status" id="formStatus"></div>
@@ -757,11 +746,7 @@
 
   <footer>
     <p>Designed & Built by <b>Anmol Kumar</b> • First-Year CSE</p>
-    <p style="margin-top: 0.4rem; font-size: 0.8rem; color: #475569;">High-performance WebGL • Three.js • Clean Architecture</p>
+    <p class="footer-subline">High-performance WebGL • Three.js • Clean Architecture</p>
   </footer>
-
-
-  <!-- ================= MASTER JAVASCRIPT ================= -->
-  <script src="script.js"></script>
 </body>
 </html>
