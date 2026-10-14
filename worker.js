@@ -43,6 +43,40 @@ export default {
       return new Response("Not Found", { status: 404, headers: SECURITY_HEADERS });
     }
 
+    // Direct background contact transmission (No app popup, direct to Gmail)
+    if (url.pathname === "/api/contact" && request.method === "POST") {
+      try {
+        const body = await request.json();
+        const { name, email, message } = body || {};
+
+        if (!name || !email || !message) {
+          return new Response(JSON.stringify({ status: "error", error: "Missing required fields" }), {
+            status: 400,
+            headers: { ...SECURITY_HEADERS, "Content-Type": "application/json" }
+          });
+        }
+
+        const scriptUrl = "https://script.google.com/macros/s/AKfycby7XIBMR_PZ3ACTdNnvEGzlItu2tfcI7cob9z15M5Rlp81tnkZAc8hrDf-MKW9BAz6o/exec";
+        const gRes = await fetch(scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+          redirect: "follow"
+        });
+
+        const gData = await gRes.json();
+        return new Response(JSON.stringify(gData), {
+          status: 200,
+          headers: { ...SECURITY_HEADERS, "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ status: "error", error: err.message }), {
+          status: 500,
+          headers: { ...SECURITY_HEADERS, "Content-Type": "application/json" }
+        });
+      }
+    }
+
     // Preserve existing static asset / origin routing logic untouched
     const originResponse = env && env.ASSETS
       ? await env.ASSETS.fetch(request)
