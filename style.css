@@ -1657,10 +1657,56 @@
       font-family: var(--font-mono);
       font-size: 0.80rem;
       min-height: 1.4rem;
-      margin-top: 0.4rem;
+      margin-top: 0.6rem;
+      transition: color 0.25s ease;
     }
-    .form-status.success { color: #6ee7b7; }
-    .form-status.error { color: #f87171; }
+    .form-status.transmitting {
+      color: #38bdf8;
+      animation: pulseTransmitting 1.4s ease-in-out infinite;
+    }
+    .form-status.success {
+      color: #34d399;
+      font-weight: 500;
+    }
+    .form-status.error {
+      color: #f87171;
+    }
+
+    .clean-form .btn-primary.is-transmitting {
+      background: linear-gradient(180deg, #0284c7 0%, #075985 100%) !important;
+      opacity: 0.9;
+      cursor: wait;
+      pointer-events: none;
+    }
+    .clean-form .btn-primary.is-success {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+      border-color: rgba(52, 211, 153, 0.4) !important;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.45) !important;
+      color: #ffffff !important;
+    }
+    .clean-form .form-input:disabled,
+    .clean-form .form-textarea:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+    .cyber-btn-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: cyberSpin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes cyberSpin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulseTransmitting {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
 
     /* FOOTER */
     footer {
