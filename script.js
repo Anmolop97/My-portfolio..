@@ -2598,26 +2598,79 @@ window.__masterLoop = __masterLoop;
 
       const form = document.getElementById('contactForm');
       const status = document.getElementById('formStatus');
+      const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Send Message →';
 
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const n = document.getElementById('name').value.trim();
-        const em = document.getElementById('email').value.trim();
-        const msg = document.getElementById('message').value.trim();
+      if (form && submitBtn) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const nameInput = document.getElementById('name');
+          const emailInput = document.getElementById('email');
+          const msgInput = document.getElementById('message');
 
-        if (!n || !em || !msg) {
-          status.className = 'form-status error';
-          status.textContent = 'Please fill out all fields.';
-          return;
-        }
+          const n = nameInput.value.trim();
+          const em = emailInput.value.trim();
+          const msg = msgInput.value.trim();
 
-        const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
-        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
-        window.location.href = mailtoLink;
+          if (!n || !em || !msg) {
+            status.className = 'form-status error';
+            status.textContent = '> [SYS] Error: Please fill out all fields.';
+            return;
+          }
 
-        status.className = 'form-status success';
-        status.textContent = 'Opening your email client... Or copy the email directly above!';
-      });
+          // Lock fields & activate transmitting animation
+          nameInput.disabled = true;
+          emailInput.disabled = true;
+          msgInput.disabled = true;
+          submitBtn.disabled = true;
+          submitBtn.classList.add('is-transmitting');
+          submitBtn.innerHTML = '<span class="cyber-btn-spinner"></span> Transmitting message...';
+          status.className = 'form-status transmitting';
+          status.textContent = '> [SYS] Routing secure message directly to Anmol...';
+
+          try {
+            const res = await fetch('/api/contact', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: n, email: em, message: msg })
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok && (data.status === 'success' || !data.error)) {
+              // Success animation
+              submitBtn.classList.remove('is-transmitting');
+              submitBtn.classList.add('is-success');
+              submitBtn.innerHTML = '✓ Message Dispatched!';
+              status.className = 'form-status success';
+              status.textContent = '> [SYS] Message delivered directly to Anmol\'s inbox. Expect a reply soon!';
+              
+              form.reset();
+
+              setTimeout(() => {
+                submitBtn.disabled = false;
+                nameInput.disabled = false;
+                emailInput.disabled = false;
+                msgInput.disabled = false;
+                submitBtn.classList.remove('is-success');
+                submitBtn.innerHTML = originalBtnHtml;
+              }, 4500);
+            } else {
+              throw new Error(data.error || 'Server rejected request');
+            }
+          } catch (err) {
+            console.error('Contact transmission hitch:', err);
+            submitBtn.disabled = false;
+            nameInput.disabled = false;
+            emailInput.disabled = false;
+            msgInput.disabled = false;
+            submitBtn.classList.remove('is-transmitting');
+            submitBtn.innerHTML = originalBtnHtml;
+            status.className = 'form-status error';
+            status.textContent = '> [SYS] Delivery hitch. Please try again or copy email directly.';
+          }
+        });
+      }
     })();
 
 /* ================================================================
