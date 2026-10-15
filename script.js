@@ -1047,7 +1047,7 @@ window.__masterLoop = __masterLoop;
 
 /* ==================== laptop.js ==================== */
 /* ================================================================
-       3. ULTRA-REALISTIC WORKSTATION (ENGRAVED KEYBOARD + DEVFIX CAD/IDE SCREEN)
+       3. ULTRA-REALISTIC WORKSTATION (ENGRAVED KEYBOARD + CODITECH CAD/IDE SCREEN)
        ================================================================ */
     function initLaptopStage() {
       const canvas = document.getElementById('laptop-canvas');
@@ -1664,12 +1664,12 @@ window.__masterLoop = __masterLoop;
 
       // High-contrast, punchy C systems code tokens (12 clear, impactful lines)
       const editorLines = [
-        { num: 1,  tokens: [{ text: "// DevFix Core Engine • Memory Safety", color: "#64748b" }] },
+        { num: 1,  tokens: [{ text: "// Coditech Core Engine • Memory Safety", color: "#64748b" }] },
         { num: 2,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<stdio.h>", color: "#2dd4bf" }] },
-        { num: 3,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<devfix/core.h>", color: "#2dd4bf" }] },
+        { num: 3,  tokens: [{ text: "#include ", color: "#38bdf8" }, { text: "<coditech/core.h>", color: "#2dd4bf" }] },
         { num: 4,  tokens: [] },
         { num: 5,  tokens: [{ text: "int ", color: "#2dd4bf" }, { text: "main", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "void", color: "#2dd4bf" }, { text: ") {", color: "#94a3b8" }] },
-        { num: 6,  tokens: [{ text: "    DevNode ", color: "#2dd4bf" }, { text: "*node", color: "#ffffff" }, { text: " = ", color: "#38bdf8" }, { text: "dev_init", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"devfix-core\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
+        { num: 6,  tokens: [{ text: "    DevNode ", color: "#2dd4bf" }, { text: "*node", color: "#ffffff" }, { text: " = ", color: "#38bdf8" }, { text: "dev_init", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"coditech-core\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
         { num: 7,  tokens: [{ text: "    if ", color: "#38bdf8" }, { text: "(", color: "#94a3b8" }, { text: "node->is_active", color: "#ffffff" }, { text: ") {", color: "#94a3b8" }] },
         { num: 8,  tokens: [{ text: "        printf", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "\"Status: 100% OK • 60 FPS\\n\"", color: "#a7f3d0" }, { text: ");", color: "#94a3b8" }] },
         { num: 9,  tokens: [{ text: "        dev_launch_pipeline", color: "#ffffff" }, { text: "(", color: "#94a3b8" }, { text: "node", color: "#ffffff" }, { text: ");", color: "#94a3b8" }] },
@@ -1708,8 +1708,8 @@ window.__masterLoop = __masterLoop;
           sCtx.fill();
         }
 
-        // Active Tab: devfix_core.c
-        const tabX = 185, tabW = 340;
+        // Active Tab: coditech_core.c
+        const tabX = 185, tabW = 365;
         sCtx.fillStyle = '#0d1526';
         sCtx.fillRect(tabX, 0, tabW, tabH);
         // Bright cyan active indicator line
@@ -1722,7 +1722,7 @@ window.__masterLoop = __masterLoop;
         sCtx.fillText('C', tabX + 32, 58);
         sCtx.font = 'bold 27px "JetBrains Mono", monospace';
         sCtx.fillStyle = '#ffffff';
-        sCtx.fillText('devfix_core.c', tabX + 70, 58);
+        sCtx.fillText('coditech_core.c', tabX + 70, 58);
         sCtx.fillStyle = '#64748b';
         sCtx.fillText('×', tabX + tabW - 40, 56);
 
@@ -1733,7 +1733,7 @@ window.__masterLoop = __masterLoop;
         // Breadcrumb right
         sCtx.fillStyle = '#475569';
         sCtx.font = 'bold 24px "JetBrains Mono", monospace';
-        sCtx.fillText('src > core > devfix_core.c', W - 520, 58);
+        sCtx.fillText('src > core > coditech_core.c', W - 540, 58);
 
         // Git indicator
         sCtx.fillStyle = '#10b981';
@@ -1809,7 +1809,7 @@ window.__masterLoop = __masterLoop;
 
         sCtx.fillStyle = '#cbd5e1';
         sCtx.font = 'bold 24px "JetBrains Mono", monospace';
-        sCtx.fillText('devfix_core.c', 190, barY + 45);
+        sCtx.fillText('coditech_core.c', 190, barY + 45);
         sCtx.fillText('UTF-8', 460, barY + 45);
         sCtx.fillText('C (Clang 17)', 600, barY + 45);
 
@@ -2541,7 +2541,6 @@ window.__masterLoop = __masterLoop;
       const webglChip = document.getElementById('hudWebglChip');
       const profilerOutput = document.getElementById('hudLiveProfilerOutput');
       const hudCard = document.getElementById('hudTerminalCard');
-
       if (fpsChip && frameTimeChip && hudCard) {
         let hudVisible = false;
         let frameCount = 0;
@@ -2564,10 +2563,7 @@ window.__masterLoop = __masterLoop;
                 webglChip.textContent = laptopRenderer.capabilities.isWebGL2 ? 'WEBGL 2.0' : 'WEBGL 1.0';
               }
               if (profilerOutput) {
-                const geoms = laptopRenderer.info.memory.geometries;
-                const texs = laptopRenderer.info.memory.textures;
-                const progs = laptopRenderer.info.programs ? laptopRenderer.info.programs.length : 3;
-                profilerOutput.textContent = `## main • WebGL VRAM: ${geoms} geometries, ${texs} textures, ${progs} compiled shaders (${fps} FPS)`;
+                profilerOutput.textContent = '## main...origin/main • Syntax OK • Live WebGL Renderer: Active';
               }
             }
 
@@ -2607,14 +2603,23 @@ window.__masterLoop = __masterLoop;
           const nameInput = document.getElementById('name');
           const emailInput = document.getElementById('email');
           const msgInput = document.getElementById('message');
+          const hpInput = document.getElementById('companyWebsiteInput');
 
           const n = nameInput.value.trim();
           const em = emailInput.value.trim();
           const msg = msgInput.value.trim();
+          const hp = hpInput ? hpInput.value.trim() : '';
 
           if (!n || !em || !msg) {
             status.className = 'form-status error';
             status.textContent = '> [SYS] Error: Please fill out all fields.';
+            return;
+          }
+
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(em)) {
+            status.className = 'form-status error';
+            status.textContent = '> [SYS] Error: Please enter a valid email address.';
             return;
           }
 
@@ -2632,7 +2637,7 @@ window.__masterLoop = __masterLoop;
             const res = await fetch('/api/contact', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: n, email: em, message: msg })
+              body: JSON.stringify({ name: n, email: em, message: msg, company_website: hp })
             });
 
             const data = await res.json().catch(() => ({}));
