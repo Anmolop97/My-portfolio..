@@ -1,115 +1,48 @@
-# 🌌 Anmol Kumar — Creative Developer Portfolio
+<div align="center">
 
-An interactive, high-performance 3D developer portfolio engineered with **Three.js**, hardware-accelerated **WebGL**, procedural Canvas 2D textures, and modern modular architecture.
+  <img src="logo.png" width="72" height="72" alt="Anmol Kumar Logo" style="border-radius: 18px;" />
 
-![Portfolio Preview](modular_hero_verified.png)
+  # Anmol Kumar
+  ### Creative Developer & Systems Engineer
 
----
+  <p>
+    <b>Curious enough to try. Stubborn enough to make it work.</b>
+  </p>
 
-## ✨ Features & Engineering Highlights
+  <p>
+    <a href="https://portfolio.anmolkumar.workers.dev/"><strong>🌐 View Live Portfolio »</strong></a>
+  </p>
 
-- **💻 3D Workstation Kinematics**:
-  - Custom Three.js model with procedural brushed-aluminum chassis, beveled edges, illuminated Apple-style keyboard well, and realistic chiclet keys.
-  - Interactive C code editor screen (`coditech_core.c`) with syntax highlighting generated on dynamic Canvas 2D texture.
-  - Ultra-smooth trigonometric hinge unfold (`1.15s`) and glowing display power-on transition (`0.65s`) upon site load.
-  - Ergonomic target viewing angle (`rotX: 0.35, rotY: -0.07`) matching high-end workstation photography.
+  <br />
 
-- **🪐 Zero-Cost Celestial Space Orbits & Floating Physics**:
-  - Multi-tier elliptical orbit rings with rotating telemetry stations, glowing nodes, and cyber radar sweeps.
-  - Natural zero-G sinusoidal drifting physics (`Math.sin() / Math.cos()`) with damping interpolation (`lerp`) — zero physics engine overhead and 60 FPS performance.
+  <a href="https://portfolio.anmolkumar.workers.dev/">
+    <img src="preview_hero_direct.png" width="90%" alt="3D Workstation Live Preview" style="border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" />
+  </a>
 
-- **🎵 Ambient Cyber Soundscape & Quantum Sound Core**:
-  - Web Audio API integration with smooth exponential gain ramps (`AudioParam.exponentialRampToValueAtTime`).
-  - Interactive 3D Quantum Orb widget with dual rotating orbital rings, pulse-reactive audio feedback, and HUD toast.
-
-- **⚡ Zero-Jank Brand Intro Preloader**:
-  - Cinematic dual-wing delta emblem with rotating orbital HUD gyro-ring.
-  - Pre-warmed 3D shaders, geometries, and typography to eliminate first-frame drop rates.
+</div>
 
 ---
 
-## 📁 Repository Architecture & Division
+## ⚡ Overview
 
-The codebase is split into clean, modular, maintainable layers for GitHub, separating presentation, logic, styling, and assets:
+I'm a Computer Science Engineering student building at the intersection of **low-level systems** and **creative 3D graphics**. Instead of treating computers like magical black boxes, I explore how software works from bare-metal C memory to real-time WebGL shaders.
 
-```text
-├── index.html                # Semantic HTML5 master document & Open Graph social metadata
-├── css/
-│   └── style.css             # Comprehensive CSS3 design system (typography, layout, glow effects)
-├── js/
-│   ├── space-rings.js        # Background celestial orbit canvas & zero-cost floating physics
-│   ├── laptop.js             # 3D workstation geometry, keyboard generator & C editor screen
-│   ├── quantum-orb.js        # 3D interactive quantum sound core & particle halo
-│   ├── main.js               # Master 3D scene bootstrapper & preloader coordination
-│   ├── audio.js              # Ambient soundscape controller & audio toast interactions
-│   ├── nav.js                # Navigation drawer, clipboard email copy & form handlers
-│   └── intro.js              # Cinematic intro preloader motion & smooth push transition
-├── assets/
-│   ├── images/
-│   │   └── logo.png          # High-resolution vector brand emblem
-│   └── audio/
-│       └── ambient.mp3       # Ambient cyber soundscape audio track
-├── .gitignore                # Clean Git ignore file for temp files, OS artifacts & logs
-├── LICENSE                   # MIT License
-└── README.md                 # Project documentation
-```
+### 🌟 Featured Highlights
+- **💻 3D Interactive Workstation** — Custom Three.js laptop with procedural chassis, chiclet keyboard, dynamic C editor screen, and zero-G floating physics.
+- **🪐 Space Radar Telemetry** — Canvas 2D orbital telemetry rings tracking system metrics in real time.
+- **⚡ Coditech** — Educational platform built to teach students root-cause debugging and memory safety intuition.
+- **🛡️ Cloudflare Edge** — Global edge delivery with strict Content-Security-Policy (CSP Level 3).
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Stack & Technologies
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/portfolio.git
-cd portfolio
-```
-
-### 2. Run Locally
-You can run the project using any static file server:
-
-- **Using VS Code Live Server**: Right click `index.html` → *Open with Live Server*.
-- **Using Python**:
-  ```bash
-  python -m http.server 8000
-  ```
-- **Using Node.js (`npx serve`)**:
-  ```bash
-  npx serve .
-  ```
-
-Open your browser and navigate to `http://localhost:8000` (or `http://localhost:3000`).
+- **Systems & Core:** C, Linux (Ubuntu / Arch WSL2), Bash, GDB
+- **3D & Creative Web:** Three.js (r128), WebGL 2.0, HTML5 Canvas 2D, Lenis Smooth Scroll
+- **Cloud & Deployment:** Cloudflare Workers, Wrangler, Git
 
 ---
 
-## 🌐 Deployment to GitHub Pages
-
-1. Push this repository to your GitHub account:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: modular portfolio architecture with 3D workstation & celestial orbits"
-   git branch -M main
-   git remote add origin https://github.com/your-username/portfolio.git
-   git push -u origin main
-   ```
-2. In your GitHub repository:
-   - Go to **Settings** → **Pages**.
-   - Under **Build and deployment** > **Source**, choose **Deploy from a branch**.
-   - Select `main` branch and `/ (root)` folder, then click **Save**.
-3. Your portfolio will be live at `https://your-username.github.io/portfolio/` within minutes!
-
----
-
-## 🛠️ Tech Stack
-
-- **3D Engine**: Three.js (r128)
-- **Graphics**: WebGL, HTML5 Canvas 2D Context
-- **Audio**: Web Audio API
-- **Styling**: Modern CSS3 (Grid, Flexbox, Custom Properties, Glassmorphism)
-- **Typography**: Orbitron, JetBrains Mono, Plus Jakarta Sans, Space Grotesk
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE) — feel free to use and adapt it for your own portfolio.
+<div align="center">
+  <sub>© 2026 Anmol Kumar • <a href="https://portfolio.anmolkumar.workers.dev/">portfolio.anmolkumar.workers.dev</a></sub>
+</div>
