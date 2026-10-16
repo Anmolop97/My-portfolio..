@@ -7,11 +7,9 @@
   <meta name="description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
   <meta name="author" content="Anmol Kumar">
   <meta name="theme-color" content="#04060a">
-  <meta name="color-scheme" content="dark">
-  <meta name="darkreader-lock">
 
   <!-- Favicon / Browser Tab Logo -->
-  <link rel="icon" type="image/webp" href="logo.webp">
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="shortcut icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
 
@@ -24,129 +22,17 @@
   <!-- Typography & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- Master Stylesheet -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Three.js (Hardware-accelerated 3D Engine) & Master Script -->
+  <!-- Three.js (Hardware-accelerated 3D Engine), Lenis Smooth Scroll & Master Script -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" defer></script>
+  <script src="lenis.min.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
-
-  <!-- ===== CINEMATIC BRAND INTRO PRELOADER OVERLAY ===== -->
-  <div id="brandIntroOverlay" class="brand-intro-overlay" role="dialog" aria-label="Brand Introduction">
-    <!-- Font pre-warm element to eliminate runtime font decode hitches -->
-    <span class="font-prewarm-hidden" aria-hidden="true">&gt; sys.boot</span>
-    <div class="brand-intro-glow" id="introGlow"></div>
-
-    <div class="brand-intro-stage" id="introStage">
-      <!-- DUAL-WING DELTA EMBLEM -->
-      <div class="brand-intro-emblem" id="introEmblem">
-        <!-- ROTATING ORBITAL HUD GYRO-RING -->
-        <div class="intro-hud-ring" id="introHudRing">
-          <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="250" cy="250" r="238" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.6" stroke-dasharray="14 10" />
-            <path d="M 250 12 A 238 238 0 0 1 488 250" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.8" />
-            <path d="M 250 488 A 238 238 0 0 1 12 250" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.8" />
-            <line x1="250" y1="0" x2="250" y2="20" stroke="#f0f9ff" stroke-width="2.5" />
-            <line x1="250" y1="480" x2="250" y2="500" stroke="#f0f9ff" stroke-width="2.5" />
-            <line x1="0" y1="250" x2="20" y2="250" stroke="#f0f9ff" stroke-width="2.5" />
-            <line x1="480" y1="250" x2="500" y2="250" stroke="#f0f9ff" stroke-width="2.5" />
-            <circle cx="250" cy="250" r="185" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.2" stroke-dasharray="6 6" />
-          </svg>
-        </div>
-
-        <!-- ELECTROMAGNETIC IMPACT SHOCKWAVE -->
-        <div class="intro-shockwave" id="introShockwave"></div>
-
-        <div class="intro-sheen-beam" id="introSheenBeam"></div>
-        <svg viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="introTitaniumLeft" x1="20" y1="20" x2="120" y2="230" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="30%" stop-color="#cbd5e1"/>
-              <stop offset="65%" stop-color="#64748b"/>
-              <stop offset="100%" stop-color="#1e293b"/>
-            </linearGradient>
-            <linearGradient id="introTitaniumRight" x1="230" y1="20" x2="130" y2="230" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#ffffff"/>
-              <stop offset="30%" stop-color="#94a3b8"/>
-              <stop offset="70%" stop-color="#475569"/>
-              <stop offset="100%" stop-color="#0f172a"/>
-            </linearGradient>
-            <linearGradient id="introCoreGrad" x1="125" y1="70" x2="125" y2="200" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#e2e8f0"/>
-              <stop offset="50%" stop-color="#64748b"/>
-              <stop offset="100%" stop-color="#0f172a"/>
-            </linearGradient>
-            <linearGradient id="introChamferStroke" x1="20" y1="20" x2="230" y2="230" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)"/>
-              <stop offset="45%" stop-color="rgba(56, 189, 248, 0.75)"/>
-              <stop offset="100%" stop-color="rgba(255, 255, 255, 0.15)"/>
-            </linearGradient>
-          </defs>
-
-          <!-- Left Wing Blade -->
-          <g class="intro-wing-left">
-            <path d="M 122 18 L 28 212 L 68 212 L 122 84 Z" 
-                  fill="url(#introTitaniumLeft)" 
-                  stroke="url(#introChamferStroke)" 
-                  stroke-width="1.3" 
-                  stroke-linejoin="round"/>
-            <path class="intro-seam-glow" d="M 28 212 L 122 18" 
-                  stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round"/>
-            <path class="intro-seam-core" d="M 28 212 L 122 18" 
-                  stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
-          </g>
-
-          <!-- Right Wing Blade -->
-          <g class="intro-wing-right">
-            <path d="M 128 18 L 222 212 L 182 212 L 128 84 Z" 
-                  fill="url(#introTitaniumRight)" 
-                  stroke="url(#introChamferStroke)" 
-                  stroke-width="1.3" 
-                  stroke-linejoin="round"/>
-            <path class="intro-seam-glow" d="M 222 212 L 128 18" 
-                  stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round"/>
-            <path class="intro-seam-core" d="M 222 212 L 128 18" 
-                  stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
-          </g>
-
-          <!-- Center Core Arrow Crossbar -->
-          <g class="intro-core-arrow">
-            <polygon points="125,72 82,155 110,155 110,212 140,212 140,155 168,155" 
-                     fill="url(#introCoreGrad)" 
-                     stroke="url(#introChamferStroke)" 
-                     stroke-width="1.3" 
-                     stroke-linejoin="round"/>
-            <line class="intro-seam-glow" x1="82" y1="155" x2="168" y2="155" 
-                  stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
-            <line class="intro-seam-core" x1="82" y1="155" x2="168" y2="155" 
-                  stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
-          </g>
-        </svg>
-      </div>
-
-      <!-- Wordmark ANMOL -->
-      <div class="brand-intro-wordmark" id="introWordmark">
-        <div class="intro-wordmark-laser" id="introLaser"></div>
-        <span class="intro-letter">A</span>
-        <span class="intro-letter">N</span>
-        <span class="intro-letter">M</span>
-        <span class="intro-letter">O</span>
-        <span class="intro-letter">L</span>
-      </div>
-
-      <!-- Developer Terminal Boot Line (Zero Reflow) -->
-      <div class="intro-boot-line" id="introBootLine">
-        <span class="intro-boot-prompt">&gt;&nbsp;</span>
-        <span class="intro-boot-cmd">sys.boot(&quot;anmol-os&quot;)</span>
-        <span class="cursor-blink"></span>
-      </div>
-    </div>
-  </div>
 
   <!-- Glassy Celestial Space Orbit Rings Canvas (Originated from Top-Right Corner) -->
   <canvas id="space-orbit-canvas"></canvas>
@@ -155,30 +41,13 @@
   <div class="ambient-glow glow-emerald"></div>
   <div class="vignette-overlay"></div>
 
-  <!-- Hidden Background Ambient Audio (Lazy-loaded on user interaction) -->
-  <audio id="ambientAudio" loop preload="none">
-    <source src="ambient.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Ambient Audio Experience Toast Prompt -->
-  <div id="audioToast" class="audio-toast" role="status">
-    <div class="audio-toast-inner">
-      <span class="audio-toast-icon">🎧</span>
-      <div class="audio-toast-text">
-        <span class="audio-toast-title">Ambient Soundscape</span>
-        <span class="audio-toast-sub">by leberch • Tap to Play</span>
-      </div>
-      <button id="audioToastPlayBtn" class="audio-toast-btn" aria-label="Play ambient music">▶ Play</button>
-      <button id="audioToastDismissBtn" class="audio-toast-close" aria-label="Dismiss audio prompt">×</button>
-    </div>
-  </div>
 
   <!-- Header -->
   <header>
     <nav>
       <a href="#" class="brand">
         <span class="brand-logo-badge">
-          <img src="logo.webp" width="17" height="17" class="brand-logo-img" alt="Anmol Kumar">
+          <img src="logo.png" class="brand-logo-img" alt="Anmol Kumar">
         </span>
         <span class="brand-text-glow">ANMOL KUMAR</span>
       </a>
@@ -197,11 +66,12 @@
       <span class="nav-divider" aria-hidden="true"></span>
 
       <div class="nav-actions">
-        <!-- Live Status Pill (Desktop) -->
-        <div class="status-badge">
+        <!-- Live Status Pill (Desktop Luxury Glass CTA) -->
+        <a href="#contact" class="status-badge" aria-label="Available for Work - Contact Anmol">
           <span class="pulse-dot"></span>
-          <span class="status-text">Available</span>
-        </div>
+          <span class="status-text">Available for Work</span>
+          <span class="status-arrow">↗</span>
+        </a>
 
         <!-- Mobile Menu Toggle Button -->
         <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open mobile navigation menu" aria-expanded="false">
@@ -279,41 +149,32 @@
     <!-- 1. HERO SECTION -->
     <section class="hero" id="hero">
       <div class="hero-content">
-        <!-- Cyber Acoustic Quantum Core (Audio Controller & Reactor) -->
-        <button type="button" class="shiny-orb-widget" id="quantumOrbWidget" aria-label="Toggle ambient soundtrack" aria-pressed="false" title="Click to play ambient soundtrack">
-          <span class="orb-widget-ripple" id="orbWidgetRipple"></span>
-          <span class="orb-canvas-frame" id="orbCanvasFrame">
-            <span class="orb-soundwave-ring ring-1"></span>
-            <span class="orb-soundwave-ring ring-2"></span>
-            <canvas id="hero-orb-canvas" width="84" height="84"></canvas>
+        <!-- Minimalist Editorial Eyebrow -->
+        <div class="hero-eyebrow">
+          <span class="hero-status-pill">
+            <span class="status-pulse-dot"></span>
+            <span class="status-label">CSE &amp; CREATIVE SYSTEMS</span>
           </span>
-          <span class="orb-audio-tag">
-            <span class="orb-audio-icon">🎧</span>
-            <span class="orb-audio-state" id="orbAudioStateText">SOUND CORE // TAP TO PLAY</span>
-            <span class="orb-audio-bars" id="orbAudioBars">
-              <span class="bar bar-1"></span>
-              <span class="bar bar-2"></span>
-              <span class="bar bar-3"></span>
-            </span>
-          </span>
-        </button>
+        </div>
 
         <h1 class="hero-title">
-          Turning curiosity & code <br>
-          into <span class="gradient-text">things that actually work.</span>
+          Curious enough to try. <br>
+          <span class="gradient-text">Stubborn enough to make it work.</span>
         </h1>
 
         <p class="hero-desc">
-          Hey, I'm <b>Anmol Kumar</b>. First-year CSE student exploring low-level systems, 
-          Linux, algorithms, and real-time graphics with WebGL and creative engineering.
+          Hey, I'm <b>Anmol Kumar</b>. A CSE student who likes exploring how things work 
+          and turning random ideas into real projects.
         </p>
 
         <div class="hero-cta">
           <a href="#featured" class="btn btn-primary">
-            Explore Coditech <span>↓</span>
+            <span>Explore Coditech</span>
+            <span class="btn-arrow">↘</span>
           </a>
           <a href="#contact" class="btn btn-secondary">
-            Get in Touch
+            <span>Get in Touch</span>
+            <span class="btn-arrow">→</span>
           </a>
         </div>
       </div>
@@ -322,9 +183,6 @@
       <div class="laptop-stage-wrapper">
         <div class="laptop-stage" id="laptopStage">
           <canvas id="laptop-canvas"></canvas>
-          <div class="drag-instruction">
-            <span>👆 Drag in 360° • Scroll down freely</span>
-          </div>
 
           <!-- Dedicated Fullscreen Modal Chrome (Active only when .is-fullscreen-modal on mobile) -->
           <div class="laptop-modal-ui" id="laptopModalUi" aria-hidden="true">
@@ -362,115 +220,172 @@
       </div>
       <h2 class="section-title">Featured Project</h2>
 
-      <div class="featured-hero-card">
-        <div>
-          <div class="project-badge-row">
-            <span class="pill-active">● LIVE PLATFORM</span>
-            <span class="version-meta-tag">v1.0 Launched</span>
-          </div>
+      <div class="featured-stage">
+        <div class="featured-lens-halo" aria-hidden="true"></div>
+        <div class="featured-lens-ring ring-outer" aria-hidden="true"></div>
+        <div class="featured-lens-ring ring-inner" aria-hidden="true"></div>
 
-          <h3 class="featured-title">Coditech — Interactive Error Solver</h3>
-
-          <p class="featured-desc">
-            An educational developer platform built to teach students <i>why</i> code crashes occur 
-            instead of blindly copying paste answers. Provides root-cause diagnostics, memory inspection tips, 
-            and plain-English explanations for tricky bugs.
-          </p>
-
-          <div class="tag-cluster">
-            <span>JavaScript</span>
-            <span>Algorithms</span>
-            <span>Problem Solving</span>
-            <span>Next.js / Vercel</span>
-          </div>
-
+        <div class="featured-hero-card">
           <div>
-            <a href="https://thehellspires.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-              Launch Live App ↗
-            </a>
-          </div>
-        </div>
+            <div class="project-badge-row">
+              <span class="pill-active">● LIVE PLATFORM</span>
+              <span class="version-meta-tag">v1.0 Launched</span>
+            </div>
 
-        <div class="demo-terminal">
-          <div class="term-bar">
-            <span class="term-dot dot-red"></span>
-            <span class="term-dot dot-amber"></span>
-            <span class="term-dot dot-emerald"></span>
-            <span class="term-log-filename">coditech_trace.log</span>
+            <h3 class="featured-title">Coditech — Interactive Error Solver</h3>
+
+            <p class="featured-desc">
+              An educational developer platform built to teach students <i>why</i> code crashes occur 
+              instead of blindly copying paste answers. Provides root-cause diagnostics, memory inspection tips, 
+              and plain-English explanations for tricky bugs.
+            </p>
+
+            <div class="tag-cluster">
+              <span>JavaScript</span>
+              <span>Algorithms</span>
+              <span>Problem Solving</span>
+              <span>Next.js / Vercel</span>
+            </div>
+
+            <div>
+              <a href="https://thehellspires.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                Launch Live App ↗
+              </a>
+            </div>
           </div>
-          <div class="term-body">
-            <div class="term-err">&gt; Segmentation fault (core dumped)</div>
-            <div class="term-explain">&gt; Diagnostic: Accessed unallocated memory boundary. Array index out of bounds at line 42.</div>
-            <div class="term-fix">&gt; Fix: Verify loop condition (i &lt; size instead of i &lt;= size). Memory verified.</div>
+
+          <div class="demo-terminal">
+            <div class="term-bar">
+              <span class="term-dot dot-red"></span>
+              <span class="term-dot dot-amber"></span>
+              <span class="term-dot dot-emerald"></span>
+              <span class="term-log-filename">coditech_trace.log</span>
+            </div>
+            <div class="term-body">
+              <div class="term-err">&gt; Segmentation fault (core dumped)</div>
+              <div class="term-explain">&gt; Diagnostic: Accessed unallocated memory boundary. Array index out of bounds at line 42.</div>
+              <div class="term-fix">&gt; Fix: Verify loop condition (i &lt; size instead of i &lt;= size). Memory verified.</div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3. CURRENTLY UNDER CONSTRUCTION (SECTION 03) -->
-    <section class="section" id="construction">
-      <div class="section-badge">
-        <span class="section-badge-dot dot-cyan"></span>
-        <span class="section-badge-num">03</span>
-        <span>Engineering Roadmap</span>
-      </div>
-      <h2 class="section-title">Currently Under Construction</h2>
-
-      <div class="roadmap-steps-grid">
-        <!-- Step 1 -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-title"><span class="step-num">01.</span> Computer & Systems Fundamentals</span>
-            <span class="step-badge badge-done">FOUNDATION</span>
+    <!-- 3. WHAT I'M WORKING ON (SECTION 03) -->
+    <section class="roadmap-scroll-section" id="construction">
+      <div class="roadmap-sticky-stage">
+        <div class="roadmap-stage-inner">
+          <div class="section-badge">
+            <span class="section-badge-dot dot-cyan"></span>
+            <span class="section-badge-num">03</span>
+            <span>Engineering Roadmap</span>
           </div>
-          <p class="step-desc">Turns out it's not magic. Mostly logical gates, memory layout, binary arithmetic, and CPU instructions.</p>
-        </div>
+          <h2 class="section-title">What I'm Working On</h2>
+          <p class="roadmap-subtitle">A look at what I'm learning, exploring, and trying to build along the way.</p>
 
-        <!-- Step 2 -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-title"><span class="step-num">02.</span> Low-Level C Programming</span>
-            <span class="step-badge badge-prog">IN PROGRESS</span>
-          </div>
-          <p class="step-desc">Deep diving into pointers, manual memory allocation, buffer management, and struct architectures.</p>
-        </div>
+          <!-- 4-Card Pinned Interactive Deck Viewport -->
+          <div class="roadmap-deck-viewport" id="roadmapDeckViewport">
+            <!-- Ambient Floating Halo Behind Cards -->
+            <div class="roadmap-deck-halo" aria-hidden="true"></div>
 
-        <!-- Step 3 -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-title"><span class="step-num">03.</span> Linux Kernel CLI & Git Workflows</span>
-            <span class="step-badge badge-prog">ACTIVE WORKFLOW</span>
-          </div>
-          <p class="step-desc">The terminal is my daily driver. Mastering pipes, grep, sed, vim motions, commit trees, and shell pipelines.</p>
-        </div>
+            <!-- Card 01 -->
+            <div class="roadmap-deck-card" data-card-idx="0">
+              <div class="roadmap-card-header">
+                <div class="roadmap-card-track">
+                  <span class="track-pulse dot-emerald"></span>
+                  <span class="track-text">SYSTEMS ARCHITECTURE // 01</span>
+                </div>
+                <span class="roadmap-card-badge badge-done">FOUNDATION</span>
+              </div>
+              <div class="roadmap-card-body">
+                <h3 class="roadmap-card-title"><span class="roadmap-card-num">01.</span> Computer &amp; Systems Fundamentals</h3>
+                <p class="roadmap-card-desc">I'm trying to understand what actually happens inside a computer instead of treating it like a box that magically runs programs. From binary arithmetic and logic gates to memory organisation, CPU instructions, and how different components work together, this is where I'm building my fundamentals.</p>
+              </div>
+              <div class="roadmap-card-footer">
+                <div class="roadmap-card-chips">
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Binary Arithmetic</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Logic Gates &amp; ALU</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>CPU Instruction Cycles</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Memory Hierarchy</span>
+                </div>
+                <div class="roadmap-card-status">PHASE 01 // BUILDING BARE-METAL INTUITION</div>
+              </div>
+            </div>
 
-        <!-- Step 4 -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-title"><span class="step-num">04.</span> Building Real-World Products</span>
-            <span class="step-badge badge-done">DEPLOYED</span>
-          </div>
-          <p class="step-desc">Coditech launched first to diagnose real student bugs; systems utilities and compiler tools queued next.</p>
-        </div>
+            <!-- Card 02 -->
+            <div class="roadmap-deck-card" data-card-idx="1">
+              <div class="roadmap-card-header">
+                <div class="roadmap-card-track">
+                  <span class="track-pulse dot-cyan"></span>
+                  <span class="track-text">LOW-LEVEL PROGRAMMING // 02</span>
+                </div>
+                <span class="roadmap-card-badge badge-prog">IN PROGRESS</span>
+              </div>
+              <div class="roadmap-card-body">
+                <h3 class="roadmap-card-title"><span class="roadmap-card-num">02.</span> Low-Level C Programming</h3>
+                <p class="roadmap-card-desc">I'm going beyond basic syntax and getting more familiar with how C works closer to the machine. Pointers, memory allocation, data structures, and the way programs use memory are some of the things I'm working through. There's still a lot to figure out, but that's what makes it interesting.</p>
+              </div>
+              <div class="roadmap-card-footer">
+                <div class="roadmap-card-chips">
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Pointers &amp; Memory</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Dynamic Allocation (malloc/free)</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Struct Memory Layout</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Data Structures in C</span>
+                </div>
+                <div class="roadmap-card-status">PHASE 02 // MASTERING HEAP &amp; POINTER ARITHMETIC</div>
+              </div>
+            </div>
 
-        <!-- Step 5 -->
-        <div class="step-card">
-          <div class="step-header">
-            <span class="step-title"><span class="step-num">05.</span> Real-Time WebGL & 3D Engineering</span>
-            <span class="step-badge badge-prog">IN THE LAB</span>
-          </div>
-          <p class="step-desc">This site is live research: Three.js math, interactive 3D laptop models, custom shaders, and silky 60fps renders.</p>
-        </div>
+            <!-- Card 03 -->
+            <div class="roadmap-deck-card" data-card-idx="2">
+              <div class="roadmap-card-header">
+                <div class="roadmap-card-track">
+                  <span class="track-pulse dot-violet"></span>
+                  <span class="track-text">ENVIRONMENT &amp; TOOLING // 03</span>
+                </div>
+                <span class="roadmap-card-badge badge-exploring">EXPLORING</span>
+              </div>
+              <div class="roadmap-card-body">
+                <h3 class="roadmap-card-title"><span class="roadmap-card-num">03.</span> Linux &amp; Git Workflows</h3>
+                <p class="roadmap-card-desc">I'm spending time getting comfortable with Linux, the terminal, and the tools that make working with a system easier. Learning commands, understanding file permissions, experimenting with shell workflows, and getting better at using Git are all part of the process.</p>
+              </div>
+              <div class="roadmap-card-footer">
+                <div class="roadmap-card-chips">
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Linux Terminal First</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Shell Pipelines</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Git Commit Trees &amp; Rebase</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>File Permissions &amp; Scripts</span>
+                </div>
+                <div class="roadmap-card-status">PHASE 03 // STREAMLINING TERMINAL WORKFLOW</div>
+              </div>
+            </div>
 
-        <!-- Step 6 -->
-        <div class="step-card next-step">
-          <div class="step-header">
-            <span class="step-title step-title-cyan"><span class="step-num">06.</span> What's Next?</span>
-            <span class="step-badge badge-queue">QUEUED</span>
+            <!-- Card 04 -->
+            <div class="roadmap-deck-card" data-card-idx="3">
+              <div class="roadmap-card-header">
+                <div class="roadmap-card-track">
+                  <span class="track-pulse dot-lime"></span>
+                  <span class="track-text">SYSTEMS &amp; PRODUCTION // 04</span>
+                </div>
+                <span class="roadmap-card-badge badge-building">BUILDING</span>
+              </div>
+              <div class="roadmap-card-body">
+                <h3 class="roadmap-card-title"><span class="roadmap-card-num">04.</span> Building Real-World Projects</h3>
+                <p class="roadmap-card-desc">I don't want everything I learn to stay as notes or small practice programs. I'm trying to turn ideas into actual projects, starting with Coditech and exploring other tools I could build along the way. The goal is to make things that are useful, learn from what goes wrong, and gradually get better at building on my own.</p>
+              </div>
+              <div class="roadmap-card-footer">
+                <div class="roadmap-card-chips">
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Coditech Diagnostic Engine</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Hardware 3D WebGL</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Zero External Bloat</span>
+                  <span class="roadmap-chip"><span class="chip-glow"></span>Real Student Utility</span>
+                </div>
+                <div class="roadmap-card-status">PHASE 04 // BUILDING PRACTICAL, FAST SOFTWARE</div>
+              </div>
+            </div>
           </div>
-          <p class="step-desc step-desc-mono">
-            &gt; awaiting_next_engineering_breakthrough<span class="terminal-cursor"></span>
-          </p>
+
+
         </div>
       </div>
     </section>
@@ -537,10 +452,6 @@
               <span class="hud-key">engineering_goal</span>
               <span class="hud-val hud-val-emerald">Understand how software actually works under the hood</span>
             </div>
-          </div>
-          <div class="hud-footer-cmd">
-            <div class="hud-prompt">anmol@workstation:~/anmol-portfolio$ git status -sb &amp;&amp; node --check script.js</div>
-            <div class="hud-output" id="hudLiveProfilerOutput">## main...origin/main • Syntax OK • Live WebGL Renderer: Active</div>
           </div>
         </div>
       </div>
@@ -651,30 +562,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 4-Tile High-Impact Systems Metrics Bar -->
-      <div class="telemetry-metrics-bar">
-        <div class="metric-tile">
-          <span class="metric-tile-label">01 // RENDERING</span>
-          <span class="metric-tile-val" id="metricTileFpsVal">60-120 FPS</span>
-          <span class="metric-tile-sub">Offscreen orbit caching &amp; static WebGL matrices</span>
-        </div>
-        <div class="metric-tile">
-          <span class="metric-tile-label">02 // ARCHITECTURE</span>
-          <span class="metric-tile-val">Zero Deps UI</span>
-          <span class="metric-tile-sub">Vanilla ES6+, semantic DOM &amp; direct GPU canvas</span>
-        </div>
-        <div class="metric-tile">
-          <span class="metric-tile-label">03 // CORE FOCUS</span>
-          <span class="metric-tile-val">C + Linux</span>
-          <span class="metric-tile-sub">Pointers, memory layouts &amp; shell workflows</span>
-        </div>
-        <div class="metric-tile">
-          <span class="metric-tile-label">04 // APPROACH</span>
-          <span class="metric-tile-val">1st Principles</span>
-          <span class="metric-tile-sub">Learning by building and debugging real tools</span>
-        </div>
-      </div>
     </section>
 
     <!-- 5. BESPOKE CONTACT SECTION (SECTION 05) -->
@@ -733,12 +620,6 @@
           <div class="form-group">
             <label for="message">Message</label>
             <textarea id="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." maxlength="1500" required></textarea>
-          </div>
-
-          <!-- Anti-Bot Honeypot (Hidden from human visitors, traps automated scrapers) -->
-          <div style="display:none!important;position:absolute!important;left:-9999px!important;" aria-hidden="true">
-            <label for="companyWebsiteInput">Leave blank</label>
-            <input type="text" id="companyWebsiteInput" name="company_website" tabindex="-1" autocomplete="off">
           </div>
 
           <div>
