@@ -691,8 +691,68 @@
   </main>
 
   <footer>
-    <p>Designed & Built by <b>Anmol Kumar</b> • Creative Developer</p>
+    <p>Designed &amp; Built by <b>Anmol Kumar</b> • Creative Developer</p>
     <p class="footer-subline">High-performance WebGL • Three.js • Clean Architecture</p>
+    <div class="footer-links">
+      <button type="button" class="footer-link-btn" id="openPrivacyModalBtn" aria-haspopup="dialog">
+        Privacy Notice
+      </button>
+      <span class="footer-bullet">•</span>
+      <a href="#hero" class="footer-link">Back to Top ↑</a>
+    </div>
   </footer>
+
+  <!-- PRIVACY NOTICE MODAL -->
+  <div class="privacy-modal-backdrop" id="privacyModalBackdrop" aria-hidden="true"></div>
+  <div class="privacy-modal" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle" aria-hidden="true">
+    <div class="privacy-modal-card">
+      <div class="privacy-modal-header">
+        <div class="privacy-modal-badge-group">
+          <span class="privacy-badge">DATA &amp; PRIVACY</span>
+          <h3 class="privacy-modal-title" id="privacyModalTitle">Privacy &amp; Data Transparency</h3>
+        </div>
+        <button type="button" class="privacy-modal-close" id="closePrivacyModalBtn" aria-label="Close privacy notice">
+          ✕
+        </button>
+      </div>
+      <div class="privacy-modal-body">
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-emerald"></span>
+            <span class="privacy-point-title">Zero Tracking &amp; No Cookies</span>
+          </div>
+          <p class="privacy-point-desc">This site does not use tracking cookies, advertising pixels, or invasive user profiling. Your browsing activity is never tracked or monetized.</p>
+        </div>
+
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-cyan"></span>
+            <span class="privacy-point-title">Direct Contact Form</span>
+          </div>
+          <p class="privacy-point-desc">When you submit a message, your name and email are securely routed directly to respond to your inquiry. Your information is never sold, shared, or added to marketing newsletters.</p>
+        </div>
+
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-violet"></span>
+            <span class="privacy-point-title">Cryptographically Verified CDNs</span>
+          </div>
+          <p class="privacy-point-desc">External assets (Three.js 3D engine via Cloudflare CDNJS, Google Fonts) are delivered over HTTPS with strict Subresource Integrity (SRI) hashes to guarantee asset authenticity.</p>
+        </div>
+
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-lime"></span>
+            <span class="privacy-point-title">Your Rights &amp; Data Removal</span>
+          </div>
+          <p class="privacy-point-desc">Under GDPR and the DPDP Act, you have full ownership of your data. If you ever wish to delete previous correspondence, simply reach out directly at <a href="mailto:anmolkumar2762@gmail.com" class="privacy-link">anmolkumar2762@gmail.com</a>.</p>
+        </div>
+      </div>
+      <div class="privacy-modal-footer">
+        <span class="privacy-footer-note">Last updated: October 2026</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="dismissPrivacyModalBtn">Close Window</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
