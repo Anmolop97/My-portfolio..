@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://portfolio.anmolkumar.workers.dev/sitemap.xml
