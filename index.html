@@ -3,10 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Anmol Kumar | Creative Developer</title>
-  <meta name="description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
+  <title>Anmol Kumar | Creative Developer &amp; Systems Programmer</title>
+  <meta name="description" content="Anmol Kumar — First-Year CSE Student exploring systems programming, low-level C, and interactive 3D WebGL experiences. Creator of Coditech.">
   <meta name="author" content="Anmol Kumar">
+  <meta name="keywords" content="Anmol Kumar, Anmol Kumar Portfolio, Creative Developer, Systems Programming, C Programming, Three.js, WebGL, Computer Science Student, Coditech">
   <meta name="theme-color" content="#04060a">
+
+  <!-- Search Engine Crawlers & Canonical URL -->
+  <link rel="canonical" href="https://portfolio.anmolkumar.workers.dev/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
   <!-- Favicon / Browser Tab Logo -->
   <link rel="icon" type="image/png" href="logo.png">
@@ -14,10 +20,58 @@
   <link rel="apple-touch-icon" href="logo.png">
 
   <!-- Open Graph / Meta for Social Previews -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Anmol Kumar | Creative Developer">
-  <meta property="og:description" content="First-Year CSE Student • Systems, 3D & Creative Engineering">
-  <meta property="og:image" content="logo.png">
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Anmol Kumar Portfolio">
+  <meta property="og:url" content="https://portfolio.anmolkumar.workers.dev/">
+  <meta property="og:title" content="Anmol Kumar | Creative Developer &amp; Systems Programmer">
+  <meta property="og:description" content="Anmol Kumar — First-Year CSE Student exploring systems programming, low-level C, and interactive 3D WebGL experiences. Creator of Coditech.">
+  <meta property="og:image" content="https://portfolio.anmolkumar.workers.dev/logo.png">
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Anmol Kumar | Creative Developer &amp; Systems Programmer">
+  <meta name="twitter:description" content="Anmol Kumar — First-Year CSE Student exploring systems programming, low-level C, and interactive 3D WebGL experiences. Creator of Coditech.">
+  <meta name="twitter:image" content="https://portfolio.anmolkumar.workers.dev/logo.png">
+
+  <!-- Structured Data (JSON-LD) for Google Search & Knowledge Graph -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://portfolio.anmolkumar.workers.dev/#person",
+        "name": "Anmol Kumar",
+        "url": "https://portfolio.anmolkumar.workers.dev/",
+        "image": "https://portfolio.anmolkumar.workers.dev/logo.png",
+        "jobTitle": "Creative Developer & Systems Engineering Student",
+        "description": "First-Year Computer Science and Engineering student specializing in systems programming, low-level C, and interactive 3D WebGL experiences.",
+        "sameAs": [
+          "https://github.com/Anmolop97",
+          "https://www.linkedin.com/in/anmol-kumar-784849412/"
+        ],
+        "knowsAbout": [
+          "Systems Programming",
+          "C Programming Language",
+          "Linux & Git Workflows",
+          "WebGL & Three.js",
+          "Computer Architecture",
+          "Web Development"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://portfolio.anmolkumar.workers.dev/#website",
+        "url": "https://portfolio.anmolkumar.workers.dev/",
+        "name": "Anmol Kumar Portfolio",
+        "description": "Personal developer portfolio of Anmol Kumar featuring systems engineering, 3D WebGL graphics, and project showcases.",
+        "publisher": {
+          "@id": "https://portfolio.anmolkumar.workers.dev/#person"
+        }
+      }
+    ]
+  }
+  </script>
 
   <!-- Typography & Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -607,6 +661,9 @@
         </div>
 
         <form class="clean-form" id="contactForm">
+          <!-- Anti-bot honeypot trap (invisible to human visitors) -->
+          <input type="text" name="_hp_trap" id="hpTrap" style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;" tabindex="-1" autocomplete="off" aria-hidden="true">
+
           <div class="form-group">
             <label for="name">Your Name</label>
             <input type="text" id="name" class="form-input" placeholder="What should I call you?" maxlength="100" required>
