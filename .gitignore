@@ -31,5 +31,9 @@ node_modules/
 *.png
 !assets/images/*.png
 !assets/images/logo.png
+!logo.png
 *.zip
 scratch/
+.env
+.env.*
+*.bak
