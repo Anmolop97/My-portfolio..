@@ -214,7 +214,7 @@ npx wrangler deploy
 
 ## 📬 Connect & Inquiries
 
-- **Author**: Anmol Kumar (First-Year CSE Student)
+- **Author**: Anmol Kumar (Creative Developer & Systems Programmer)
 - **Portfolio**: [portfolio.anmolkumar.workers.dev](https://portfolio.anmolkumar.workers.dev/)
 - **GitHub**: [@Anmolop97](https://github.com/Anmolop97)
 - **LinkedIn**: [Anmol Kumar](https://www.linkedin.com/in/anmol-kumar-784849412/)
