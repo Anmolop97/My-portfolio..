@@ -2183,26 +2183,120 @@ window.__masterLoop = __masterLoop;
 
       const form = document.getElementById('contactForm');
       const status = document.getElementById('formStatus');
+      const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Send Message →';
 
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const n = document.getElementById('name').value.trim();
-        const em = document.getElementById('email').value.trim();
-        const msg = document.getElementById('message').value.trim();
+      if (form && submitBtn) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const nameInput = document.getElementById('name');
+          const emailInput = document.getElementById('email');
+          const msgInput = document.getElementById('message');
+          const hpInput = document.getElementById('hpTrap');
 
-        if (!n || !em || !msg) {
-          status.className = 'form-status error';
-          status.textContent = 'Please fill out all fields.';
-          return;
-        }
+          const n = nameInput.value.trim();
+          const em = emailInput.value.trim();
+          const msg = msgInput.value.trim();
+          const hp = hpInput ? hpInput.value.trim() : '';
 
-        const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
-        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
-        window.location.href = mailtoLink;
+          if (!n || !em || !msg) {
+            status.className = 'form-status error';
+            status.textContent = '> [SYS] Error: Please fill out all fields.';
+            return;
+          }
 
-        status.className = 'form-status success';
-        status.textContent = 'Opening your email client... Or copy the email directly above!';
-      });
+          // Client-side email format validation
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailPattern.test(em)) {
+            status.className = 'form-status error';
+            status.textContent = '> [SYS] Error: Please enter a valid email address.';
+            emailInput.focus();
+            return;
+          }
+
+          // Anti-bot honeypot trap: if filled by a scraper, silently simulate success
+          if (hp && hp.length > 0) {
+            form.reset();
+            submitBtn.classList.remove('is-transmitting');
+            submitBtn.classList.add('is-success');
+            submitBtn.innerHTML = '✓ Message Dispatched!';
+            status.className = 'form-status success';
+            status.textContent = '> [SYS] Message delivered directly to Anmol\'s inbox. Expect a reply soon!';
+            setTimeout(() => {
+              submitBtn.classList.remove('is-success');
+              submitBtn.innerHTML = originalBtnHtml;
+            }, 3000);
+            return;
+          }
+
+          // Lock fields & activate transmitting animation
+          nameInput.disabled = true;
+          emailInput.disabled = true;
+          msgInput.disabled = true;
+          submitBtn.disabled = true;
+          submitBtn.classList.add('is-transmitting');
+          submitBtn.innerHTML = '<span class="cyber-btn-spinner"></span> Transmitting message...';
+          status.className = 'form-status transmitting';
+          status.textContent = '> [SYS] Routing secure message directly to Anmol...';
+
+          try {
+            // Production secure transmission via hardened Cloudflare Worker backend
+            const res = await fetch('/api/contact', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: n, email: em, message: msg, _hp_trap: hp })
+            });
+
+            // Resilient Fallback: If running in static preview (404), trigger mailto
+            if (res.status === 404) {
+              const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
+              const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
+              window.location.href = mailtoLink;
+              submitBtn.classList.remove('is-transmitting');
+              submitBtn.innerHTML = originalBtnHtml;
+              status.className = 'form-status success';
+              status.textContent = '> [SYS] Static preview detected. Opening direct email client!';
+              return;
+            }
+
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok && (data.status === 'success' || !data.error)) {
+              // Success animation
+              submitBtn.classList.remove('is-transmitting');
+              submitBtn.classList.add('is-success');
+              submitBtn.innerHTML = '✓ Message Dispatched!';
+              status.className = 'form-status success';
+              status.textContent = '> [SYS] Message delivered directly to Anmol\'s inbox. Expect a reply soon!';
+              form.reset();
+            } else {
+              // Server-side validation or rate limit error
+              submitBtn.classList.remove('is-transmitting');
+              submitBtn.innerHTML = originalBtnHtml;
+              status.className = 'form-status error';
+              status.textContent = `> [SYS] ${data.error || 'Transmission declined. Please try again.'}`;
+            }
+          } catch (err) {
+            // Offline or network error fallback: trigger direct mailto
+            const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
+            window.location.href = mailtoLink;
+            submitBtn.classList.remove('is-transmitting');
+            submitBtn.innerHTML = originalBtnHtml;
+            status.className = 'form-status success';
+            status.textContent = '> [SYS] Offline mode. Opened direct email client!';
+          } finally {
+            setTimeout(() => {
+              submitBtn.disabled = false;
+              nameInput.disabled = false;
+              emailInput.disabled = false;
+              msgInput.disabled = false;
+              submitBtn.classList.remove('is-transmitting', 'is-success');
+              submitBtn.innerHTML = originalBtnHtml;
+            }, 4500);
+          }
+        });
+      }
     })();
 
 /* ================================================================
