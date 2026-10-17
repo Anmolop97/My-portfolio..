@@ -660,23 +660,23 @@
           </div>
         </div>
 
-        <form class="clean-form" id="contactForm">
-          <!-- Anti-bot honeypot trap (invisible to human visitors) -->
-          <input type="text" name="_hp_trap" id="hpTrap" style="display:none !important; visibility:hidden !important; position:absolute !important; left:-9999px !important;" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <form class="clean-form" id="contactForm" method="POST" action="/api/contact">
+          <!-- Anti-bot honeypot trap (invisible to human visitors, zero inline styles) -->
+          <input type="text" name="_hp_trap" id="hpTrap" class="hp-trap" tabindex="-1" autocomplete="off" aria-hidden="true">
 
           <div class="form-group">
             <label for="name">Your Name</label>
-            <input type="text" id="name" class="form-input" placeholder="What should I call you?" maxlength="100" required>
+            <input type="text" id="name" name="name" class="form-input" placeholder="What should I call you?" maxlength="100" autocomplete="name" required>
           </div>
 
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" class="form-input" placeholder="you@domain.com" maxlength="150" required>
+            <input type="email" id="email" name="email" class="form-input" placeholder="you@domain.com" maxlength="100" autocomplete="email" required>
           </div>
 
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea id="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." maxlength="1500" required></textarea>
+            <textarea id="message" name="message" class="form-textarea" placeholder="Tell me what you're working on or want to talk about..." maxlength="3000" required></textarea>
           </div>
 
           <div>
