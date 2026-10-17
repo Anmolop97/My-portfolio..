@@ -58,10 +58,10 @@ window.__masterLoop = __masterLoop;
   if (typeof Lenis === 'undefined') return;
 
   const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    lerp: 0.088, // Silky luxury inertia (instant pickup, zero delay)
+    wheelMultiplier: 0.95, // Refined cadence per notch (prevents overshooting)
     smoothWheel: true,
-    touchMultiplier: 1.5,
+    syncTouch: false, // Preserve native 120Hz touch physics on mobile
     infinite: false,
     orientation: 'vertical',
     gestureOrientation: 'vertical'
@@ -85,7 +85,8 @@ window.__masterLoop = __masterLoop;
           e.preventDefault();
           lenis.scrollTo(target, {
             offset: -35,
-            duration: 1.25,
+            duration: 1.1,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
           });
         }
       });
@@ -427,8 +428,8 @@ window.__masterLoop = __masterLoop;
         const dt = Math.min(Math.max((now - lastFrameNow) * 0.001, 0.001), 0.05);
         lastFrameNow = now;
 
-        // Silky-smooth scroll interpolation (Zero jitter 0.055 lerp damping)
-        smoothScrollY += (targetScrollY - smoothScrollY) * 0.055;
+        // Responsive scroll synchronization (tightly coupled with Lenis)
+        smoothScrollY += (targetScrollY - smoothScrollY) * 0.20;
         const scrollDelta = smoothScrollY - lastSmoothScrollY;
         lastSmoothScrollY = smoothScrollY;
 
@@ -1952,9 +1953,9 @@ window.__masterLoop = __masterLoop;
           }
         }
 
-        // Kinetic scroll inertia and delay damping
+        // Kinetic scroll inertia and delay damping (synchronized with Lenis)
         const prevLaptopScroll = laptopScrollY;
-        laptopScrollY += (targetLaptopScrollY - laptopScrollY) * 0.05;
+        laptopScrollY += (targetLaptopScrollY - laptopScrollY) * 0.20;
         laptopScrollVelocity = (laptopScrollY - prevLaptopScroll);
 
         // Zero-G Harmonic Weightless Float (Multi-axis sinusoidal bobbing - Zero GPU Cost)
@@ -2367,17 +2368,32 @@ window.__masterLoop = __masterLoop;
   const halo = section.querySelector('.roadmap-deck-halo');
   const cardCount = cards.length;
 
-  function updateRoadmapDeck() {
+  let sectionTop = 0;
+  let totalDist = 0;
+  let winHeight = window.innerHeight;
+
+  function measureDimensions() {
+    winHeight = window.innerHeight;
+    const currentScroll = window.__lenis ? window.__lenis.scroll : (window.scrollY || 0);
     const rect = section.getBoundingClientRect();
+    sectionTop = rect.top + currentScroll;
+    totalDist = section.offsetHeight - winHeight;
+  }
 
-    // Guard: Skip execution when section is completely offscreen (zero CPU/GPU waste)
-    if (rect.bottom < -100 || rect.top > window.innerHeight + 100) return;
-
-    const totalDist = section.offsetHeight - window.innerHeight;
+  function updateRoadmapDeck(e) {
     if (totalDist <= 0) return;
 
-    // 100% continuous Lenis smooth scroll: progress maps 0.0 to 1.0 with zero dead zones
-    const progress = Math.min(1, Math.max(0, -rect.top / totalDist));
+    const scrollY = (e && typeof e.scroll === 'number') 
+      ? e.scroll 
+      : (window.__lenis ? window.__lenis.scroll : (window.scrollY || 0));
+
+    const relY = scrollY - sectionTop;
+
+    // Guard: Skip execution when section is completely offscreen (zero CPU/GPU waste)
+    if (relY < -winHeight || relY > totalDist + winHeight) return;
+
+    // 100% continuous Lenis smooth scroll: progress maps 0.0 to 1.0 with zero layout thrashing
+    const progress = Math.min(1, Math.max(0, relY / totalDist));
     const floatIdx = progress * (cardCount - 1);
 
     cards.forEach((card, i) => {
@@ -2413,13 +2429,62 @@ window.__masterLoop = __masterLoop;
     }
   }
 
+  measureDimensions();
+
   if (window.__lenis) {
     window.__lenis.on('scroll', updateRoadmapDeck);
   } else {
     window.addEventListener('scroll', updateRoadmapDeck, { passive: true });
   }
-  window.addEventListener('resize', updateRoadmapDeck, { passive: true });
+
+  window.addEventListener('resize', () => {
+    measureDimensions();
+    updateRoadmapDeck();
+  }, { passive: true });
 
   // Initial pass to position cards
   updateRoadmapDeck();
+})();
+
+/* ================================================================
+   PRIVACY NOTICE MODAL CONTROLLER
+   Accessible, lightweight, with scroll locking and Escape key support
+   ================================================================ */
+(() => {
+  const openBtn = document.getElementById('openPrivacyModalBtn');
+  const modal = document.getElementById('privacyModal');
+  const backdrop = document.getElementById('privacyModalBackdrop');
+  const closeBtn = document.getElementById('closePrivacyModalBtn');
+  const dismissBtn = document.getElementById('dismissPrivacyModalBtn');
+
+  if (!openBtn || !modal || !backdrop) return;
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-scroll-locked');
+    if (window.__lenis) window.__lenis.stop();
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-scroll-locked');
+    if (window.__lenis) window.__lenis.start();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
 })();
