@@ -1026,7 +1026,7 @@ window.__masterLoop = __masterLoop;
       ];
 
       // Master Power-Of-Two canvas for keycap texture (2048x1024 desktop, 1024x512 mobile to save 75% VRAM & enable clean hardware mipmaps)
-      const texScale = isMobile ? 0.5 : 1.0;
+      const texScale = isMobile ? 0.25 : 1.0;
       const KB_LOGICAL_W = 2048;
       const KB_LOGICAL_H = 860;
       const kbCanvas = document.createElement('canvas');
@@ -2186,10 +2186,10 @@ window.__masterLoop = __masterLoop;
       // Post-FCP Deferral: Defer heavy WebGL compilation & canvas baking until after initial paint
       const isMobile = window.innerWidth <= 900;
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => bootLaptopSafe(), { timeout: isMobile ? 300 : 150 });
+        requestIdleCallback(() => bootLaptopSafe(), { timeout: isMobile ? 1200 : 150 });
       } else {
         requestAnimationFrame(() => {
-          setTimeout(bootLaptopSafe, isMobile ? 80 : 30);
+          setTimeout(bootLaptopSafe, isMobile ? 250 : 30);
         });
       }
     }
