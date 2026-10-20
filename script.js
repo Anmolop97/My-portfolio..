@@ -486,8 +486,9 @@ window.__masterLoop = __masterLoop;
       let isRunning = false;
 
       function renderFrame(now) {
+        const isMobileScreen = width < 768;
         // Frame-pace: 30 FPS on mobile saves 50% GPU fill-rate, 60 FPS on desktop
-        const minFrameInterval = (width < 768) ? 42 : 15;
+        const minFrameInterval = isMobileScreen ? 42 : 15;
         if (now && lastFrameNow && (now - lastFrameNow) < minFrameInterval) {
           return;
         }
@@ -529,7 +530,6 @@ window.__masterLoop = __masterLoop;
         ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, width, height);
 
-        const isMobileScreen = width < 768;
         const baseOriginX = isMobileScreen ? width * 0.66 : width * 0.92;
         const baseOriginY = isMobileScreen ? height * 0.07 : height * 0.05;
         const rot = isMobileScreen ? -0.34 : -0.42;

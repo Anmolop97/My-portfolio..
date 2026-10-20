@@ -37,3 +37,4 @@ scratch/
 .env
 .env.*
 *.bak
+serve.js
