@@ -199,7 +199,8 @@ window.__masterLoop = __masterLoop;
         const expansion = isMobileScreen ? 0.76 : 1.0;
         const viewportScale = isMobileScreen ? 0.68 : Math.min(width / 1920, 1.0);
 
-        for (let i = 0; i < ORBITS.length; i++) {
+        const orbitsCount = isMobileScreen ? 4 : ORBITS.length;
+        for (let i = 0; i < orbitsCount; i++) {
           const orb = ORBITS[i];
           const rx = orb.baseR * expansion * viewportScale;
           curRxArray[i] = rx;
@@ -486,7 +487,7 @@ window.__masterLoop = __masterLoop;
 
       function renderFrame(now) {
         // Frame-pace: 30 FPS on mobile saves 50% GPU fill-rate, 60 FPS on desktop
-        const minFrameInterval = (width < 768) ? 31 : 15;
+        const minFrameInterval = (width < 768) ? 42 : 15;
         if (now && lastFrameNow && (now - lastFrameNow) < minFrameInterval) {
           return;
         }
@@ -505,11 +506,12 @@ window.__masterLoop = __masterLoop;
         scrollGlow = Math.min(scrollGlow * 0.94 + scrollVelocity * 0.015, 1.0);
 
         // --- SPAWN METEORS ONLY WHEN SCROLL IS ACTIVE ---
-        if (scrollVelocity > 1.2) {
+        const maxMeteors = isMobileScreen ? 1 : MAX_METEORS;
+        if (scrollVelocity > (isMobileScreen ? 2.5 : 1.2)) {
           meteorCooldown -= scrollVelocity;
-          if (meteorCooldown <= 0 && activeMeteorCount < MAX_METEORS) {
+          if (meteorCooldown <= 0 && activeMeteorCount < maxMeteors) {
             spawnMeteor();
-            meteorCooldown = 22; // Interval between shooting stars during scroll
+            meteorCooldown = isMobileScreen ? 50 : 22;
           }
         } else {
           meteorCooldown = 0;
@@ -876,7 +878,7 @@ window.__masterLoop = __masterLoop;
       camera.position.set(0, isMobile ? 0.70 : 1.25, isMobile ? 6.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
-      const getOptimalPixelRatio = () => Math.min(window.devicePixelRatio || 1, 1.5);
+      const getOptimalPixelRatio = () => isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'default' });
       renderer.setPixelRatio(getOptimalPixelRatio());
       renderer.setSize(cw, ch);
@@ -1959,7 +1961,7 @@ window.__masterLoop = __masterLoop;
       let lastLaptopRender = 0;
       function animate(now) {
         // Frame-pace: ~35-40 FPS on mobile, 60 FPS on desktop (conserves phone battery & GPU headroom)
-        const minLaptopInterval = (window.innerWidth <= 900) ? 26 : 15;
+        const minLaptopInterval = (window.innerWidth <= 900) ? 33 : 15;
         if (now && lastLaptopRender && (now - lastLaptopRender) < minLaptopInterval) {
           return;
         }

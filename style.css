@@ -1608,6 +1608,9 @@
         justify-content: space-between;
         padding: 0.45rem 1rem;
         gap: 0.8rem;
+        background: rgba(10, 14, 22, 0.96) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
       }
       .nav-divider {
         display: none !important;
