@@ -69,6 +69,15 @@ window.__masterLoop = __masterLoop;
 
   window.__lenis = lenis;
 
+  // Prevent browser native restoration fighting with Lenis lerp loop
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  const initialScrollY = window.scrollY || window.pageYOffset || 0;
+  if (initialScrollY > 0) {
+    lenis.scrollTo(initialScrollY, { immediate: true });
+  }
+
   let rafId = 0;
   let idleFrames = 0;
 
@@ -1651,17 +1660,21 @@ window.__masterLoop = __masterLoop;
       // Re-bake screen and keyboard textures once web fonts (JetBrains Mono / Space Grotesk) finish loading
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
-          drawEngravedKeyboard();
-          renderCodeEditorScreen(false);
-          screenTexture.needsUpdate = true;
-          const updatedNormX = (savedCursorX / SCREEN_LOGICAL_W) - 0.5;
-          const updatedNormY = 0.5 - (savedCursorY / SCREEN_LOGICAL_H);
-          cursorMesh.position.set(
-            updatedNormX * screenW + curW3D / 2,
-            updatedNormY * screenH - curH3D / 2,
-            0.003
-          );
-          cursorMesh.updateMatrix();
+          requestAnimationFrame(() => {
+            drawEngravedKeyboard();
+            requestAnimationFrame(() => {
+              renderCodeEditorScreen(false);
+              screenTexture.needsUpdate = true;
+              const updatedNormX = (savedCursorX / SCREEN_LOGICAL_W) - 0.5;
+              const updatedNormY = 0.5 - (savedCursorY / SCREEN_LOGICAL_H);
+              cursorMesh.position.set(
+                updatedNormX * screenW + curW3D / 2,
+                updatedNormY * screenH - curH3D / 2,
+                0.003
+              );
+              cursorMesh.updateMatrix();
+            });
+          });
         });
       }
 
@@ -2151,6 +2164,8 @@ window.__masterLoop = __masterLoop;
         if (typeof window.__startLaptop === 'function') {
           window.__startLaptop();
         }
+        const canvas = document.getElementById('laptop-canvas');
+        if (canvas) canvas.classList.add('is-ready');
       } catch (err) {
         console.warn("Laptop error:", err);
       }
@@ -2166,16 +2181,14 @@ window.__masterLoop = __masterLoop;
         window.__startSpaceOrbitRings();
       }
 
-      // Post-FCP Deferral: On mobile, defer the heavy WebGL compilation until after first paint & main-thread idle
+      // Post-FCP Deferral: Defer heavy WebGL compilation & canvas baking until after initial paint
       const isMobile = window.innerWidth <= 900;
-      if (isMobile) {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => bootLaptopSafe(), { timeout: 250 });
-        } else {
-          setTimeout(bootLaptopSafe, 80);
-        }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => bootLaptopSafe(), { timeout: isMobile ? 300 : 150 });
       } else {
-        bootLaptopSafe();
+        requestAnimationFrame(() => {
+          setTimeout(bootLaptopSafe, isMobile ? 80 : 30);
+        });
       }
     }
 
@@ -2521,8 +2534,6 @@ window.__masterLoop = __masterLoop;
     }
   }
 
-  measureDimensions();
-
   if (window.__lenis) {
     window.__lenis.on('scroll', updateRoadmapDeck);
   } else {
@@ -2534,8 +2545,11 @@ window.__masterLoop = __masterLoop;
     updateRoadmapDeck();
   }, { passive: true });
 
-  // Initial pass to position cards
-  updateRoadmapDeck();
+  // Defer initial layout queries until after first paint to prevent layout thrashing
+  requestAnimationFrame(() => {
+    measureDimensions();
+    updateRoadmapDeck();
+  });
 })();
 
 /* ================================================================

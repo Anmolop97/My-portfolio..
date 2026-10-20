@@ -661,6 +661,10 @@
       outline: none;
       cursor: grab;
       touch-action: pan-y;
+      opacity: 0;
+      transition: opacity 0.4s ease-out;
+    }
+    #laptop-canvas.is-ready {
       opacity: 1;
     }
     #laptop-canvas:active {
@@ -774,6 +778,7 @@
       width: clamp(380px, 70vw, 880px);
       height: clamp(380px, 70vw, 880px);
       border: 1px dashed rgba(56, 189, 248, 0.16);
+      will-change: transform;
       animation: rotateLensRing 120s linear infinite;
     }
     .featured-lens-ring.ring-inner {
