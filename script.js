@@ -53,9 +53,30 @@ const __masterLoop = (() => {
 })();
 window.__masterLoop = __masterLoop;
 
+// High-velocity mobile scroll-pause monitor (0% GPU draw calls while finger is actively swiping)
+let isMobileScrolling = false;
+let mobileScrollTimer = 0;
+if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+  window.addEventListener('scroll', () => {
+    isMobileScrolling = true;
+    clearTimeout(mobileScrollTimer);
+    mobileScrollTimer = setTimeout(() => {
+      isMobileScrolling = false;
+      if (typeof __masterLoop !== 'undefined' && __masterLoop && __masterLoop.schedule) {
+        __masterLoop.schedule();
+      }
+    }, 100);
+  }, { passive: true });
+}
+
 /* ==================== LENIS SMOOTH SCROLL ENGINE ==================== */
 (() => {
   if (typeof Lenis === 'undefined') return;
+
+  // On mobile screens (<= 768px), bypass Lenis to let mobile OS use 100% native GPU compositor touch physics
+  if (window.innerWidth <= 768) {
+    return;
+  }
 
   const lenis = new Lenis({
     lerp: 0.088, // Silky luxury inertia (instant pickup, zero delay)
@@ -816,9 +837,10 @@ window.__masterLoop = __masterLoop;
         if (!isRunning || !spaceInView) return false;
         if (window.__introIsActive && (!window.__introProgress || window.__introProgress <= 0.85)) return false;
         // On mobile, pause canvas rendering when scrolled past the hero/upper sections (saves 100% GPU during reading)
-        const scrollPos = window.__lenis ? window.__lenis.scroll : (window.scrollY || 0);
-        if (width < 768 && scrollPos > height * 2.0) {
-          return false;
+        if (width < 768) {
+          if (isMobileScrolling) return false;
+          const scrollPos = window.scrollY || 0;
+          if (scrollPos > height * 1.5) return false;
         }
         return true;
       }
@@ -2103,7 +2125,7 @@ window.__masterLoop = __masterLoop;
 
       __masterLoop.register(
         'laptop',
-        () => laptopRunning && laptopInView,
+        () => laptopRunning && laptopInView && (!isMobile || !isMobileScrolling),
         animate
       );
 

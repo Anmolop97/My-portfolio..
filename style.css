@@ -1641,16 +1641,10 @@
         overflow: hidden !important;
       }
       .glow-cyan {
-        width: 250px !important;
-        height: 250px !important;
-        top: -40px !important;
-        right: 0 !important;
+        display: none !important;
       }
       .glow-emerald {
-        width: 240px !important;
-        height: 240px !important;
-        bottom: -30px !important;
-        left: 0 !important;
+        display: none !important;
       }
 
       .hero {
