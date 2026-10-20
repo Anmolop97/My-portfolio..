@@ -37,7 +37,8 @@ const BLOCKED_PATHS = new Set([
   "/README.md",
   "/LICENSE",
   "/package.json",
-  "/package-lock.json"
+  "/package-lock.json",
+  "/build.js"
 ]);
 
 function isPathForbidden(pathname) {
@@ -365,6 +366,18 @@ export default {
     const newHeaders = new Headers(originResponse.headers);
     for (const [header, value] of Object.entries(SECURITY_HEADERS)) {
       newHeaders.set(header, value);
+    }
+
+    // Smart Caching Strategy: Instant repeat visits while keeping HTML fresh
+    const pathname = url.pathname.toLowerCase();
+    if (pathname.endsWith('.js') || pathname.endsWith('.css')) {
+      newHeaders.set('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+    } else if (pathname.endsWith('.png') || pathname.endsWith('.ico') || pathname.endsWith('.jpg') || pathname.endsWith('.webp') || pathname.endsWith('.svg')) {
+      newHeaders.set('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
+    } else if (pathname.endsWith('.woff2') || pathname.endsWith('.woff') || pathname.endsWith('.ttf')) {
+      newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (pathname === '/' || pathname.endsWith('.html') || pathname.endsWith('.xml') || pathname.endsWith('.txt')) {
+      newHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
     }
 
     return new Response(originResponse.body, {

@@ -69,11 +69,63 @@ window.__masterLoop = __masterLoop;
 
   window.__lenis = lenis;
 
+  let rafId = 0;
+  let idleFrames = 0;
+
   function lenisRaf(time) {
     lenis.raf(time);
-    requestAnimationFrame(lenisRaf);
+    // Halt rAF when scroll momentum has completely settled (saves 100% idle CPU)
+    if (!lenis.isScrolling && Math.abs(lenis.velocity) < 0.005) {
+      idleFrames++;
+      if (idleFrames > 12) {
+        rafId = 0;
+        return;
+      }
+    } else {
+      idleFrames = 0;
+    }
+    rafId = requestAnimationFrame(lenisRaf);
   }
-  requestAnimationFrame(lenisRaf);
+
+  function startLenisRaf() {
+    idleFrames = 0;
+    if (!rafId) {
+      rafId = requestAnimationFrame(lenisRaf);
+    }
+  }
+
+  // Reactive wakeup hooks on user scroll inputs
+  window.addEventListener('wheel', startLenisRaf, { passive: true });
+  window.addEventListener('touchstart', startLenisRaf, { passive: true });
+  window.addEventListener('touchmove', startLenisRaf, { passive: true });
+  window.addEventListener('resize', startLenisRaf, { passive: true });
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Space'].includes(e.code)) {
+      startLenisRaf();
+    }
+  }, { passive: true });
+
+  // Hook programmatic scrollTo so anchor clicks wake up the smooth scroll loop
+  const origScrollTo = lenis.scrollTo.bind(lenis);
+  lenis.scrollTo = function(...args) {
+    startLenisRaf();
+    return origScrollTo(...args);
+  };
+
+  // Pause when tab is hidden, wake on return
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    } else {
+      startLenisRaf();
+    }
+  });
+
+  // Initial pass to settle any initial scroll offset
+  startLenisRaf();
 
   function bindSmoothAnchors() {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -424,6 +476,11 @@ window.__masterLoop = __masterLoop;
       let isRunning = false;
 
       function renderFrame(now) {
+        // Frame-pace: 30 FPS on mobile saves 50% GPU fill-rate, 60 FPS on desktop
+        const minFrameInterval = (width < 768) ? 31 : 15;
+        if (now && lastFrameNow && (now - lastFrameNow) < minFrameInterval) {
+          return;
+        }
         const t = (now - startTime) * 0.001;
         const dt = Math.min(Math.max((now - lastFrameNow) * 0.001, 0.001), 0.05);
         lastFrameNow = now;
@@ -744,9 +801,20 @@ window.__masterLoop = __masterLoop;
 
       let spaceInView = true;
 
+      function isSpaceRingsActive() {
+        if (!isRunning || !spaceInView) return false;
+        if (window.__introIsActive && (!window.__introProgress || window.__introProgress <= 0.85)) return false;
+        // On mobile, pause canvas rendering when scrolled past the hero/upper sections (saves 100% GPU during reading)
+        const scrollPos = window.__lenis ? window.__lenis.scroll : (window.scrollY || 0);
+        if (width < 768 && scrollPos > height * 2.0) {
+          return false;
+        }
+        return true;
+      }
+
       __masterLoop.register(
         'spaceRings',
-        () => isRunning && spaceInView && (!window.__introIsActive || (window.__introProgress && window.__introProgress > 0.85)),
+        isSpaceRingsActive,
         renderFrame
       );
 
@@ -799,10 +867,8 @@ window.__masterLoop = __masterLoop;
       camera.position.set(0, isMobile ? 0.70 : 1.25, isMobile ? 6.2 : 6.4);
       camera.lookAt(0, 0, 0);
 
-      const getOptimalPixelRatio = () => (window.innerWidth <= 900)
-        ? Math.min(window.devicePixelRatio || 1, 2)
-        : Math.min(Math.max(window.devicePixelRatio || 1, 2), 2.5);
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+      const getOptimalPixelRatio = () => Math.min(window.devicePixelRatio || 1, 1.5);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'default' });
       renderer.setPixelRatio(getOptimalPixelRatio());
       renderer.setSize(cw, ch);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1873,11 +1939,18 @@ window.__masterLoop = __masterLoop;
           if (laptopInView) {
             __masterLoop.schedule();
           }
-        }, { threshold: [0, 0.05, 0.1, 0.5, 1.0], rootMargin: '120px 0px 120px 0px' });
+        }, { threshold: [0, 0.05, 0.1, 0.5, 1.0], rootMargin: '0px 0px 0px 0px' });
         laptopObserver.observe(canvas);
       }
 
-      function animate() {
+      let lastLaptopRender = 0;
+      function animate(now) {
+        // Frame-pace: ~35-40 FPS on mobile, 60 FPS on desktop (conserves phone battery & GPU headroom)
+        const minLaptopInterval = (window.innerWidth <= 900) ? 26 : 15;
+        if (now && lastLaptopRender && (now - lastLaptopRender) < minLaptopInterval) {
+          return;
+        }
+        lastLaptopRender = now || performance.now();
         const elapsed = clock2.getElapsedTime();
 
         const heroScroll = Math.max(0, targetLaptopScrollY);
@@ -2073,25 +2146,44 @@ window.__masterLoop = __masterLoop;
     function bootLaptopSafe() {
       if (laptopBooted) return;
       laptopBooted = true;
-      try { initLaptopStage(); } catch (err) { console.warn("Laptop error:", err); }
+      try {
+        initLaptopStage();
+        if (typeof window.__startLaptop === 'function') {
+          window.__startLaptop();
+        }
+      } catch (err) {
+        console.warn("Laptop error:", err);
+      }
     }
 
     function boot3DAllImmediate() {
       if (typeof THREE === 'undefined') {
-        setTimeout(boot3DAllImmediate, 60);
+        setTimeout(boot3DAllImmediate, 50);
         return;
       }
       bootSpaceRingsSafe();
-      bootLaptopSafe();
+      if (typeof window.__startSpaceOrbitRings === 'function') {
+        window.__startSpaceOrbitRings();
+      }
+
+      // Post-FCP Deferral: On mobile, defer the heavy WebGL compilation until after first paint & main-thread idle
+      const isMobile = window.innerWidth <= 900;
+      if (isMobile) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => bootLaptopSafe(), { timeout: 250 });
+        } else {
+          setTimeout(bootLaptopSafe, 80);
+        }
+      } else {
+        bootLaptopSafe();
+      }
     }
 
     window.__start3DScenes = function() {
       boot3DAllImmediate();
-      if (typeof window.__startSpaceOrbitRings === 'function') window.__startSpaceOrbitRings();
-      if (typeof window.__startLaptop === 'function') window.__startLaptop();
     };
 
-    // Boot and start all 3D scenes immediately upon load
+    // Boot and start all 3D scenes (immediate on desktop, post-FCP idle on mobile)
     window.__start3DScenes();
 
 /* ==================== nav.js ==================== */
