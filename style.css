@@ -555,9 +555,12 @@
     .gradient-text {
       background: linear-gradient(135deg, #ffffff 15%, #cbd5e1 45%, #94a3b8 70%, #38bdf8 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
+      color: transparent;
       display: inline-block;
-      text-shadow: 0 0 40px rgba(56, 189, 248, 0.12);
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .hero-desc {
