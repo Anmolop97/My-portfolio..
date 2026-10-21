@@ -193,7 +193,7 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      let dpr = 1.0; // Optimized: 1.0 DPR saves 55% GPU fill rate churn with zero visible difference
+      let dpr = Math.min(typeof window !== 'undefined' && window.devicePixelRatio ? window.devicePixelRatio : 1, 2.0);
       let width = window.innerWidth;
       let height = window.innerHeight;
       let docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, height * 2);
@@ -230,7 +230,7 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       }
 
       function resize() {
-        dpr = 1.0;
+        dpr = Math.min(typeof window !== 'undefined' && window.devicePixelRatio ? window.devicePixelRatio : 1, 2.0);
         width = window.innerWidth;
         height = window.innerHeight;
         docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, height * 2);
@@ -406,34 +406,29 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       // Central star ('CPU') pre-baked label sprite
       let centralStarLabelSprite = getOrBakeLabelSprite('CPU');
 
-      // 2. 7 DETERMINISTIC ORBITAL BINDUS (1 Per Ring, Innermost -> Outermost, Continuous One-Way Revolution)
+      // 2. 7 DETERMINISTIC ORBITAL BINDUS (Continuous Smooth Revolution along Rings)
       const RING_BINDU_SPEC = [
-        { orbitIdx: 0, label: 'GPU',      baseAngle: 2.55, mobAngle: 2.50, speed:  0.42, isMoonPlanet: false, isPulsar: false, color: '#38bdf8' },
-        { orbitIdx: 1, label: 'DDR5',     baseAngle: 2.85, mobAngle: 2.75, speed: -0.32, isMoonPlanet: true,  isPulsar: false, color: '#38bdf8' },
-        { orbitIdx: 2, label: 'NVMe',     baseAngle: 2.22, mobAngle: 2.28, speed:  0.25, isMoonPlanet: false, isPulsar: true,  color: '#2dd4bf' },
-        { orbitIdx: 3, label: 'L1_CACHE', baseAngle: 2.04, mobAngle: 2.08, speed: -0.20, isMoonPlanet: true,  isPulsar: false, color: '#60a5fa' },
-        { orbitIdx: 4, label: 'PCIe',     baseAngle: 3.24, mobAngle: 2.22, speed:  0.16, isMoonPlanet: true,  isPulsar: true,  color: '#38bdf8' },
-        { orbitIdx: 5, label: 'BIOS',     baseAngle: 3.46, mobAngle: 1.98, speed: -0.13, isMoonPlanet: false, isPulsar: false, color: '#2dd4bf' },
-        { orbitIdx: 6, label: 'KERNEL',   baseAngle: 3.53, mobAngle: 1.88, speed:  0.10, isMoonPlanet: false, isPulsar: true,  color: '#38bdf8' }
+        { orbitIdx: 0, label: 'GPU',      baseAngle: 2.35, mobAngle: 2.30, speed:  0.35, dir:  1, color: '#38bdf8' },
+        { orbitIdx: 1, label: 'DDR5',     baseAngle: 2.70, mobAngle: 2.75, speed: -0.28, dir: -1, color: '#38bdf8' },
+        { orbitIdx: 2, label: 'NVMe',     baseAngle: 3.05, mobAngle: 3.18, speed:  0.22, dir:  1, color: '#2dd4bf' },
+        { orbitIdx: 3, label: 'L1_CACHE', baseAngle: 3.40, mobAngle: 3.60, speed: -0.18, dir: -1, color: '#60a5fa' },
+        { orbitIdx: 4, label: 'PCIe',     baseAngle: 3.75, mobAngle: 3.75, speed:  0.15, dir:  1, color: '#38bdf8' },
+        { orbitIdx: 5, label: 'BIOS',     baseAngle: 4.10, mobAngle: 4.10, speed: -0.12, dir: -1, color: '#2dd4bf' },
+        { orbitIdx: 6, label: 'KERNEL',   baseAngle: 4.45, mobAngle: 4.45, speed:  0.10, dir:  1, color: '#38bdf8' }
       ];
 
-      const CELESTIAL_NODES = RING_BINDU_SPEC.map((cfg, idx) => ({
+      const CELESTIAL_NODES = RING_BINDU_SPEC.map((cfg) => ({
         orbitIdx: cfg.orbitIdx,
         baseAngle: cfg.baseAngle,
         mobAngle: cfg.mobAngle,
         speed: cfg.speed,
-        dir: cfg.speed > 0 ? 1 : -1,
+        dir: cfg.dir,
         color: cfg.color,
-        radius: cfg.isMoonPlanet ? 3.6 : 3.2,
-        isMoonPlanet: cfg.isMoonPlanet,
-        isPulsar: cfg.isPulsar,
+        radius: 3.4,
         hasLabel: true,
         labelText: cfg.label,
-        labelSprite: getOrBakeLabelSprite(cfg.label),
-        binduSprite: cfg.isMoonPlanet ? binduSpriteMoon : binduSpriteStandard,
-        wakeLen: 0.28,
-        moonAngle: idx * 1.1,
-        moonSpeed: 2.6,
+        binduSprite: binduSpriteStandard,
+        wakeLen: 0.24,
         renderX: 0,
         renderY: 0,
         nodeAngle: cfg.baseAngle,
@@ -508,17 +503,17 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
 
       function renderFrame(now) {
         const isMobileScreen = width < 768;
-        // Frame-pace: 30 FPS on mobile saves 50% GPU fill-rate, 60 FPS on desktop
-        const minFrameInterval = isMobileScreen ? 42 : 15;
-        if (now && lastFrameNow && (now - lastFrameNow) < minFrameInterval) {
-          return;
-        }
+        if (!now) now = performance.now();
         const t = (now - startTime) * 0.001;
-        const dt = Math.min(Math.max((now - lastFrameNow) * 0.001, 0.001), 0.05);
+        const dt = lastFrameNow ? Math.min(Math.max((now - lastFrameNow) * 0.001, 0.001), 0.05) : 0.016;
         lastFrameNow = now;
 
-        // Responsive scroll synchronization (tightly coupled with Lenis)
-        smoothScrollY += (targetScrollY - smoothScrollY) * 0.20;
+        // Responsive kinetic scroll synchronization with snappy mobile tracking
+        const scrollLerp = isMobileScreen ? 0.45 : 0.20;
+        smoothScrollY += (targetScrollY - smoothScrollY) * scrollLerp;
+        if (Math.abs(targetScrollY - smoothScrollY) < 0.25) {
+          smoothScrollY = targetScrollY;
+        }
         const scrollDelta = smoothScrollY - lastSmoothScrollY;
         lastSmoothScrollY = smoothScrollY;
 
@@ -568,42 +563,59 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         // =============================================================
         // A. CELESTIAL STELLAR ANCHOR (Central Star labeled 'CPU')
         // =============================================================
-        ctx.drawImage(anchorSprite, originX - 32, originY - 32, 64, 64);
+        const anchorSize = isMobileScreen ? 46 : 64;
+        ctx.drawImage(anchorSprite, originX - anchorSize / 2, originY - anchorSize / 2, anchorSize, anchorSize);
 
         // Rotating astrolabe crosshair spikes (Single batched path)
         const astrolabeAngle = t * 0.15 + scrollPhase;
+        const spikeLen = isMobileScreen ? 12 : 16;
         ctx.beginPath();
         for (let sp = 0; sp < 4; sp++) {
           const sa = astrolabeAngle + (sp * Math.PI / 2);
           const cosSa = Math.cos(sa);
           const sinSa = Math.sin(sa);
           ctx.moveTo(originX - cosSa * 4, originY - sinSa * 4);
-          ctx.lineTo(originX + cosSa * 16, originY + sinSa * 16);
+          ctx.lineTo(originX + cosSa * spikeLen, originY + sinSa * spikeLen);
         }
         ctx.strokeStyle = 'rgba(224, 242, 254, 0.75)';
-        ctx.lineWidth = 1.1;
+        ctx.lineWidth = isMobileScreen ? 0.9 : 1.1;
         ctx.stroke();
 
-        // Position 'CPU' label clearly beside the central star without obstructing it
-        if (centralStarLabelSprite) {
-          const cpuSpriteW = centralStarLabelSprite.width;
-          const cpuSpriteH = centralStarLabelSprite.height;
-          const placeCpuLeft = (originX + 18 + cpuSpriteW > width - 8);
-          const cpuLabelX = Math.round(
-            placeCpuLeft
-              ? Math.max(8, originX - cpuSpriteW - 14)
-              : Math.min(width - cpuSpriteW - 8, originX + 18)
-          );
-          const cpuLabelY = Math.round(Math.min(Math.max(originY - cpuSpriteH / 2, 8), height - cpuSpriteH - 8));
+        // Position 'CPU' label clearly beside the central star (Direct crisp vector HUD)
+        {
+          const cpuPadX = isMobileScreen ? 6 : 8;
+          const cpuBoxH = isMobileScreen ? 16 : 20;
+          const cpuFontSize = isMobileScreen ? 9 : 11;
+          ctx.font = `700 ${cpuFontSize}px "JetBrains Mono", monospace`;
+          const cpuTextW = Math.ceil(ctx.measureText('CPU').width);
+          const cpuBoxW = cpuTextW + cpuPadX * 2 + 4;
+
+          const placeCpuLeft = (originX + 16 + cpuBoxW > width - 8);
+          const cpuLabelX = placeCpuLeft
+            ? Math.max(8, originX - cpuBoxW - 12)
+            : Math.min(width - cpuBoxW - 8, originX + 16);
+          const cpuLabelY = Math.min(Math.max(originY - cpuBoxH / 2, 8), height - cpuBoxH - 8);
 
           ctx.beginPath();
-          ctx.moveTo(placeCpuLeft ? (originX - 8) : (originX + 8), originY);
-          ctx.lineTo(placeCpuLeft ? (cpuLabelX + cpuSpriteW - 2) : (cpuLabelX + 2), cpuLabelY + cpuSpriteH / 2);
+          ctx.moveTo(placeCpuLeft ? (originX - 6) : (originX + 6), originY);
+          ctx.lineTo(placeCpuLeft ? (cpuLabelX + cpuBoxW - 2) : (cpuLabelX + 2), cpuLabelY + cpuBoxH / 2);
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.60)';
-          ctx.lineWidth = 1.0;
+          ctx.lineWidth = isMobileScreen ? 0.8 : 1.0;
           ctx.stroke();
 
-          ctx.drawImage(centralStarLabelSprite.canvas, cpuLabelX, cpuLabelY, cpuSpriteW, cpuSpriteH);
+          ctx.fillStyle = 'rgba(6, 11, 20, 0.90)';
+          ctx.fillRect(cpuLabelX, cpuLabelY, cpuBoxW, cpuBoxH);
+
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+          ctx.lineWidth = 1.0;
+          ctx.strokeRect(cpuLabelX, cpuLabelY, cpuBoxW, cpuBoxH);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(cpuLabelX, cpuLabelY, 2.5, cpuBoxH);
+
+          ctx.fillStyle = '#f0f9ff';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('CPU', cpuLabelX + cpuPadX + 2, cpuLabelY + cpuBoxH / 2);
         }
 
         // =============================================================
@@ -627,37 +639,43 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
           }
           ringAlpha = Math.min(Math.max(ringAlpha, 0.48), 1.0);
 
-          const grad = ctx.createLinearGradient(
-            originX, originY,
-            originX - curRx * 0.85, originY + curRy * 1.55
-          );
-          grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.68})`);
-          grad.addColorStop(0.28, `rgba(255, 255, 255, ${ringAlpha * 1.0})`);
-          grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.98})`);
-          grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.90})`);
-          grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.62})`);
-
-          // 1. Primary Orbit Track
+          // 1. Primary Orbit Track (Zero allocation on mobile to prevent GPU fill-rate stalls)
           ctx.save();
           ctx.beginPath();
           if (orb.dash) ctx.setLineDash(orb.dash);
           ctx.ellipse(originX, originY, curRx, curRy, rot, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.32})`;
-          ctx.lineWidth = orb.lineWidth * 2.8;
+          ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.28})`;
+          ctx.lineWidth = orb.lineWidth * (isMobileScreen ? 2.0 : 2.8);
           ctx.stroke();
 
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = orb.lineWidth * 1.15;
+          if (isMobileScreen) {
+            ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.85})`;
+          } else {
+            const grad = ctx.createLinearGradient(
+              originX, originY,
+              originX - curRx * 0.85, originY + curRy * 1.55
+            );
+            grad.addColorStop(0, `rgba(56, 189, 248, ${ringAlpha * 0.68})`);
+            grad.addColorStop(0.28, `rgba(255, 255, 255, ${ringAlpha * 1.0})`);
+            grad.addColorStop(0.55, `rgba(56, 189, 248, ${ringAlpha * 0.98})`);
+            grad.addColorStop(0.82, `rgba(45, 212, 191, ${ringAlpha * 0.90})`);
+            grad.addColorStop(1, `rgba(56, 189, 248, ${ringAlpha * 0.62})`);
+            ctx.strokeStyle = grad;
+          }
+          ctx.lineWidth = orb.lineWidth * (isMobileScreen ? 0.9 : 1.15);
           ctx.stroke();
           ctx.restore();
 
-          // 2. Companion Guide Track
+          // 2. Companion Guide Track (100% strictly parallel concentric ellipse)
           if (orb.hasCompanion) {
+            const compGap = isMobileScreen ? 4.5 : 5.5;
+            const compRx = curRx + compGap;
+            const compRy = curRy + compGap * (curRy / curRx);
             ctx.save();
             ctx.beginPath();
-            ctx.ellipse(originX, originY, curRx + 5.5, (curRx + 5.5) * orb.ecc, rot, 0, Math.PI * 2);
+            ctx.ellipse(originX, originY, compRx, compRy, rot, 0, Math.PI * 2);
             ctx.strokeStyle = `rgba(56, 189, 248, ${ringAlpha * 0.72})`;
-            ctx.lineWidth = 1.4;
+            ctx.lineWidth = isMobileScreen ? 1.0 : 1.4;
             ctx.stroke();
             ctx.restore();
           }
@@ -682,13 +700,14 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         }
 
         // =============================================================
-        // C. 7 ORBITAL BINDUS & ANCHORED LABELS (1 PER RING, CONTINUOUS REVOLUTION)
+        // C. CONTINUOUS SMOOTH ORBITAL REVOLUTION & HARMONIC CALLOUTS
         // =============================================================
+        const visibleNodesCount = isMobileScreen ? 4 : CELESTIAL_NODES.length;
 
-        // Batch 1: Continuous one-way orbital revolution along each ring & trailing ion wakes
+        // Batch 1: Continuous orbital revolution along each ring & trailing ion wakes
         ctx.strokeStyle = 'rgba(125, 211, 252, 0.62)';
-        ctx.lineWidth = 2.0;
-        for (let b = 0; b < CELESTIAL_NODES.length; b++) {
+        ctx.lineWidth = isMobileScreen ? 1.4 : 1.8;
+        for (let b = 0; b < visibleNodesCount; b++) {
           const node = CELESTIAL_NODES[b];
           const curRx = curRxArray[node.orbitIdx];
           const curRy = curRyArray[node.orbitIdx];
@@ -698,33 +717,17 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
             node.isInitialized = true;
           }
 
-          // Continuous one-way orbital revolution along the ring
+          // Continuous smooth orbital revolution driven by frame dt and velocity
           node.nodeAngle += dt * node.speed + scrollDelta * 0.00035 * node.dir;
 
-          let cosA = Math.cos(node.nodeAngle);
-          let sinA = Math.sin(node.nodeAngle);
-          let renderX = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
-          let renderY = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
+          const cosA = Math.cos(node.nodeAngle);
+          const sinA = Math.sin(node.nodeAngle);
+          node.renderX = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
+          node.renderY = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
 
-          // Once the bindu + label have glided completely past the viewport edge, wrap forward
-          // in the SAME orbital direction to just outside the opposite entry edge of the ring
-          if (renderX < -75 || renderX > width + 75 || renderY < -50 || renderY > height + 50) {
-            for (let step = 0; step < 120; step++) {
-              node.nodeAngle += node.dir * 0.05;
-              cosA = Math.cos(node.nodeAngle);
-              sinA = Math.sin(node.nodeAngle);
-              renderX = originX + cosA * curRx * cosRot - sinA * curRy * sinRot;
-              renderY = originY + cosA * curRx * sinRot + sinA * curRy * cosRot;
-              if (renderX >= -18 && renderX <= width + 18 && renderY >= -18 && renderY <= height + 18) {
-                break;
-              }
-            }
-          }
-
-          node.renderX = renderX;
-          node.renderY = renderY;
-
-          const trailStart = node.nodeAngle - (node.wakeLen * node.dir);
+          // Ion trail wake following revolving node
+          const trailLen = node.wakeLen || 0.24;
+          const trailStart = node.nodeAngle - (trailLen * node.dir);
           ctx.beginPath();
           ctx.ellipse(
             originX, originY, curRx, curRy, rot,
@@ -733,51 +736,54 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
           ctx.stroke();
         }
 
-        // Batch 2: Render Bindu Sprites, Moons, Pulsars, and Rigidly Anchored Callout Labels
-        for (let b = 0; b < CELESTIAL_NODES.length; b++) {
+        // Batch 2: Render Bindu Sprites and Crisp Vector Callout Labels
+        for (let b = 0; b < visibleNodesCount; b++) {
           const node = CELESTIAL_NODES[b];
           const renderX = node.renderX;
           const renderY = node.renderY;
 
-          // Special Feature: Revolving Micro-Moon Satellite OR Pulsar Radar Ripple
-          if (node.isMoonPlanet) {
-            const mA = node.moonAngle + t * node.moonSpeed;
-            const mx = renderX + Math.cos(mA) * 10.0;
-            const my = renderY + Math.sin(mA) * 10.0;
-            ctx.beginPath();
-            ctx.arc(mx, my, 1.5, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-          } else if (node.isPulsar) {
-            const pulseR = 9.0 + Math.sin(t * 3.6 + b * 0.7) * 2.0;
-            ctx.beginPath();
-            ctx.arc(renderX, renderY, pulseR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(125, 211, 252, 0.42)';
-            ctx.lineWidth = 1.0;
-            ctx.stroke();
-          }
-
-          // Blit 2x HiDPI Bindu + Target Reticle Halo + Aura directly centered on the ring
+          // Blit 2x HiDPI Bindu + Target Reticle Halo + Aura directly centered on the ring (compact on mobile)
           const bSprite = node.binduSprite;
-          ctx.drawImage(bSprite.canvas, renderX - bSprite.half, renderY - bSprite.half, bSprite.size, bSprite.size);
+          const nodeScale = isMobileScreen ? 0.72 : 1.0;
+          const bSize = bSprite.size * nodeScale;
+          ctx.drawImage(bSprite.canvas, renderX - bSize / 2, renderY - bSize / 2, bSize, bSize);
 
-          // Rigidly Anchored Micro-HUD Callout Label (No border-freeze or side-flipping lag at edges)
-          if (node.hasLabel && node.labelSprite) {
-            const lSprite = node.labelSprite;
-            const spriteW = lSprite.width;
-            const spriteH = lSprite.height;
-            const labelX = Math.round(renderX + 13);
-            const labelY = Math.round(renderY - spriteH - 5);
+          // Direct Crisp Vector Micro-HUD Callout Label (Zero raster scaling flicker, 100% rock solid)
+          if (node.hasLabel && node.labelText) {
+            const padX = isMobileScreen ? 6 : 8;
+            const boxH = isMobileScreen ? 16 : 20;
+            const fontSize = isMobileScreen ? 9 : 11;
+            ctx.font = `700 ${fontSize}px "JetBrains Mono", monospace`;
+            const textW = Math.ceil(ctx.measureText(node.labelText).width);
+            const boxW = textW + padX * 2 + 4;
+            const labelX = renderX + (isMobileScreen ? 8 : 13);
+            const labelY = renderY - boxH - (isMobileScreen ? 3 : 5);
 
             // Crisp hairline leader connector line
             ctx.beginPath();
-            ctx.moveTo(renderX + 5.5, renderY - 5.5);
-            ctx.lineTo(labelX + 2, labelY + spriteH / 2);
+            ctx.moveTo(renderX + (isMobileScreen ? 3.2 : 5.5), renderY - (isMobileScreen ? 3.2 : 5.5));
+            ctx.lineTo(labelX + 2, labelY + boxH / 2);
             ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
-            ctx.lineWidth = 1.0;
+            ctx.lineWidth = isMobileScreen ? 0.8 : 1.0;
             ctx.stroke();
 
-            ctx.drawImage(lSprite.canvas, labelX, labelY, spriteW, spriteH);
+            // Crisp HUD Pill background
+            ctx.fillStyle = 'rgba(6, 11, 20, 0.90)';
+            ctx.fillRect(labelX, labelY, boxW, boxH);
+
+            // Luminous Cyan border
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+            ctx.lineWidth = 1.0;
+            ctx.strokeRect(labelX, labelY, boxW, boxH);
+
+            // Left Cybernetic accent bar
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(labelX, labelY, 2.5, boxH);
+
+            // Crisp vector text
+            ctx.fillStyle = '#f0f9ff';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.labelText, labelX + padX + 2, labelY + boxH / 2);
           }
         }
 
@@ -838,7 +844,6 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         if (window.__introIsActive && (!window.__introProgress || window.__introProgress <= 0.85)) return false;
         // On mobile, pause canvas rendering when scrolled past the hero/upper sections (saves 100% GPU during reading)
         if (width < 768) {
-          if (isMobileScrolling) return false;
           const scrollPos = window.scrollY || 0;
           if (scrollPos > height * 1.5) return false;
         }
