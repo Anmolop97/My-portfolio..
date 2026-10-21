@@ -919,7 +919,7 @@
     .roadmap-scroll-section {
       position: relative;
       width: 100%;
-      height: 300vh; /* Continuous, fluid Lenis smooth scroll runway with zero dead-zones */
+      height: 380vh; /* Continuous, fluid Lenis smooth scroll runway with extended lock-hold for final card */
       margin: 0;
       padding: 0;
       box-sizing: border-box;

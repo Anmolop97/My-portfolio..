@@ -2527,7 +2527,17 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     if (relY < -winHeight || relY > totalDist + winHeight) return;
 
     // 100% continuous Lenis smooth scroll: progress maps 0.0 to 1.0 with zero layout thrashing
-    const progress = Math.min(1, Math.max(0, relY / totalDist));
+    const rawProgress = Math.min(1, Math.max(0, relY / totalDist));
+
+    // Continuous smooth side scroll with extended lock-hold for Card 04 at the end
+    let progress = 0;
+    if (rawProgress <= 0.04) {
+      progress = 0;
+    } else if (rawProgress >= 0.72) {
+      progress = 1; // Locked firmly on Card 04 for the entire last 28% of the scroll runway!
+    } else {
+      progress = (rawProgress - 0.04) / (0.72 - 0.04);
+    }
     const floatIdx = progress * (cardCount - 1);
 
     cards.forEach((card, i) => {
