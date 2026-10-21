@@ -2526,19 +2526,8 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     // Guard: Skip execution when section is completely offscreen (zero CPU/GPU waste)
     if (relY < -winHeight || relY > totalDist + winHeight) return;
 
-    // 100% continuous Lenis smooth scroll: progress maps 0.0 to 1.0 with zero layout thrashing
-    const rawProgress = Math.min(1, Math.max(0, relY / totalDist));
-
-    // Continuous smooth side scroll: 0 to 0.88 scrubs cards 01 -> 04,
-    // 0.88 to 0.98 provides a clean resting pause for Card 04 without any dead freeze or stucky lag
-    let progress = 0;
-    if (rawProgress <= 0.02) {
-      progress = 0;
-    } else if (rawProgress >= 0.88) {
-      progress = 1;
-    } else {
-      progress = (rawProgress - 0.02) / (0.88 - 0.02);
-    }
+    // 100% continuous Lenis smooth scroll: progress maps 0.0 to 1.0 with zero dead-zone stalls or stucky lag
+    const progress = Math.min(1, Math.max(0, relY / totalDist));
     const floatIdx = progress * (cardCount - 1);
 
     cards.forEach((card, i) => {
