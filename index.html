@@ -81,12 +81,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Master Stylesheet -->
-  <link rel="stylesheet" href="style.min.css?v=2.9">
+  <link rel="stylesheet" href="style.min.css?v=3.0">
 
   <!-- Three.js (Hardware-accelerated 3D Engine), Lenis Smooth Scroll & Master Script -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" defer></script>
-  <script src="lenis.min.js?v=2.9" defer></script>
-  <script src="script.min.js?v=2.9" defer></script>
+  <script src="lenis.min.js?v=3.0" defer></script>
+  <script src="script.min.js?v=3.0" defer></script>
 </head>
 <body>
 
@@ -441,7 +441,20 @@
             </div>
           </div>
 
-
+          <!-- Mobile & Interactive Carousel Controls -->
+          <div class="roadmap-carousel-controls" id="roadmapCarouselControls">
+            <button id="roadmapPrevBtn" class="roadmap-nav-btn" aria-label="Previous card">
+              <span class="nav-btn-icon">←</span>
+            </button>
+            <div class="roadmap-carousel-counter">
+              <span id="roadmapCardCurrent" class="counter-num">01</span>
+              <span class="counter-divider">/</span>
+              <span class="counter-total">04</span>
+            </div>
+            <button id="roadmapNextBtn" class="roadmap-nav-btn" aria-label="Next card">
+              <span class="nav-btn-icon">→</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>

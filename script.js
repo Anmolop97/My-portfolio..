@@ -2515,6 +2515,10 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
   }
 
   function updateRoadmapDeck(e) {
+    // On mobile devices (<= 768px), bypass the scroll-hijack completely!
+    // Native GPU touch swipe handles cards with 120Hz smoothness, 0% CPU overhead.
+    if (window.innerWidth <= 768) return;
+
     if (totalDist <= 0) return;
 
     const scrollY = (e && typeof e.scroll === 'number') 
@@ -2562,6 +2566,84 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       halo.style.opacity = pulse.toFixed(3);
     }
   }
+
+  /* Beautiful Responsive Carousel Navigation Controller (Left/Right Buttons & Live Counter) */
+  (() => {
+    const viewport = document.getElementById('roadmapDeckViewport');
+    const prevBtn = document.getElementById('roadmapPrevBtn');
+    const nextBtn = document.getElementById('roadmapNextBtn');
+    const counterCurrent = document.getElementById('roadmapCardCurrent');
+    if (!viewport || !prevBtn || !nextBtn) return;
+
+    const cards = Array.from(viewport.querySelectorAll('.roadmap-deck-card'));
+    if (!cards.length) return;
+
+    let activeIdx = 0;
+
+    function updateNavState() {
+      if (counterCurrent) {
+        counterCurrent.textContent = `0${activeIdx + 1}`;
+      }
+      prevBtn.classList.toggle('is-disabled', activeIdx === 0);
+      nextBtn.classList.toggle('is-disabled', activeIdx === cards.length - 1);
+    }
+
+    function scrollToIndex(idx) {
+      activeIdx = Math.max(0, Math.min(cards.length - 1, idx));
+      if (window.innerWidth <= 768) {
+        const card = cards[activeIdx];
+        if (card) {
+          const targetLeft = card.offsetLeft - (viewport.offsetWidth - card.offsetWidth) / 2;
+          viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
+        }
+      } else {
+        if (totalDist > 0 && typeof sectionTop === 'number') {
+          const targetProgress = activeIdx / (cards.length - 1);
+          const targetY = sectionTop + targetProgress * totalDist;
+          if (window.__lenis) {
+            window.__lenis.scrollTo(targetY, { duration: 0.9 });
+          } else {
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }
+        }
+      }
+      updateNavState();
+    }
+
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      scrollToIndex(activeIdx - 1);
+    });
+
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      scrollToIndex(activeIdx + 1);
+    });
+
+    // Touch swipe listener on mobile to keep button states & counter 100% in sync
+    let scrollDebounce = null;
+    viewport.addEventListener('scroll', () => {
+      if (window.innerWidth > 768) return;
+      if (scrollDebounce) clearTimeout(scrollDebounce);
+      scrollDebounce = setTimeout(() => {
+        const center = viewport.scrollLeft + viewport.offsetWidth / 2;
+        let closestIdx = 0;
+        let minDist = Infinity;
+        cards.forEach((card, i) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const dist = Math.abs(center - cardCenter);
+          if (dist < minDist) {
+            minDist = dist;
+            closestIdx = i;
+          }
+        });
+        activeIdx = closestIdx;
+        updateNavState();
+      }, 40);
+    }, { passive: true });
+
+    updateNavState();
+  })();
 
   if (window.__lenis) {
     window.__lenis.on('scroll', updateRoadmapDeck);
