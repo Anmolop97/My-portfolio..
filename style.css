@@ -1025,9 +1025,9 @@
       box-shadow: 0 50px 130px -25px rgba(0, 0, 0, 0.99), 0 0 60px -5px rgba(56, 189, 248, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
 
-    /* Beautiful Glassmorphism Carousel Nav Controls */
+    /* Beautiful Glassmorphism Carousel Nav Controls (Mobile Only) */
     .roadmap-carousel-controls {
-      display: flex;
+      display: none !important;
       align-items: center;
       justify-content: center;
       gap: 1.25rem;
@@ -2062,6 +2062,15 @@
         min-height: 440px !important;
         gap: 1.2rem !important;
         box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.85), 0 0 25px -5px rgba(56, 189, 248, 0.08) !important;
+      }
+      .roadmap-carousel-controls {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        margin-top: 1.6rem !important;
+        position: relative;
+        z-index: 15;
       }
       .roadmap-card-header {
         flex-direction: row;

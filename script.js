@@ -2515,9 +2515,9 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
   }
 
   function updateRoadmapDeck(e) {
-    // On mobile devices (<= 768px), bypass the scroll-hijack completely!
+    // On mobile devices (<= 900px), bypass the scroll-hijack completely!
     // Native GPU touch swipe handles cards with 120Hz smoothness, 0% CPU overhead.
-    if (window.innerWidth <= 768) return;
+    if (window.innerWidth <= 900) return;
 
     if (totalDist <= 0) return;
 
@@ -2590,10 +2590,10 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
 
     function scrollToIndex(idx) {
       activeIdx = Math.max(0, Math.min(cards.length - 1, idx));
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 900) {
         const card = cards[activeIdx];
         if (card) {
-          const targetLeft = card.offsetLeft - (viewport.offsetWidth - card.offsetWidth) / 2;
+          const targetLeft = card.offsetLeft - (viewport.clientWidth - card.clientWidth) / 2;
           viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
         }
       } else {
@@ -2623,7 +2623,7 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     // Touch swipe listener on mobile to keep button states & counter 100% in sync
     let scrollDebounce = null;
     viewport.addEventListener('scroll', () => {
-      if (window.innerWidth > 768) return;
+      if (window.innerWidth > 900) return;
       if (scrollDebounce) clearTimeout(scrollDebounce);
       scrollDebounce = setTimeout(() => {
         const center = viewport.scrollLeft + viewport.offsetWidth / 2;
