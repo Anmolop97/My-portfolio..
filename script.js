@@ -2515,8 +2515,7 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
   }
 
   function updateRoadmapDeck(e) {
-    // On mobile devices (<= 900px), bypass the scroll-hijack completely!
-    // Native GPU touch swipe handles cards with 120Hz smoothness, 0% CPU overhead.
+    // On mobile devices (<= 900px), carousel controls handle slide transforms; bypass scroll hijack completely
     if (window.innerWidth <= 900) return;
 
     if (totalDist <= 0) return;
@@ -2588,14 +2587,16 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       nextBtn.classList.toggle('is-disabled', activeIdx === cards.length - 1);
     }
 
-    function scrollToIndex(idx) {
+    function showCard(idx) {
       activeIdx = Math.max(0, Math.min(cards.length - 1, idx));
       if (window.innerWidth <= 900) {
-        const card = cards[activeIdx];
-        if (card) {
-          const targetLeft = card.offsetLeft - (viewport.clientWidth - card.clientWidth) / 2;
-          viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
-        }
+        cards.forEach((card, i) => {
+          card.classList.toggle('is-active', i === activeIdx);
+          card.style.transform = '';
+          card.style.opacity = '';
+          card.style.pointerEvents = '';
+          card.style.transition = '';
+        });
       } else {
         if (totalDist > 0 && typeof sectionTop === 'number') {
           const targetProgress = activeIdx / (cards.length - 1);
@@ -2612,37 +2613,53 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
 
     prevBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      scrollToIndex(activeIdx - 1);
+      showCard(activeIdx - 1);
     });
 
     nextBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      scrollToIndex(activeIdx + 1);
+      showCard(activeIdx + 1);
     });
 
-    // Touch swipe listener on mobile to keep button states & counter 100% in sync
-    let scrollDebounce = null;
-    viewport.addEventListener('scroll', () => {
+    // Touch swipe gesture listener on mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    viewport.addEventListener('touchstart', (e) => {
       if (window.innerWidth > 900) return;
-      if (scrollDebounce) clearTimeout(scrollDebounce);
-      scrollDebounce = setTimeout(() => {
-        const center = viewport.scrollLeft + viewport.offsetWidth / 2;
-        let closestIdx = 0;
-        let minDist = Infinity;
-        cards.forEach((card, i) => {
-          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-          const dist = Math.abs(center - cardCenter);
-          if (dist < minDist) {
-            minDist = dist;
-            closestIdx = i;
-          }
-        });
-        activeIdx = closestIdx;
-        updateNavState();
-      }, 40);
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     }, { passive: true });
 
-    updateNavState();
+    viewport.addEventListener('touchend', (e) => {
+      if (window.innerWidth > 900) return;
+      const diffX = touchStartX - e.changedTouches[0].clientX;
+      const diffY = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
+        if (diffX > 0) {
+          showCard(activeIdx + 1);
+        } else {
+          showCard(activeIdx - 1);
+        }
+      }
+    }, { passive: true });
+
+    // Handle resize: ensure active card on mobile or remove on desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 900) {
+        showCard(activeIdx);
+      } else {
+        cards.forEach((card) => {
+          card.classList.remove('is-active');
+        });
+      }
+    }, { passive: true });
+
+    // ALWAYS start at Card 01 on mobile
+    if (window.innerWidth <= 900) {
+      showCard(0);
+    } else {
+      updateNavState();
+    }
   })();
 
   if (window.__lenis) {
