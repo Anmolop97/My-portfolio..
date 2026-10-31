@@ -1,0 +1,19 @@
+# Anmol Kumar
+
+> Creative Developer & Systems Programmer specializing in high-performance WebGL/Three.js 3D experiences, low-level C programming, Linux workflows, and practical software development.
+
+- Website: https://portfolio.anmolkumar.workers.dev/
+- GitHub: https://github.com/Anmolop97
+- LinkedIn: https://www.linkedin.com/in/anmol-kumar-784849412/
+- Email: anmolkumar2762@gmail.com
+
+## Featured Projects
+
+### Coditech (The Hellspires)
+- URL: https://thehellspires.vercel.app/
+- Description: Interactive error-solving and debugging platform tailored for developers working across low-level code, systems architecture, and modern application stacks.
+
+## Core Competencies & Tech Stack
+- Systems & Low-Level: C Programming, Computer Architecture, Memory Management, Linux System APIs, Git CLI workflows
+- Graphics & Frontend: WebGL, Three.js, Canvas APIs, High-Performance Interactive 3D Web Experiences, Modern JavaScript / TypeScript, Responsive CSS
+- Tools & Cloud: Cloudflare Workers, Node.js, Performance & SEO Optimization
