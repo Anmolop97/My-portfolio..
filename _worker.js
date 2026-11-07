@@ -223,6 +223,7 @@ function isDuplicateSpam(name, email, message) {
 const ALLOWED_ORIGIN_HOSTS = new Set([
   "portfolio.anmolkumar.workers.dev",
   "anmolkumar.workers.dev",
+  "portfolio-anmol.pages.dev",
   "localhost",
   "127.0.0.1"
 ]);
