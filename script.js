@@ -3073,9 +3073,10 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
   let isAuthenticated = false;
 
   function openVault() {
-    backdrop.style.display = 'flex';
     backdrop.classList.add('is-open');
     backdrop.setAttribute('aria-hidden', 'false');
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('is-scroll-locked');
     if (window.__lenis) window.__lenis.stop();
 
@@ -3084,16 +3085,17 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       messagesView.style.display = 'none';
       keyInput.value = '';
       authError.textContent = '';
-      setTimeout(() => keyInput.focus(), 60);
+      setTimeout(() => keyInput.focus(), 80);
     } else {
       loadMessages();
     }
   }
 
   function closeVault() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
     backdrop.classList.remove('is-open');
     backdrop.setAttribute('aria-hidden', 'true');
-    setTimeout(() => { backdrop.style.display = 'none'; }, 200);
     document.body.classList.remove('is-scroll-locked');
     if (window.__lenis) window.__lenis.start();
     // Relock on close for tight security
@@ -3123,8 +3125,9 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
 
   if (closeBtn) closeBtn.addEventListener('click', closeVault);
   if (dismissBtn) dismissBtn.addEventListener('click', closeVault);
-  backdrop.addEventListener('click', (e) => {
-    if (!modal.contains(e.target)) closeVault();
+  backdrop.addEventListener('click', closeVault);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeVault();
   });
 
   // Password Verification Gate

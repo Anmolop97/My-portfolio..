@@ -980,48 +980,47 @@
   </div>
 
   <!-- STEALTH ADMIN TERMINAL VAULT (PASSWORD PROTECTED & HIDDEN FROM PUBLIC) -->
-  <div class="privacy-modal-backdrop" id="stealthVaultBackdrop" aria-hidden="true" style="display: none;">
-    <div class="privacy-modal" id="stealthVaultModal" role="dialog" aria-modal="true" aria-labelledby="stealthVaultTitle" style="display: flex;">
-      <div class="privacy-modal-card" style="max-width: 720px;">
-        <div class="privacy-modal-header">
-          <div class="privacy-modal-badge-group">
-            <span class="privacy-badge">RESTRICTED ACCESS</span>
-            <h3 class="privacy-modal-title" id="stealthVaultTitle">Admin Messages Vault</h3>
-          </div>
-          <button type="button" class="privacy-modal-close" id="closeStealthVaultBtn" aria-label="Close stealth vault">✕</button>
+  <div class="privacy-modal-backdrop" id="stealthVaultBackdrop" aria-hidden="true"></div>
+  <div class="privacy-modal" id="stealthVaultModal" role="dialog" aria-modal="true" aria-labelledby="stealthVaultTitle" aria-hidden="true">
+    <div class="privacy-modal-card" style="max-width: 720px;">
+      <div class="privacy-modal-header">
+        <div class="privacy-modal-badge-group">
+          <span class="privacy-badge">RESTRICTED ACCESS</span>
+          <h3 class="privacy-modal-title" id="stealthVaultTitle">Admin Messages Vault</h3>
         </div>
+        <button type="button" class="privacy-modal-close" id="closeStealthVaultBtn" aria-label="Close stealth vault">✕</button>
+      </div>
 
-        <!-- Password Challenge Gate -->
-        <div id="vaultAuthGate" style="padding: 1.8rem 1.4rem; text-align: center;">
-          <div style="font-family: var(--font-mono, monospace); font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.1rem;">
-            &gt; [AUTH_CHALLENGE] Master key required to decrypt database inbox:
-          </div>
-          <form id="vaultAuthForm" style="display: flex; gap: 0.5rem; justify-content: center; max-width: 380px; margin: 0 auto;">
-            <input 
-              type="password" 
-              id="vaultKeyInput" 
-              placeholder="Enter master key..." 
-              autocomplete="current-password" 
-              style="flex: 1; background: #060911; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 0.55rem 0.85rem; color: #fff; font-family: var(--font-mono, monospace); font-size: 0.85rem; outline: none;"
-            >
-            <button type="submit" class="btn btn-primary btn-sm">Unlock →</button>
-          </form>
-          <div id="vaultAuthError" style="color: #f87171; font-family: var(--font-mono, monospace); font-size: 0.76rem; margin-top: 0.85rem; min-height: 1.2rem;"></div>
+      <!-- Password Challenge Gate -->
+      <div id="vaultAuthGate" style="padding: 1.8rem 1.4rem; text-align: center;">
+        <div style="font-family: var(--font-mono, monospace); font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.1rem;">
+          &gt; [AUTH_CHALLENGE] Master key required to decrypt database inbox:
         </div>
+        <form id="vaultAuthForm" style="display: flex; gap: 0.5rem; justify-content: center; max-width: 380px; margin: 0 auto;">
+          <input 
+            type="password" 
+            id="vaultKeyInput" 
+            placeholder="Enter master key..." 
+            autocomplete="current-password" 
+            style="flex: 1; background: #060911; border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 0.55rem 0.85rem; color: #fff; font-family: var(--font-mono, monospace); font-size: 0.85rem; outline: none;"
+          >
+          <button type="submit" class="btn btn-primary btn-sm">Unlock →</button>
+        </form>
+        <div id="vaultAuthError" style="color: #f87171; font-family: var(--font-mono, monospace); font-size: 0.76rem; margin-top: 0.85rem; min-height: 1.2rem;"></div>
+      </div>
 
-        <!-- Decrypted Inbox View (Revealed strictly upon correct password) -->
-        <div id="vaultMessagesView" style="display: none; padding: 1rem 1.4rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
-            <span style="font-family: var(--font-mono, monospace); font-size: 0.74rem; color: #38bdf8;">✓ Decrypted Database Stream</span>
-            <button type="button" class="btn btn-secondary btn-sm" id="vaultRefreshBtn" style="font-size: 0.72rem; padding: 3px 9px;">Refresh</button>
-          </div>
-          <div id="vaultMessagesList" style="max-height: 380px; overflow-y: auto;"></div>
+      <!-- Decrypted Inbox View (Revealed strictly upon correct password) -->
+      <div id="vaultMessagesView" style="display: none; padding: 1rem 1.4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+          <span style="font-family: var(--font-mono, monospace); font-size: 0.74rem; color: #38bdf8;">✓ Decrypted Database Stream</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="vaultRefreshBtn" style="font-size: 0.72rem; padding: 3px 9px;">Refresh</button>
         </div>
+        <div id="vaultMessagesList" style="max-height: 380px; overflow-y: auto;"></div>
+      </div>
 
-        <div class="privacy-modal-footer">
-          <span style="font-family: var(--font-mono, monospace); font-size: 0.72rem; color: #64748b;">Cloudflare D1 &bull; End-to-End Edge Isolation</span>
-          <button type="button" class="btn btn-secondary btn-sm" id="dismissStealthVaultBtn">Lock &amp; Exit</button>
-        </div>
+      <div class="privacy-modal-footer">
+        <span style="font-family: var(--font-mono, monospace); font-size: 0.72rem; color: #64748b;">Cloudflare D1 &bull; End-to-End Edge Isolation</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="dismissStealthVaultBtn">Lock &amp; Exit</button>
       </div>
     </div>
   </div>
