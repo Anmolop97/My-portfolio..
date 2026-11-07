@@ -3030,8 +3030,101 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         if (privacyBtn) privacyBtn.click();
         break;
       }
+      case 'admin-vault': {
+        if (typeof window.__openAdminVault === 'function') {
+          window.__openAdminVault();
+        }
+        break;
+      }
       default:
         break;
     }
   }
+})();
+
+/* ================================================================
+   DATABASE MESSAGES VAULT (1-CLICK INBOX MODAL)
+   ================================================================ */
+(() => {
+  const modal = document.getElementById('adminVaultModal');
+  const backdrop = document.getElementById('adminVaultModalBackdrop');
+  const closeBtn = document.getElementById('closeAdminVaultModalBtn');
+  const dismissBtn = document.getElementById('dismissAdminVaultModalBtn');
+  const refreshBtn = document.getElementById('refreshAdminVaultBtn');
+  const openBtn = document.getElementById('openAdminVaultBtn');
+  const footerBtn = document.getElementById('openAdminVaultFooterBtn');
+  const contentEl = document.getElementById('adminVaultContent');
+
+  if (!modal || !backdrop || !contentEl) return;
+
+  async function fetchAndRenderMessages() {
+    contentEl.innerHTML = '<div style="text-align: center; padding: 2rem; color: #64748b; font-size: 0.88rem;">Fetching messages from database...</div>';
+    try {
+      const res = await fetch('/api/admin/messages?key=anmol-dev-secret-key-123', {
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await res.json();
+      if (!data.messages || data.messages.length === 0) {
+        contentEl.innerHTML = '<div style="text-align: center; padding: 2rem; color: #64748b; font-size: 0.88rem;">No messages in database yet. Try submitting the contact form!</div>';
+        return;
+      }
+
+      const rows = data.messages.map(m => `
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 0.65rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: var(--font-mono, monospace); font-size: 0.72rem; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 6px; border-radius: 4px;">#${m.id}</span>
+              <strong style="color: #ffffff; font-size: 0.9rem;">${m.name}</strong>
+              <span style="color: #64748b; font-size: 0.78rem;">(${m.country || 'IN'})</span>
+            </div>
+            <span style="font-family: var(--font-mono, monospace); font-size: 0.72rem; color: #64748b;">${m.created_at}</span>
+          </div>
+          <div style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 0.4rem;">
+            Email: <a href="mailto:${m.email}" style="color: #38bdf8; text-decoration: none;">${m.email}</a>
+          </div>
+          <div style="font-size: 0.84rem; color: #e2e8f0; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 2px solid #38bdf8;">
+            ${m.message}
+          </div>
+        </div>
+      `).join('');
+
+      contentEl.innerHTML = rows;
+    } catch (err) {
+      contentEl.innerHTML = `<div style="text-align: center; padding: 2rem; color: #f87171; font-size: 0.88rem;">Failed to load messages: ${err.message}</div>`;
+    }
+  }
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-scroll-locked');
+    if (window.__lenis) window.__lenis.stop();
+    fetchAndRenderMessages();
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-scroll-locked');
+    if (window.__lenis) window.__lenis.start();
+  }
+
+  window.__openAdminVault = openModal;
+
+  if (openBtn) openBtn.addEventListener('click', openModal);
+  if (footerBtn) footerBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
+  if (refreshBtn) refreshBtn.addEventListener('click', fetchAndRenderMessages);
+  backdrop.addEventListener('click', closeModal);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
 })();
