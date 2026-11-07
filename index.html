@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#04060a">
 
   <!-- Search Engine Crawlers & Canonical URL -->
-  <link rel="canonical" href="https://portfolio.anmolkumar.workers.dev/">
+  <link rel="canonical" href="https://portfolio-anmol.pages.dev/">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="google-site-verification" content="google488f7767e7bbcdf2">
   <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -23,16 +23,16 @@
   <!-- Open Graph / Meta for Social Previews -->
   <meta property="og:type" content="profile">
   <meta property="og:site_name" content="Anmol Kumar Portfolio">
-  <meta property="og:url" content="https://portfolio.anmolkumar.workers.dev/">
+  <meta property="og:url" content="https://portfolio-anmol.pages.dev/">
   <meta property="og:title" content="Anmol Kumar Portfolio | Creative Developer">
   <meta property="og:description" content="Official portfolio of Anmol Kumar — Creative Developer building fast, interactive 3D WebGL experiences and practical software. Creator of Coditech.">
-  <meta property="og:image" content="https://portfolio.anmolkumar.workers.dev/logo.png">
+  <meta property="og:image" content="https://portfolio-anmol.pages.dev/logo.png">
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Anmol Kumar Portfolio | Creative Developer">
   <meta name="twitter:description" content="Official portfolio of Anmol Kumar — Creative Developer building fast, interactive 3D WebGL experiences and practical software. Creator of Coditech.">
-  <meta name="twitter:image" content="https://portfolio.anmolkumar.workers.dev/logo.png">
+  <meta name="twitter:image" content="https://portfolio-anmol.pages.dev/logo.png">
 
   <!-- Structured Data (JSON-LD) for Google Search & Knowledge Graph -->
   <script type="application/ld+json">
@@ -41,10 +41,10 @@
     "@graph": [
       {
         "@type": "Person",
-        "@id": "https://portfolio.anmolkumar.workers.dev/#person",
+        "@id": "https://portfolio-anmol.pages.dev/#person",
         "name": "Anmol Kumar",
-        "url": "https://portfolio.anmolkumar.workers.dev/",
-        "image": "https://portfolio.anmolkumar.workers.dev/logo.png",
+        "url": "https://portfolio-anmol.pages.dev/",
+        "image": "https://portfolio-anmol.pages.dev/logo.png",
         "jobTitle": "Creative Developer",
         "description": "Creative Developer building fast, interactive 3D WebGL experiences and practical software.",
         "sameAs": [
@@ -62,17 +62,17 @@
       },
       {
         "@type": "WebSite",
-        "@id": "https://portfolio.anmolkumar.workers.dev/#website",
-        "url": "https://portfolio.anmolkumar.workers.dev/",
+        "@id": "https://portfolio-anmol.pages.dev/#website",
+        "url": "https://portfolio-anmol.pages.dev/",
         "name": "Anmol Kumar Portfolio",
         "description": "Personal developer portfolio of Anmol Kumar featuring systems engineering, 3D WebGL graphics, and project showcases.",
         "publisher": {
-          "@id": "https://portfolio.anmolkumar.workers.dev/#person"
+          "@id": "https://portfolio-anmol.pages.dev/#person"
         }
       },
       {
         "@type": "SoftwareApplication",
-        "@id": "https://portfolio.anmolkumar.workers.dev/#coditech",
+        "@id": "https://portfolio-anmol.pages.dev/#coditech",
         "name": "Coditech",
         "alternateName": "The Hellspires",
         "url": "https://thehellspires.vercel.app/",
@@ -80,7 +80,7 @@
         "operatingSystem": "Web",
         "description": "Interactive error solver and developer productivity tool designed for debugging, systems programming, and modern engineering workflows.",
         "author": {
-          "@id": "https://portfolio.anmolkumar.workers.dev/#person"
+          "@id": "https://portfolio-anmol.pages.dev/#person"
         }
       }
     ]
@@ -94,12 +94,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Master Stylesheet -->
-  <link rel="stylesheet" href="style.min.css?v=3.4">
+  <link rel="stylesheet" href="style.min.css?v=3.5">
 
   <!-- Three.js (Hardware-accelerated 3D Engine), Lenis Smooth Scroll & Master Script -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" defer></script>
-  <script src="lenis.min.js?v=3.4" defer></script>
-  <script src="script.min.js?v=3.4" defer></script>
+  <script src="lenis.min.js?v=3.5" defer></script>
+  <script src="script.min.js?v=3.5" defer></script>
 </head>
 <body>
 
@@ -135,6 +135,16 @@
       <span class="nav-divider" aria-hidden="true"></span>
 
       <div class="nav-actions">
+        <!-- Command Palette Trigger Button -->
+        <button id="openCmdPaletteBtn" class="nav-cmd-btn" type="button" aria-label="Open Command Palette (Ctrl+K or Cmd+K)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span class="nav-cmd-text">Search</span>
+          <kbd class="nav-cmd-kbd">⌘K</kbd>
+        </button>
+
         <!-- Live Status Pill (Desktop Luxury Glass CTA) -->
         <a href="#contact" class="status-badge" aria-label="Available for Work - Contact Anmol">
           <span class="pulse-dot"></span>
@@ -315,10 +325,13 @@
               <span>Next.js / Vercel</span>
             </div>
 
-            <div>
+            <div class="project-btn-row">
               <a href="https://thehellspires.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
                 Launch Live App ↗
               </a>
+              <button type="button" class="btn btn-secondary" id="openCoditechArchBtn" aria-haspopup="dialog">
+                Technical Specs &amp; Flow ↓
+              </button>
             </div>
           </div>
 
@@ -357,7 +370,7 @@
             <div class="roadmap-deck-halo" aria-hidden="true"></div>
 
             <!-- Card 01 -->
-            <div class="roadmap-deck-card is-active" data-card-idx="0">
+            <div class="roadmap-deck-card spotlight-card is-active" data-card-idx="0">
               <div class="roadmap-card-header">
                 <div class="roadmap-card-track">
                   <span class="track-pulse dot-emerald"></span>
@@ -381,7 +394,7 @@
             </div>
 
             <!-- Card 02 -->
-            <div class="roadmap-deck-card" data-card-idx="1">
+            <div class="roadmap-deck-card spotlight-card" data-card-idx="1">
               <div class="roadmap-card-header">
                 <div class="roadmap-card-track">
                   <span class="track-pulse dot-cyan"></span>
@@ -405,7 +418,7 @@
             </div>
 
             <!-- Card 03 -->
-            <div class="roadmap-deck-card" data-card-idx="2">
+            <div class="roadmap-deck-card spotlight-card" data-card-idx="2">
               <div class="roadmap-card-header">
                 <div class="roadmap-card-track">
                   <span class="track-pulse dot-violet"></span>
@@ -429,7 +442,7 @@
             </div>
 
             <!-- Card 04 -->
-            <div class="roadmap-deck-card" data-card-idx="3">
+            <div class="roadmap-deck-card spotlight-card" data-card-idx="3">
               <div class="roadmap-card-header">
                 <div class="roadmap-card-track">
                   <span class="track-pulse dot-lime"></span>
@@ -486,7 +499,7 @@
 
       <!-- Centered Live HUD Terminal (Authentic Environment Config + Real Browser WebGL Profiler) -->
       <div class="telemetry-terminal-wrap">
-        <div class="hud-terminal" id="hudTerminalCard">
+        <div class="hud-terminal spotlight-card" id="hudTerminalCard">
           <div class="hud-header">
             <div class="hud-dots">
               <span class="hud-dot dot-red"></span>
@@ -540,7 +553,7 @@
       <!-- 4-Column Categorized Tech Stack Matrix -->
       <div class="stack-matrix-grid">
         <!-- Cat 1 -->
-        <div class="stack-cat-card">
+        <div class="stack-cat-card spotlight-card">
           <div class="stack-cat-header">
             <span>⚡</span>
             <span>Low-Level Systems</span>
@@ -566,7 +579,7 @@
         </div>
 
         <!-- Cat 2 -->
-        <div class="stack-cat-card">
+        <div class="stack-cat-card spotlight-card">
           <div class="stack-cat-header">
             <span>🌐</span>
             <span>Creative & 3D Web</span>
@@ -592,7 +605,7 @@
         </div>
 
         <!-- Cat 3 -->
-        <div class="stack-cat-card">
+        <div class="stack-cat-card spotlight-card">
           <div class="stack-cat-header">
             <span>🛠️</span>
             <span>Developer Tooling</span>
@@ -753,6 +766,215 @@
         <span class="privacy-footer-note">Last updated: October 2026</span>
         <button type="button" class="btn btn-secondary btn-sm" id="dismissPrivacyModalBtn">Close Window</button>
       </div>
+    </div>
+  </div>
+  <!-- CODITECH ARCHITECTURE & TECHNICAL SPECS MODAL -->
+  <div class="privacy-modal-backdrop" id="coditechModalBackdrop" aria-hidden="true"></div>
+  <div class="privacy-modal" id="coditechModal" role="dialog" aria-modal="true" aria-labelledby="coditechModalTitle" aria-hidden="true">
+    <div class="privacy-modal-card">
+      <div class="privacy-modal-header">
+        <div class="privacy-modal-badge-group">
+          <span class="privacy-badge">SYSTEMS ARCHITECTURE</span>
+          <h3 class="privacy-modal-title" id="coditechModalTitle">Coditech — Engineering Architecture</h3>
+        </div>
+        <button type="button" class="privacy-modal-close" id="closeCoditechModalBtn" aria-label="Close architecture modal">
+          ✕
+        </button>
+      </div>
+      <div class="privacy-modal-body">
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-cyan"></span>
+            <span class="privacy-point-title">Deterministic AST &amp; Signal Parser</span>
+          </div>
+          <p class="privacy-point-desc">Normalizes POSIX crash signals (SIGSEGV, SIGABRT, SIGFPE) against source lines. Maps out-of-bounds array indices and off-by-one loops directly to the culpable memory boundary rather than relying on generative guesswork.</p>
+        </div>
+
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-emerald"></span>
+            <span class="privacy-point-title">Zero-Telemetry &amp; Sub-5ms Diagnostics</span>
+          </div>
+          <p class="privacy-point-desc">Diagnostic resolution operates entirely client-side without third-party analytics, user tracking, or backend round-trips. Code traces are evaluated deterministically in sub-5ms.</p>
+        </div>
+
+        <div class="privacy-point">
+          <div class="privacy-point-header">
+            <span class="privacy-point-dot dot-lime"></span>
+            <span class="privacy-point-title">Pedagogical Root-Cause Engine</span>
+          </div>
+          <p class="privacy-point-desc">Designed to break the &quot;copy-paste Stack Overflow&quot; habit: instead of giving a silent patch, it highlights the conceptual trap (stack vs. heap allocation, pointer lifetime, buffer capacity) so junior engineers learn how memory really works.</p>
+        </div>
+      </div>
+      <div class="privacy-modal-footer">
+        <a href="https://thehellspires.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Launch Live App ↗</a>
+        <button type="button" class="btn btn-secondary btn-sm" id="dismissCoditechModalBtn">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE MODAL (WATERMELON UI VECTOR LOGOS) -->
+  <div class="cmd-backdrop" id="cmdPaletteBackdrop" aria-hidden="true">
+    <div class="cmd-modal" id="cmdPaletteModal" role="dialog" aria-modal="true" aria-label="Command Palette">
+      
+      <div class="cmd-header">
+        <svg class="cmd-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          class="cmd-input" 
+          id="cmdPaletteInput" 
+          placeholder="Type a command or search sections..." 
+          autocomplete="off" 
+          spellcheck="false"
+        >
+        <button type="button" class="cmd-close-esc" id="closeCmdPaletteBtn" aria-label="Close Command Palette">ESC</button>
+      </div>
+
+      <div class="cmd-body" id="cmdPaletteBody">
+        <!-- Navigation Section -->
+        <div class="cmd-group" data-group="Navigation">
+          <div class="cmd-category-title">Navigation</div>
+          
+          <!-- Coditech: Zap High-Voltage Engine Icon -->
+          <div class="cmd-item is-selected" data-action="coditech" data-keywords="coditech flagship 3d engine c++ opengl compiler ast">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Jump to Coditech (Flagship Engine)</span>
+            </div>
+            <span class="cmd-item-badge">#featured</span>
+          </div>
+
+          <!-- 3D Hardware Workstation: Laptop / Terminal Screen Icon -->
+          <div class="cmd-item" data-action="workstation" data-keywords="workstation 3d laptop canvas hero hardware keyboard threejs">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Inspect 3D Hardware Workstation</span>
+            </div>
+            <span class="cmd-item-badge">#hero</span>
+          </div>
+
+          <!-- Roadmap: Git-Branch / Milestone Compass Icon -->
+          <div class="cmd-item" data-action="roadmap" data-keywords="roadmap engineering construction milestones wip">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="6" y1="3" x2="6" y2="15"></line>
+                  <circle cx="18" cy="6" r="3"></circle>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <path d="M18 9a9 9 0 0 1-9 9"></path>
+                </svg>
+              </div>
+              <span class="cmd-item-title">View Engineering Roadmap</span>
+            </div>
+            <span class="cmd-item-badge">#construction</span>
+          </div>
+
+          <!-- Telemetry: Activity / Waveform HUD Icon -->
+          <div class="cmd-item" data-action="telemetry" data-keywords="telemetry hud terminal system stats fps isolate">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Open Systems Telemetry HUD</span>
+            </div>
+            <span class="cmd-item-badge">#telemetry</span>
+          </div>
+
+          <!-- Contact: Mail Envelope Icon -->
+          <div class="cmd-item" data-action="contact" data-keywords="contact anmol email send message form inquiry">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Contact Anmol</span>
+            </div>
+            <span class="cmd-item-badge">#contact</span>
+          </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="cmd-group" data-group="Actions">
+          <div class="cmd-category-title">Actions &amp; Documentation</div>
+
+          <!-- Specs: Layers / Blueprint Architecture Icon -->
+          <div class="cmd-item" data-action="specs" data-keywords="architecture specs technical modal coditech details ast memory">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Open Coditech Architecture Specs</span>
+            </div>
+            <span class="cmd-item-badge">Modal</span>
+          </div>
+
+          <!-- Copy Email: Copy Clipboard Icon -->
+          <div class="cmd-item" data-action="copy-email" data-keywords="copy email direct clipboard address anmolkumar2762@gmail.com">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </div>
+              <span class="cmd-item-title">Copy Direct Email to Clipboard</span>
+            </div>
+            <span class="cmd-item-badge">⌘C</span>
+          </div>
+
+          <!-- Privacy Notice: Shield Check Icon -->
+          <div class="cmd-item" data-action="privacy" data-keywords="privacy policy gdpr data notice tracking cookies">
+            <div class="cmd-item-left">
+              <div class="cmd-item-chassis">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <span class="cmd-item-title">View Data &amp; Privacy Notice</span>
+            </div>
+            <span class="cmd-item-badge">Notice</span>
+          </div>
+        </div>
+
+        <!-- Empty search result state -->
+        <div class="cmd-empty" id="cmdPaletteEmpty">
+          No matching commands or sections found.
+        </div>
+      </div>
+
+      <div class="cmd-footer">
+        <div class="cmd-footer-keys">
+          <span><kbd class="kbd-pill">↑↓</kbd> Navigate</span>
+          <span><kbd class="kbd-pill">↵</kbd> Select</span>
+          <span><kbd class="kbd-pill">ESC</kbd> Close</span>
+        </div>
+        <div class="cmd-footer-brand">
+          Anmol Portfolio Engine
+        </div>
+      </div>
+
     </div>
   </div>
 </body>

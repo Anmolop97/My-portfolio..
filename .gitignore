@@ -25,6 +25,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 node_modules/
+.wrangler/
 
 # Local Test Scripts and Verification Screenshots
 *.mjs
@@ -37,4 +38,5 @@ scratch/
 .env
 .env.*
 *.bak
-serve.js
+archive/
+*.mp3

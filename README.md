@@ -10,14 +10,14 @@
   [![WebGL 2.0](https://img.shields.io/badge/WebGL_2.0-990000?style=for-the-badge&logo=webgl&logoColor=white)](https://www.khronos.org/webgl/)
   [![C Programming](https://img.shields.io/badge/C_Language-A8B9CC?style=for-the-badge&logo=c&logoColor=black)](https://en.wikipedia.org/wiki/C_(programming_language))
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-  [![Security: Hardened](https://img.shields.io/badge/Security-A%2B_Grade-emerald?style=for-the-badge&logo=shield)](https://portfolio.anmolkumar.workers.dev/)
+  [![Security: Hardened](https://img.shields.io/badge/Security-A%2B_Grade-emerald?style=for-the-badge&logo=shield)](https://portfolio-anmol.pages.dev/)
 
   <p align="center">
     <b>Hardware-accelerated 3D graphics, procedural engineering, low-level systems architecture, and rock-solid edge security.</b>
   </p>
 
   <p align="center">
-    <a href="https://portfolio.anmolkumar.workers.dev/">
+    <a href="https://portfolio-anmol.pages.dev/">
       <img src="https://img.shields.io/badge/▶_Launch_Live_Workstation-0ea5e9?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Live Demo" />
     </a>
     <a href="https://thehellspires.vercel.app/">
@@ -46,7 +46,7 @@
 
 ## 🌟 Overview
 
-This repository houses the production source code for **[portfolio.anmolkumar.workers.dev](https://portfolio.anmolkumar.workers.dev/)** — an experimental, high-performance developer portfolio built from first principles.
+This repository houses the production source code for **[portfolio-anmol.pages.dev](https://portfolio-anmol.pages.dev/)** — an experimental, high-performance developer portfolio built from first principles.
 
 Rather than relying on generic website templates, CSS UI frameworks, or bundled black boxes, this site is engineered from scratch to demonstrate:
 - **Low-level graphics understanding**: Interactive 3D WebGL scenes with procedural textures and physical trigonometry.
@@ -121,7 +121,7 @@ The deployment features an enterprise-grade security posture verified through au
 | Security Vector | Implementation Detail | Status |
 | :--- | :--- | :--- |
 | **Strict CSP** | Zero inline styles (`style-src 'self' https://fonts.googleapis.com`), uncompromised hashes, `upgrade-insecure-requests`. | `ENFORCED` |
-| **Origin Isolation** | Exact hostname allowlist checking (`portfolio.anmolkumar.workers.dev`, `localhost`). Subdomain spoofing blocked. | `ENFORCED` |
+| **Origin Isolation** | Exact hostname allowlist checking (`portfolio-anmol.pages.dev`, `localhost`). Subdomain spoofing blocked. | `ENFORCED` |
 | **Rate Limiting** | Sliding-window client IP rate limiter (maximum 3 messages per 10 minutes). Returns `429` with `Retry-After`. | `ENFORCED` |
 | **Quota Shield** | Global hourly circuit breaker (max 25 requests/hour) protecting Google Apps Script email quotas from botnets. | `ENFORCED` |
 | **Formula Sanitization** | OWASP CWE-1236 protection. Neutralizes `=`, `+`, `-`, `@`, `\|`, `%` with literal apostrophes across all lines. | `ENFORCED` |
@@ -215,7 +215,7 @@ npx wrangler deploy
 ## 📬 Connect & Inquiries
 
 - **Author**: Anmol Kumar (Creative Developer & Systems Programmer)
-- **Portfolio**: [portfolio.anmolkumar.workers.dev](https://portfolio.anmolkumar.workers.dev/)
+- **Portfolio**: [portfolio-anmol.pages.dev](https://portfolio-anmol.pages.dev/)
 - **GitHub**: [@Anmolop97](https://github.com/Anmolop97)
 - **LinkedIn**: [Anmol Kumar](https://www.linkedin.com/in/anmol-kumar-784849412/)
 - **Email**: [anmolkumar2762@gmail.com](mailto:anmolkumar2762@gmail.com)

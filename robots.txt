@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://portfolio.anmolkumar.workers.dev/sitemap.xml
+Sitemap: https://portfolio-anmol.pages.dev/sitemap.xml

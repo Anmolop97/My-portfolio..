@@ -1052,13 +1052,13 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         ]
       ];
 
-      // Master Power-Of-Two canvas for keycap texture (2048x1024 desktop, 1024x512 mobile to save 75% VRAM & enable clean hardware mipmaps)
-      const texScale = isMobile ? 0.25 : 1.0;
+      // Master canvas for keycap texture (Exact 2048x828 matching the 2.82x1.14 3D plane aspect ratio)
+      const texScale = isMobile ? 0.75 : 1.0;
       const KB_LOGICAL_W = 2048;
-      const KB_LOGICAL_H = 860;
+      const KB_LOGICAL_H = 828;
       const kbCanvas = document.createElement('canvas');
-      kbCanvas.width = Math.round(2048 * texScale);
-      kbCanvas.height = Math.round(1024 * texScale);
+      kbCanvas.width = Math.round(KB_LOGICAL_W * texScale);
+      kbCanvas.height = Math.round(KB_LOGICAL_H * texScale);
       const kbCtx = kbCanvas.getContext('2d');
 
       const maxAniso = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 16;
@@ -1069,8 +1069,8 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       keycapTexture.anisotropy = maxAniso;
       const keycapMaterial = new THREE.MeshStandardMaterial({
         map: keycapTexture,
-        metalness: 0.12,
-        roughness: 0.78
+        metalness: 0.10,
+        roughness: 0.82
       });
 
       function drawEngravedKeyboard() {
@@ -1080,72 +1080,63 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
         kbCtx.save();
         kbCtx.scale(kbCanvas.width / KB_LOGICAL_W, kbCanvas.height / KB_LOGICAL_H);
 
-        // Base keyboard tray / recessed well: HEX #181A20, RGB rgb(24, 26, 32)
-        kbCtx.fillStyle = '#181a20';
+        // Base keyboard tray / recessed well: sleek deep matte graphite
+        kbCtx.fillStyle = '#0a0c10';
         kbCtx.fillRect(0, 0, kbW, kbH);
 
         const padX = 14;
         const padY = 14;
-        const keyGap = 6;
-        const rowGap = 6;
-        const row0H = 88;
+        const keyGap = 6.5;
+        const rowGap = 6.5;
+        const row0H = 76;
         const stdH = (kbH - 2 * padY - row0H - 5 * rowGap) / 5;
         const pitch = (kbW - 2 * padX + keyGap) / 14.5;
 
-        // Helper to draw a single 3D sculpted keycap
+        // Helper to draw an authentic, precision MacBook chiclet keycap
         function drawKey(kx, ky, kw, kh, key) {
+          const radius = 7.5;
+
           // 1. Socket well cavity shadow beneath keycap
-          kbCtx.fillStyle = '#0e1015';
+          kbCtx.fillStyle = '#040508';
           kbCtx.beginPath();
-          if (kbCtx.roundRect) kbCtx.roundRect(kx, ky + 1.5, kw, kh, 5.5);
-          else kbCtx.rect(kx, ky + 1.5, kw, kh);
+          if (kbCtx.roundRect) kbCtx.roundRect(kx, ky + 1.8, kw, kh, radius);
+          else kbCtx.rect(kx, ky + 1.8, kw, kh);
           kbCtx.fill();
 
-          // 2. Keycap body gradient (Authentic dark obsidian / matte graphite PBT)
+          // 2. Chiclet Keycap Body (Flat, matte graphite obsidian PBT — zero ugly circular bowl dishes)
           const grad = kbCtx.createLinearGradient(kx, ky, kx, ky + kh);
-          grad.addColorStop(0, '#1c2230');   // Micro ambient highlight at top rim
-          grad.addColorStop(0.16, '#131622'); // Rich stealth obsidian
-          grad.addColorStop(0.85, '#0c0f18');
-          grad.addColorStop(1, '#070911');   // Dark base
+          grad.addColorStop(0, '#212532');   // Subtle top edge ambient reflection
+          grad.addColorStop(0.12, '#171922'); // Silky dark matte obsidian body
+          grad.addColorStop(0.90, '#12141c'); // Consistent flat matte body
+          grad.addColorStop(1, '#0c0e14');   // Crisp bottom transition
           kbCtx.fillStyle = grad;
           kbCtx.beginPath();
-          if (kbCtx.roundRect) kbCtx.roundRect(kx, ky, kw, kh, 5.5);
+          if (kbCtx.roundRect) kbCtx.roundRect(kx, ky, kw, kh, radius);
           else kbCtx.rect(kx, ky, kw, kh);
           kbCtx.fill();
 
-          // 3. Ergonomic dish scoop (subtle radial depth concave)
-          const dish = kbCtx.createRadialGradient(kx + kw * 0.5, ky + kh * 0.42, 2, kx + kw * 0.5, ky + kh * 0.42, Math.max(kw, kh) * 0.65);
-          dish.addColorStop(0, 'rgba(255, 255, 255, 0.045)');
-          dish.addColorStop(0.55, 'rgba(255, 255, 255, 0.012)');
-          dish.addColorStop(1, 'rgba(0, 0, 0, 0.32)');
-          kbCtx.fillStyle = dish;
+          // 3. Precision Bevel Rim Strokes
+          // Top & side specular rim highlight (1px crisp edge)
+          kbCtx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+          kbCtx.lineWidth = 1.0;
           kbCtx.beginPath();
-          if (kbCtx.roundRect) kbCtx.roundRect(kx + 1, ky + 1, kw - 2, kh - 2, 4.5);
-          else kbCtx.rect(kx + 1, ky + 1, kw - 2, kh - 2);
-          kbCtx.fill();
+          if (kbCtx.roundRect) kbCtx.roundRect(kx + 0.5, ky + 0.5, kw - 1.0, kh - 1.0, radius - 0.5);
+          else kbCtx.rect(kx + 0.5, ky + 0.5, kw - 1.0, kh - 1.0);
+          kbCtx.stroke();
 
-          // 4. Chamfer bevel rim strokes
-          // Top & side specular rim highlight
-          kbCtx.strokeStyle = 'rgba(255, 255, 255, 0.10)';
+          // Bottom edge contact shadow (grounding the keycap in 3D)
+          kbCtx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
           kbCtx.lineWidth = 1.2;
           kbCtx.beginPath();
-          if (kbCtx.roundRect) kbCtx.roundRect(kx + 0.6, ky + 0.6, kw - 1.2, kh - 1.2, 5.0);
-          else kbCtx.rect(kx + 0.6, ky + 0.6, kw - 1.2, kh - 1.2);
+          kbCtx.moveTo(kx + radius, ky + kh - 0.6);
+          kbCtx.lineTo(kx + kw - radius, ky + kh - 0.6);
           kbCtx.stroke();
 
-          // Bottom edge contact shadow
-          kbCtx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
-          kbCtx.lineWidth = 1.4;
-          kbCtx.beginPath();
-          kbCtx.moveTo(kx + 5, ky + kh - 0.7);
-          kbCtx.lineTo(kx + kw - 5, ky + kh - 0.7);
-          kbCtx.stroke();
-
-          // 5. Special Key Details
+          // 4. Special Key Details
           if (key.type === 'touchid') {
             const cx = kx + kw / 2;
             const cy = ky + kh / 2;
-            const r = Math.min(kw, kh) * 0.34;
+            const r = Math.min(kw, kh) * 0.36;
             // Metal bevel ring
             kbCtx.strokeStyle = '#2d3748';
             kbCtx.lineWidth = 2.0;
@@ -1179,91 +1170,81 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
 
           // Caps Lock Emerald LED
           if (key.hasLed) {
-            const ledX = kx + 16;
+            const ledX = kx + 15;
             const ledY = ky + kh / 2;
-            kbCtx.fillStyle = '#060a0f';
+            kbCtx.fillStyle = '#05070a';
             kbCtx.beginPath();
-            kbCtx.arc(ledX, ledY, 3.5, 0, Math.PI * 2);
+            kbCtx.arc(ledX, ledY, 3.2, 0, Math.PI * 2);
             kbCtx.fill();
             kbCtx.fillStyle = '#10b981';
-            kbCtx.shadowColor = 'rgba(16, 185, 129, 0.85)';
-            kbCtx.shadowBlur = 6;
             kbCtx.beginPath();
-            kbCtx.arc(ledX, ledY, 2.0, 0, Math.PI * 2);
+            kbCtx.arc(ledX, ledY, 1.8, 0, Math.PI * 2);
             kbCtx.fill();
-            kbCtx.shadowBlur = 0;
           }
 
           // Tactile Homing Bumps (F and J keys)
           if (key.hasNub) {
             const cx = kx + kw / 2;
-            const nubY = ky + kh * 0.77;
-            const nubW = 16;
+            const nubY = ky + kh * 0.78;
+            const nubW = 18;
             kbCtx.fillStyle = '#475569';
             kbCtx.beginPath();
-            if (kbCtx.roundRect) kbCtx.roundRect(cx - nubW / 2, nubY, nubW, 2.5, 1.2);
-            else kbCtx.rect(cx - nubW / 2, nubY, nubW, 2.5);
+            if (kbCtx.roundRect) kbCtx.roundRect(cx - nubW / 2, nubY, nubW, 2.4, 1.2);
+            else kbCtx.rect(cx - nubW / 2, nubY, nubW, 2.4);
             kbCtx.fill();
-            kbCtx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-            kbCtx.lineWidth = 0.8;
-            kbCtx.beginPath();
-            kbCtx.moveTo(cx - nubW / 2 + 1, nubY);
-            kbCtx.lineTo(cx + nubW / 2 - 1, nubY);
-            kbCtx.stroke();
           }
 
+          const fontSans = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif';
+
           // Dual-legend keys (Numbers / Symbols, e.g. "1" and "!", "[" and "{")
-          if (key.sub && key.main && !key.main.startsWith('F') && key.main !== 'fn') {
-            kbCtx.font = '600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+          if (key.sub && key.main && !/^F\d+$/.test(key.main) && key.main !== 'fn') {
+            kbCtx.font = `500 17px ${fontSans}`;
             kbCtx.fillStyle = '#94a3b8';
             kbCtx.textAlign = 'center';
             kbCtx.textBaseline = 'middle';
             kbCtx.fillText(key.sub, kx + kw / 2, ky + kh * 0.32);
 
-            kbCtx.font = '700 19px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-            kbCtx.fillStyle = '#f1f5f9';
-            kbCtx.shadowColor = 'rgba(255, 255, 255, 0.3)';
-            kbCtx.shadowBlur = 2.5;
-            kbCtx.fillText(key.main, kx + kw / 2, ky + kh * 0.70);
-            kbCtx.shadowBlur = 0;
+            kbCtx.font = `500 22px ${fontSans}`;
+            kbCtx.fillStyle = '#f8fafc';
+            kbCtx.fillText(key.main, kx + kw / 2, ky + kh * 0.69);
           }
           // Function Keys (Row 0: F1-F12 + icons)
-          else if (key.main && key.main.startsWith('F')) {
+          else if (key.main && /^F\d+$/.test(key.main)) {
             if (key.sub) {
-              kbCtx.font = '15px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+              kbCtx.font = `16px ${fontSans}`;
               kbCtx.fillStyle = '#94a3b8';
               kbCtx.textAlign = 'center';
               kbCtx.textBaseline = 'middle';
-              kbCtx.fillText(key.sub, kx + kw / 2, ky + kh * 0.32);
+              kbCtx.fillText(key.sub, kx + kw / 2, ky + kh * 0.33);
             }
-            kbCtx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            kbCtx.font = `500 14px ${fontSans}`;
             kbCtx.fillStyle = '#cbd5e1';
             kbCtx.textAlign = 'center';
             kbCtx.textBaseline = 'middle';
-            kbCtx.fillText(key.main, kx + kw / 2, ky + (key.sub ? kh * 0.72 : kh / 2));
+            kbCtx.fillText(key.main, kx + kw / 2, ky + (key.sub ? kh * 0.73 : kh / 2));
           }
           // Modifier Keys with text + glyph (e.g. "tab ⇥", "shift ⇧", "delete ⌫")
           else if (key.glyph && key.main) {
             kbCtx.fillStyle = '#cbd5e1';
-            kbCtx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            kbCtx.font = `500 15px ${fontSans}`;
             kbCtx.textAlign = 'left';
             kbCtx.textBaseline = 'bottom';
-            kbCtx.fillText(key.main, kx + (key.hasLed ? 28 : 12), ky + kh - 11);
+            kbCtx.fillText(key.main, kx + (key.hasLed ? 28 : 12), ky + kh - 12);
 
-            kbCtx.font = '600 17px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            kbCtx.font = `500 17px ${fontSans}`;
             kbCtx.textAlign = 'right';
             kbCtx.textBaseline = 'top';
-            kbCtx.fillText(key.glyph, kx + kw - 12, ky + 11);
+            kbCtx.fillText(key.glyph, kx + kw - 12, ky + 12);
           }
           // fn / globe key
           else if (key.main === 'fn' && key.sub) {
-            kbCtx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+            kbCtx.font = `14px ${fontSans}`;
             kbCtx.fillStyle = '#94a3b8';
             kbCtx.textAlign = 'right';
             kbCtx.textBaseline = 'top';
             kbCtx.fillText(key.sub, kx + kw - 10, ky + 10);
 
-            kbCtx.font = '600 13px -apple-system, BlinkMacSystemFont, sans-serif';
+            kbCtx.font = `500 14px ${fontSans}`;
             kbCtx.fillStyle = '#cbd5e1';
             kbCtx.textAlign = 'left';
             kbCtx.textBaseline = 'bottom';
@@ -1273,19 +1254,16 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
           else if (key.main && key.main.length === 1) {
             const isArrow = ['◀', '▲', '▼', '▶'].includes(key.main);
             kbCtx.font = isArrow
-              ? '700 15px -apple-system, BlinkMacSystemFont, sans-serif'
-              : '700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+              ? `600 16px ${fontSans}`
+              : `500 28px ${fontSans}`;
             kbCtx.fillStyle = '#f8fafc';
-            kbCtx.shadowColor = 'rgba(255, 255, 255, 0.35)';
-            kbCtx.shadowBlur = 3;
             kbCtx.textAlign = 'center';
             kbCtx.textBaseline = 'middle';
-            kbCtx.fillText(key.main, kx + kw / 2, ky + kh / 2);
-            kbCtx.shadowBlur = 0;
+            kbCtx.fillText(key.main, kx + kw / 2, ky + kh / 2 + 1);
           }
           // Text-only keys (esc, etc.)
           else if (key.main) {
-            kbCtx.font = '600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            kbCtx.font = `500 15px ${fontSans}`;
             kbCtx.fillStyle = '#cbd5e1';
             kbCtx.textAlign = 'center';
             kbCtx.textBaseline = 'middle';
@@ -2721,4 +2699,339 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       closeModal();
     }
   });
+})();
+
+/* ================================================================
+   CODITECH ARCHITECTURE & TECHNICAL SPECS MODAL
+   ================================================================ */
+(() => {
+  const openBtn = document.getElementById('openCoditechArchBtn');
+  const modal = document.getElementById('coditechModal');
+  const backdrop = document.getElementById('coditechModalBackdrop');
+  const closeBtn = document.getElementById('closeCoditechModalBtn');
+  const dismissBtn = document.getElementById('dismissCoditechModalBtn');
+
+  if (!openBtn || !modal || !backdrop) return;
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-scroll-locked');
+    if (window.__lenis) window.__lenis.stop();
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-scroll-locked');
+    if (window.__lenis) window.__lenis.start();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
+})();
+
+/* ================================================================
+   ACETERNITY / GOD-UI 3D PARALLAX TILT CARD
+   ================================================================ */
+(() => {
+  const card = document.querySelector('.featured-hero-card');
+  if (!card) return;
+  if (typeof window === 'undefined' || (window.matchMedia && !window.matchMedia('(pointer: fine)').matches)) return;
+
+  let bounds = null;
+  let isHovered = false;
+  let rafId = 0;
+  let targetRotX = 0;
+  let targetRotY = 0;
+  let currentRotX = 0;
+  let currentRotY = 0;
+
+  function updateBounds() {
+    bounds = card.getBoundingClientRect();
+  }
+
+  function lerp(start, end, factor) {
+    return start + (end - start) * factor;
+  }
+
+  function tick() {
+    currentRotX = lerp(currentRotX, targetRotX, 0.12);
+    currentRotY = lerp(currentRotY, targetRotY, 0.12);
+
+    if (isHovered || Math.abs(currentRotX) > 0.05 || Math.abs(currentRotY) > 0.05) {
+      card.style.transform = `rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+      rafId = requestAnimationFrame(tick);
+    } else {
+      card.style.transform = '';
+      rafId = 0;
+    }
+  }
+
+  card.addEventListener('mouseenter', () => {
+    if (window.innerWidth <= 900) return;
+    updateBounds();
+    isHovered = true;
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  });
+
+  card.addEventListener('mousemove', (e) => {
+    if (window.innerWidth <= 900 || !bounds) return;
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    const leftX = mouseX - bounds.left;
+    const topY = mouseY - bounds.top;
+    const centerX = leftX - bounds.width / 2;
+    const centerY = topY - bounds.height / 2;
+
+    const maxTilt = 8.5;
+    targetRotX = -(centerY / (bounds.height / 2)) * maxTilt;
+    targetRotY = (centerX / (bounds.width / 2)) * maxTilt;
+  });
+
+  card.addEventListener('mouseleave', () => {
+    isHovered = false;
+    targetRotX = 0;
+    targetRotY = 0;
+  });
+
+  window.addEventListener('resize', () => {
+    if (isHovered) updateBounds();
+  }, { passive: true });
+})();
+
+/* ================================================================
+   GOD-UI / WATERMELON RADIAL CURSOR SPOTLIGHT TRACKER
+   ================================================================ */
+(() => {
+  if (typeof window === 'undefined' || (window.matchMedia && !window.matchMedia('(pointer: fine)').matches)) return;
+
+  const cards = document.querySelectorAll('.spotlight-card');
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    let bounds = null;
+
+    card.addEventListener('mouseenter', () => {
+      bounds = card.getBoundingClientRect();
+    }, { passive: true });
+
+    card.addEventListener('mousemove', e => {
+      if (!bounds) bounds = card.getBoundingClientRect();
+      const x = e.clientX - bounds.left;
+      const y = e.clientY - bounds.top;
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+    }, { passive: true });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.removeProperty('--mouse-x');
+      card.style.removeProperty('--mouse-y');
+      bounds = null;
+    }, { passive: true });
+  });
+
+  window.addEventListener('resize', () => {
+    cards.forEach(c => {
+      c.style.removeProperty('--mouse-x');
+      c.style.removeProperty('--mouse-y');
+    });
+  }, { passive: true });
+})();
+
+/* ================================================================
+   COMMAND PALETTE LAUNCHER (WATERMELON UI OBSIDIAN ENGINE)
+   ================================================================ */
+(() => {
+  const backdrop = document.getElementById('cmdPaletteBackdrop');
+  const modal = document.getElementById('cmdPaletteModal');
+  const input = document.getElementById('cmdPaletteInput');
+  const openBtn = document.getElementById('openCmdPaletteBtn');
+  const closeBtn = document.getElementById('closeCmdPaletteBtn');
+  const emptyEl = document.getElementById('cmdPaletteEmpty');
+
+  if (!backdrop || !modal || !input) return;
+
+  function openPalette() {
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-scroll-locked');
+    if (window.__lenis) window.__lenis.stop();
+    input.value = '';
+    filterItems('');
+    setTimeout(() => input.focus(), 60);
+  }
+
+  function closePalette() {
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('is-scroll-locked');
+    if (window.__lenis) window.__lenis.start();
+    input.blur();
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openPalette);
+  if (closeBtn) closeBtn.addEventListener('click', closePalette);
+
+  backdrop.addEventListener('click', (e) => {
+    if (!modal.contains(e.target)) {
+      closePalette();
+    }
+  });
+
+  // Global Shortcut: Cmd+K / Ctrl+K & Escape
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (backdrop.classList.contains('is-open')) {
+        closePalette();
+      } else {
+        openPalette();
+      }
+    } else if (e.key === 'Escape' && backdrop.classList.contains('is-open')) {
+      closePalette();
+    }
+  });
+
+  function getVisibleItems() {
+    return Array.from(modal.querySelectorAll('.cmd-item')).filter(el => el.style.display !== 'none');
+  }
+
+  function updateSelection(index) {
+    const items = getVisibleItems();
+    items.forEach((item, i) => {
+      if (i === index) {
+        item.classList.add('is-selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('is-selected');
+      }
+    });
+  }
+
+  function filterItems(query) {
+    const cleanQ = query.trim().toLowerCase();
+    const allItems = Array.from(modal.querySelectorAll('.cmd-item'));
+    const groups = Array.from(modal.querySelectorAll('.cmd-group'));
+    let visibleCount = 0;
+
+    allItems.forEach(item => {
+      const title = item.querySelector('.cmd-item-title')?.textContent.toLowerCase() || '';
+      const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+      const badge = (item.querySelector('.cmd-item-badge')?.textContent || '').toLowerCase();
+
+      if (!cleanQ || title.includes(cleanQ) || keywords.includes(cleanQ) || badge.includes(cleanQ)) {
+        item.style.display = 'flex';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    groups.forEach(group => {
+      const hasVisible = Array.from(group.querySelectorAll('.cmd-item')).some(item => item.style.display !== 'none');
+      group.style.display = hasVisible ? 'block' : 'none';
+    });
+
+    if (emptyEl) {
+      emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+    if (visibleCount > 0) {
+      updateSelection(0);
+    }
+  }
+
+  input.addEventListener('input', (e) => {
+    filterItems(e.target.value);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = getVisibleItems();
+    if (!items.length) return;
+
+    const currentIndex = items.findIndex(item => item.classList.contains('is-selected'));
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % items.length;
+      updateSelection(nextIndex);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + items.length) % items.length;
+      updateSelection(prevIndex);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const selected = items[currentIndex >= 0 ? currentIndex : 0];
+      if (selected) {
+        executeAction(selected.getAttribute('data-action'));
+      }
+    }
+  });
+
+  modal.querySelectorAll('.cmd-item').forEach(item => {
+    item.addEventListener('click', () => {
+      executeAction(item.getAttribute('data-action'));
+    });
+  });
+
+  function scrollToSection(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    if (window.__lenis) {
+      window.__lenis.scrollTo(el, { offset: -70, duration: 1.1 });
+    } else {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function executeAction(action) {
+    closePalette();
+    switch (action) {
+      case 'coditech':
+        scrollToSection('#featured');
+        break;
+      case 'workstation':
+        scrollToSection('#hero');
+        break;
+      case 'roadmap':
+        scrollToSection('#construction');
+        break;
+      case 'telemetry':
+        scrollToSection('#telemetry');
+        break;
+      case 'contact':
+        scrollToSection('#contact');
+        break;
+      case 'specs': {
+        const archBtn = document.getElementById('openCoditechArchBtn');
+        if (archBtn) archBtn.click();
+        break;
+      }
+      case 'copy-email': {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText('anmolkumar2762@gmail.com').catch(() => {});
+        }
+        break;
+      }
+      case 'privacy': {
+        const privacyBtn = document.getElementById('openPrivacyModalBtn');
+        if (privacyBtn) privacyBtn.click();
+        break;
+      }
+      default:
+        break;
+    }
+  }
 })();
