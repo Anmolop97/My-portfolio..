@@ -3050,3 +3050,153 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     }
   }
 })();
+
+/* ================================================================
+   STEALTH ADMIN TERMINAL VAULT (PASSWORD GATE CONTROLLER)
+   ================================================================ */
+(() => {
+  const backdrop = document.getElementById('stealthVaultBackdrop');
+  const modal = document.getElementById('stealthVaultModal');
+  const closeBtn = document.getElementById('closeStealthVaultBtn');
+  const dismissBtn = document.getElementById('dismissStealthVaultBtn');
+  const authForm = document.getElementById('vaultAuthForm');
+  const keyInput = document.getElementById('vaultKeyInput');
+  const authError = document.getElementById('vaultAuthError');
+  const authGate = document.getElementById('vaultAuthGate');
+  const messagesView = document.getElementById('vaultMessagesView');
+  const messagesList = document.getElementById('vaultMessagesList');
+  const refreshBtn = document.getElementById('vaultRefreshBtn');
+
+  if (!backdrop || !modal || !authForm || !keyInput) return;
+
+  const VALID_KEYS = new Set(['anmol2026', 'anmol-dev-secret-key-123']);
+  let isAuthenticated = false;
+
+  function openVault() {
+    backdrop.style.display = 'flex';
+    backdrop.classList.add('is-open');
+    backdrop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-scroll-locked');
+    if (window.__lenis) window.__lenis.stop();
+
+    if (!isAuthenticated) {
+      authGate.style.display = 'block';
+      messagesView.style.display = 'none';
+      keyInput.value = '';
+      authError.textContent = '';
+      setTimeout(() => keyInput.focus(), 60);
+    } else {
+      loadMessages();
+    }
+  }
+
+  function closeVault() {
+    backdrop.classList.remove('is-open');
+    backdrop.setAttribute('aria-hidden', 'true');
+    setTimeout(() => { backdrop.style.display = 'none'; }, 200);
+    document.body.classList.remove('is-scroll-locked');
+    if (window.__lenis) window.__lenis.start();
+    // Relock on close for tight security
+    isAuthenticated = false;
+    authGate.style.display = 'block';
+    messagesView.style.display = 'none';
+    keyInput.value = '';
+    authError.textContent = '';
+  }
+
+  // Stealth Keydown Listener: Ctrl+Shift+V or Alt+V triggers the stealth vault
+  window.addEventListener('keydown', (e) => {
+    const isCtrlShiftV = (e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'v';
+    const isAltV = e.altKey && e.key.toLowerCase() === 'v';
+
+    if (isCtrlShiftV || isAltV) {
+      e.preventDefault();
+      if (backdrop.classList.contains('is-open')) {
+        closeVault();
+      } else {
+        openVault();
+      }
+    } else if (e.key === 'Escape' && backdrop.classList.contains('is-open')) {
+      closeVault();
+    }
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeVault);
+  if (dismissBtn) dismissBtn.addEventListener('click', closeVault);
+  backdrop.addEventListener('click', (e) => {
+    if (!modal.contains(e.target)) closeVault();
+  });
+
+  // Password Verification Gate
+  authForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entered = keyInput.value.trim();
+
+    if (VALID_KEYS.has(entered)) {
+      isAuthenticated = true;
+      authError.textContent = '';
+      authGate.style.display = 'none';
+      messagesView.style.display = 'block';
+      loadMessages(entered);
+    } else {
+      authError.textContent = '> [SYS] Access Denied: Invalid Master Key';
+      keyInput.value = '';
+      keyInput.focus();
+    }
+  });
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => loadMessages());
+  }
+
+  async function loadMessages(passKey) {
+    messagesList.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: #64748b; font-size: 0.85rem;">Decrypting database stream...</div>';
+    let messages = [];
+
+    const keyParam = passKey === 'anmol2026' ? 'anmol-dev-secret-key-123' : (passKey || 'anmol-dev-secret-key-123');
+    const targetUrl = window.location.protocol === 'file:' 
+      ? `http://localhost:8080/api/admin/messages?key=${keyParam}`
+      : `/api/admin/messages?key=${keyParam}`;
+
+    try {
+      const res = await fetch(targetUrl, { headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.messages && Array.isArray(data.messages)) {
+          messages = data.messages;
+        }
+      }
+    } catch {}
+
+    if (messages.length === 0) {
+      try {
+        const localStore = JSON.parse(localStorage.getItem('anmol_vault_messages') || '[]');
+        if (localStore.length > 0) messages = localStore;
+      } catch {}
+    }
+
+    if (messages.length === 0) {
+      messagesList.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: #64748b; font-size: 0.85rem;">No messages in database yet.</div>';
+      return;
+    }
+
+    messagesList.innerHTML = messages.map(m => `
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem 0.95rem; margin-bottom: 0.55rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+          <div style="display: flex; align-items: center; gap: 7px;">
+            <span style="font-family: var(--font-mono, monospace); font-size: 0.70rem; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 1px 5px; border-radius: 4px;">#${m.id}</span>
+            <strong style="color: #ffffff; font-size: 0.88rem;">${m.name}</strong>
+            <span style="color: #64748b; font-size: 0.75rem;">(${m.country || 'IN'})</span>
+          </div>
+          <span style="font-family: var(--font-mono, monospace); font-size: 0.70rem; color: #64748b;">${m.created_at}</span>
+        </div>
+        <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 0.35rem;">
+          Email: <a href="mailto:${m.email}" style="color: #38bdf8; text-decoration: none;">${m.email}</a>
+        </div>
+        <div style="font-size: 0.82rem; color: #e2e8f0; line-height: 1.45; background: rgba(0,0,0,0.25); padding: 0.45rem 0.65rem; border-radius: 5px; border-left: 2px solid #38bdf8;">
+          ${m.message}
+        </div>
+      </div>
+    `).join('');
+  }
+})();
