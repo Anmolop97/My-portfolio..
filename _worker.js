@@ -438,8 +438,11 @@ export default {
     // Protected Admin Endpoint: Query or Export Messages from Cloudflare D1
     if (url.pathname === "/api/admin/messages") {
       const authHeader = request.headers.get("authorization") || "";
+      const queryKey = url.searchParams.get("key") || "";
       const adminKey = env && env.ADMIN_KEY;
-      if (!adminKey || authHeader !== `Bearer ${adminKey}`) {
+      const isAuthorized = (adminKey && (authHeader === `Bearer ${adminKey}` || queryKey === adminKey));
+
+      if (!isAuthorized) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
           headers: { ...SECURITY_HEADERS, "Content-Type": "application/json" }
