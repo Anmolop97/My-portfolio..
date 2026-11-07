@@ -698,12 +698,6 @@
               Send Message →
             </button>
             <div class="form-status" id="formStatus"></div>
-            <div style="text-align: center; margin-top: 0.85rem;">
-              <button type="button" class="btn btn-secondary btn-sm" id="openAdminVaultBtn" style="font-size: 0.76rem; padding: 5px 12px; gap: 6px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                View Messages in Database Vault
-              </button>
-            </div>
           </div>
         </form>
       </div>
@@ -714,10 +708,6 @@
     <p>Designed &amp; Built by <b>Anmol Kumar</b> • Creative Developer</p>
     <p class="footer-subline">High-performance WebGL • Three.js • Clean Architecture</p>
     <div class="footer-links">
-      <button type="button" class="footer-link-btn" id="openAdminVaultFooterBtn" aria-haspopup="dialog">
-        Database Vault
-      </button>
-      <span class="footer-bullet">•</span>
       <button type="button" class="footer-link-btn" id="openPrivacyModalBtn" aria-haspopup="dialog">
         Privacy Notice
       </button>
@@ -967,18 +957,6 @@
             <span class="cmd-item-badge">Notice</span>
           </div>
 
-          <!-- Admin Vault: Inbox Messages Icon -->
-          <div class="cmd-item" data-action="admin-vault" data-keywords="admin vault inbox messages database d1 contact list responses">
-            <div class="cmd-item-left">
-              <div class="cmd-item-chassis">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </div>
-              <span class="cmd-item-title">Open Database Inbox (Admin Vault)</span>
-            </div>
-            <span class="cmd-item-badge">Admin</span>
-          </div>
         </div>
 
         <!-- Empty search result state -->
@@ -998,37 +976,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- ADMIN DATABASE MESSAGES VAULT MODAL -->
-  <div class="privacy-modal-backdrop" id="adminVaultModalBackdrop" aria-hidden="true"></div>
-  <div class="privacy-modal" id="adminVaultModal" role="dialog" aria-modal="true" aria-labelledby="adminVaultModalTitle" aria-hidden="true">
-    <div class="privacy-modal-card" style="max-width: 820px;">
-      <div class="privacy-modal-header">
-        <div class="privacy-modal-badge-group">
-          <span class="privacy-badge">DATABASE VAULT • SQLITE D1</span>
-          <h3 class="privacy-modal-title" id="adminVaultModalTitle">Inbox Messages Vault</h3>
-        </div>
-        <button type="button" class="privacy-modal-close" id="closeAdminVaultModalBtn" aria-label="Close database vault">
-          ✕
-        </button>
-      </div>
-      <div class="privacy-modal-body" style="padding: 1rem 1.4rem;">
-        <p style="font-size: 0.82rem; color: #94a3b8; margin: 0 0 1rem;">
-          Live database inspector. Every inquiry submitted from your contact form is stored here securely.
-        </p>
-        <div id="adminVaultContent" style="min-height: 120px; max-height: 380px; overflow-y: auto;">
-          <div style="text-align: center; padding: 2rem; color: #64748b; font-size: 0.88rem;">Loading messages from database...</div>
-        </div>
-      </div>
-      <div class="privacy-modal-footer">
-        <button type="button" class="btn btn-secondary btn-sm" id="refreshAdminVaultBtn" style="gap: 5px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          Refresh Inbox
-        </button>
-        <button type="button" class="btn btn-secondary btn-sm" id="dismissAdminVaultModalBtn">Close Window</button>
-      </div>
     </div>
   </div>
 </body>
