@@ -472,13 +472,6 @@ export default {
         });
       }
     }
-      } catch (err) {
-        return new Response(JSON.stringify({ status: "error", error: "Transmission failed" }), {
-          status: 500,
-          headers: { ...SECURITY_HEADERS, "Content-Type": "application/json" }
-        });
-      }
-    }
 
     // Preserve existing static asset / origin routing logic untouched
     const originResponse = env && env.ASSETS
