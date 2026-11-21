@@ -2762,69 +2762,71 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
    ACETERNITY / GOD-UI 3D PARALLAX TILT CARD
    ================================================================ */
 (() => {
-  const card = document.querySelector('.featured-hero-card');
-  if (!card) return;
+  const cards = document.querySelectorAll('.featured-hero-card');
+  if (!cards.length) return;
   if (typeof window === 'undefined' || (window.matchMedia && !window.matchMedia('(pointer: fine)').matches)) return;
 
-  let bounds = null;
-  let isHovered = false;
-  let rafId = 0;
-  let targetRotX = 0;
-  let targetRotY = 0;
-  let currentRotX = 0;
-  let currentRotY = 0;
+  cards.forEach((card) => {
+    let bounds = null;
+    let isHovered = false;
+    let rafId = 0;
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let currentRotX = 0;
+    let currentRotY = 0;
 
-  function updateBounds() {
-    bounds = card.getBoundingClientRect();
-  }
-
-  function lerp(start, end, factor) {
-    return start + (end - start) * factor;
-  }
-
-  function tick() {
-    currentRotX = lerp(currentRotX, targetRotX, 0.12);
-    currentRotY = lerp(currentRotY, targetRotY, 0.12);
-
-    if (isHovered || Math.abs(currentRotX) > 0.05 || Math.abs(currentRotY) > 0.05) {
-      card.style.transform = `rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
-      rafId = requestAnimationFrame(tick);
-    } else {
-      card.style.transform = '';
-      rafId = 0;
+    function updateBounds() {
+      bounds = card.getBoundingClientRect();
     }
-  }
 
-  card.addEventListener('mouseenter', () => {
-    if (window.innerWidth <= 900) return;
-    updateBounds();
-    isHovered = true;
-    if (!rafId) rafId = requestAnimationFrame(tick);
+    function lerp(start, end, factor) {
+      return start + (end - start) * factor;
+    }
+
+    function tick() {
+      currentRotX = lerp(currentRotX, targetRotX, 0.12);
+      currentRotY = lerp(currentRotY, targetRotY, 0.12);
+
+      if (isHovered || Math.abs(currentRotX) > 0.05 || Math.abs(currentRotY) > 0.05) {
+        card.style.transform = `rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+        rafId = requestAnimationFrame(tick);
+      } else {
+        card.style.transform = '';
+        rafId = 0;
+      }
+    }
+
+    card.addEventListener('mouseenter', () => {
+      if (window.innerWidth <= 900) return;
+      updateBounds();
+      isHovered = true;
+      if (!rafId) rafId = requestAnimationFrame(tick);
+    });
+
+    card.addEventListener('mousemove', (e) => {
+      if (window.innerWidth <= 900 || !bounds) return;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const leftX = mouseX - bounds.left;
+      const topY = mouseY - bounds.top;
+      const centerX = leftX - bounds.width / 2;
+      const centerY = topY - bounds.height / 2;
+
+      const maxTilt = 8.5;
+      targetRotX = -(centerY / (bounds.height / 2)) * maxTilt;
+      targetRotY = (centerX / (bounds.width / 2)) * maxTilt;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      isHovered = false;
+      targetRotX = 0;
+      targetRotY = 0;
+    });
+
+    window.addEventListener('resize', () => {
+      if (isHovered) updateBounds();
+    }, { passive: true });
   });
-
-  card.addEventListener('mousemove', (e) => {
-    if (window.innerWidth <= 900 || !bounds) return;
-    const mouseX = e.clientX;
-    const mouseY = e.clientY;
-    const leftX = mouseX - bounds.left;
-    const topY = mouseY - bounds.top;
-    const centerX = leftX - bounds.width / 2;
-    const centerY = topY - bounds.height / 2;
-
-    const maxTilt = 8.5;
-    targetRotX = -(centerY / (bounds.height / 2)) * maxTilt;
-    targetRotY = (centerX / (bounds.width / 2)) * maxTilt;
-  });
-
-  card.addEventListener('mouseleave', () => {
-    isHovered = false;
-    targetRotX = 0;
-    targetRotY = 0;
-  });
-
-  window.addEventListener('resize', () => {
-    if (isHovered) updateBounds();
-  }, { passive: true });
 })();
 
 /* ================================================================

@@ -799,6 +799,8 @@
       width: 100%;
       isolation: isolate;
       display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
       justify-content: center;
       align-items: center;
       perspective: 1200px;
