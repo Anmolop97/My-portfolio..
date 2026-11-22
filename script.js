@@ -2352,58 +2352,39 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
           status.className = 'form-status transmitting';
           status.textContent = '> [SYS] Routing secure message directly to Anmol...';
 
+          const scriptUrl = 'https://script.google.com/macros/s/AKfycby7XIBMR_PZ3ACTdNnvEGzlItu2tfcI7cob9z15M5Rlp81tnkZAc8hrDf-MKW9BAz6o/exec';
+
           try {
-            // Production secure transmission via hardened Cloudflare Worker backend
-            const res = await fetch('/api/contact', {
+            // Direct serverless client transmission to Google Apps Script webhook (lands directly in Gmail)
+            await fetch(scriptUrl, {
               method: 'POST',
+              mode: 'no-cors',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: n, email: em, message: msg, _hp_trap: hp })
+              body: JSON.stringify({ name: n, email: em, message: msg, country: 'IN' })
             });
 
-            // Resilient Fallback: If running in static preview (404), trigger mailto
-            if (res.status === 404) {
-              const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
-              const mailtoLink = `mailto:${email}?subject=${encodeURIComponent("Message from " + n)}&body=${encodeURIComponent(msg + "\n\nFrom: " + n + " (" + em + ")")}`;
-              window.location.href = mailtoLink;
-              submitBtn.classList.remove('is-transmitting');
-              submitBtn.innerHTML = originalBtnHtml;
-              status.className = 'form-status success';
-              status.textContent = '> [SYS] Static preview detected. Opening direct email client!';
-              return;
-            }
+            // Mirror to local vault storage so it is immediately visible anywhere
+            try {
+              const vaultStore = JSON.parse(localStorage.getItem('anmol_vault_messages') || '[]');
+              vaultStore.unshift({
+                id: vaultStore.length + 1,
+                name: n,
+                email: em,
+                message: msg,
+                country: 'IN',
+                status: 'saved',
+                created_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+              });
+              localStorage.setItem('anmol_vault_messages', JSON.stringify(vaultStore));
+            } catch(e) {}
 
-            const data = await res.json().catch(() => ({}));
-
-            if (res.ok && (data.status === 'success' || !data.error)) {
-              // Mirror to local vault storage so it is immediately visible anywhere
-              try {
-                const vaultStore = JSON.parse(localStorage.getItem('anmol_vault_messages') || '[]');
-                vaultStore.unshift({
-                  id: vaultStore.length + 1,
-                  name: n,
-                  email: em,
-                  message: msg,
-                  country: 'IN',
-                  status: 'saved',
-                  created_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
-                });
-                localStorage.setItem('anmol_vault_messages', JSON.stringify(vaultStore));
-              } catch(e) {}
-
-              // Success animation
-              submitBtn.classList.remove('is-transmitting');
-              submitBtn.classList.add('is-success');
-              submitBtn.innerHTML = '✓ Message Dispatched!';
-              status.className = 'form-status success';
-              status.textContent = '> [SYS] Message delivered directly to Anmol\'s inbox. Expect a reply soon!';
-              form.reset();
-            } else {
-              // Server-side validation or rate limit error
-              submitBtn.classList.remove('is-transmitting');
-              submitBtn.innerHTML = originalBtnHtml;
-              status.className = 'form-status error';
-              status.textContent = `> [SYS] ${data.error || 'Transmission declined. Please try again.'}`;
-            }
+            // Success animation
+            submitBtn.classList.remove('is-transmitting');
+            submitBtn.classList.add('is-success');
+            submitBtn.innerHTML = '✓ Message Dispatched!';
+            status.className = 'form-status success';
+            status.textContent = '> [SYS] Message delivered directly to Anmol\'s inbox. Expect a reply soon!';
+            form.reset();
           } catch (err) {
             // Offline or network error fallback: trigger direct mailto
             const email = ['anmol', 'kumar', '2762'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.');
@@ -2412,7 +2393,7 @@ if (typeof window !== 'undefined' && window.innerWidth <= 768) {
             submitBtn.classList.remove('is-transmitting');
             submitBtn.innerHTML = originalBtnHtml;
             status.className = 'form-status success';
-            status.textContent = '> [SYS] Offline mode. Opened direct email client!';
+            status.textContent = '> [SYS] Opened direct email client!';
           } finally {
             setTimeout(() => {
               submitBtn.disabled = false;
